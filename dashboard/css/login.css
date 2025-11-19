@@ -39,3 +39,13 @@
   .login-right { padding: 2rem 1rem; }
   .login-card { margin-top: -60px; }
 }
+
+/* Register page image uses same sizing — reuse or override image path here */
+.bg-register-image {
+  background-image: url('../images/register-left.jpg'); /* replace with your register image */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
