@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Lab IVSS - Register</title>
+    <title>Lab IVSS - Daftar Member</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -35,49 +35,70 @@
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">Daftar Member</h1>
                             </div>
-                            <form class="user">
-                                <div class="form-group row">
-                                    <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <input type="text" class="form-control form-control-user" id="firstName"
-                                            placeholder="First Name">
+
+                            <!-- Form: gunakan grid Bootstrap dengan form-row / form-group yang benar -->
+                            <form class="user" method="post" action="daftarMember_process.php">
+
+                                <div class="form-group">
+                                    <input type="text" name="name" class="form-control form-control-user" id="name" placeholder="Nama Lengkap" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="text" name="nim" class="form-control form-control-user" id="nim" placeholder="NIM" required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <input type="text" name="jurusan" class="form-control form-control-user" id="jurusan" placeholder="Jurusan">
                                     </div>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-user" id="lastName"
-                                            placeholder="Last Name">
+                                    <div class="form-group col-md-6">
+                                        <input type="text" name="prodi" class="form-control form-control-user" id="prodi" placeholder="Prodi" required>
                                     </div>
                                 </div>
+
                                 <div class="form-group">
-                                    <input type="text" class="form-control form-control-user" id="nim"
-                                        placeholder="NIM">
+                                    <input type="text" name="dosenPembimbing" class="form-control form-control-user" id="dosenPembimbing" placeholder="Dosen Pembimbing" required>
                                 </div>
+
                                 <div class="form-group">
-                                    <input type="email" class="form-control form-control-user" id="email"
-                                        placeholder="Email">
+                                    <input type="email" name="email" class="form-control form-control-user" id="email" placeholder="Email Mahasiswa" required>
                                 </div>
+
                                 <div class="form-group">
-                                    <input type="password" class="form-control form-control-user" id="password"
-                                        placeholder="Password">
+                                    <input type="password" name="password" class="form-control form-control-user" id="password" placeholder="Password" required>
                                 </div>
+
                                 <div class="form-group">
                                     <div class="custom-control custom-checkbox small">
                                         <input type="checkbox" class="custom-control-input" id="showPass">
-                                        <label class="custom-control-label" for="showPass">Show Password</label>
+                                        <label class="custom-control-label" for="showPass">Tampilkan Password</label>
                                     </div>
                                 </div>
-                                <a href="login.html" class="btn btn-primary btn-user btn-block">
-                                    Sign Up
-                                </a>
+
+                                <button type="submit" class="btn btn-primary btn-user btn-block">
+                                    Daftar Member
+                                </button>
                             </form>
+
                             <hr>
-                            <div class="text-center">
-                                <a class="small" href="login.html">Already have an account? Sign In</a>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var chk = document.getElementById('showPass');
+            var pwd = document.getElementById('password');
+            if (chk && pwd) {
+                chk.addEventListener('change', function () {
+                    pwd.type = this.checked ? 'text' : 'password';
+                });
+            }
+        });
+    </script>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
