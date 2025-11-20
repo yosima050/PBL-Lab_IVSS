@@ -59,16 +59,16 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				</div>
 				<div class="slid banner2">				  
 				  <div class="caption">
-					<h3>Donec ut turpis sit amet enim mattis commodo velit.</h3>
-					<p>FOURNIER Timber carefully selects from a wide range of quality hardwoods to customers exact requirements which minimises wastage.</p>
+					<h3>Intelligent Vision and Smart Systems</h3>
+					<p>Intelligent Vision and Smart Systems</p>
 					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
 					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
 					</div>
 				</div>
 				<div class="slid banner3">				  
 				  <div class="caption">
-					<h3>Donec ut turpis sit amet enim mattis commodo velit.</h3>
-					<p>FOURNIER Timber carefully selects from a wide range of quality hardwoods to customers exact requirements which minimises wastage.</p>
+					<h3>Intelligent Vision and Smart Systems</h3>
+					<p>Intelligent Vision and Smart Systems</p>
 					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
 					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
 					</div>
