@@ -25,7 +25,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <!--/script-->
 <script type="text/javascript">
 			jQuery(document).ready(function($) {
-				$(".scroll").click(function(event){		
+				$(".scroll").click(function(event){
 					event.preventDefault();
 					$('html,body').animate({scrollTop:$(this.hash).offset().top},900);
 				});
