@@ -1,0 +1,51 @@
+/* Fullscreen split-login styles */
+
+/* Left image column: full viewport height, cover image */
+.bg-login-image {
+  background-image: url('../images/login-left.jpg'); /* replace with your image */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+/* Right column: center content vertically and horizontally */
+.login-right {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+/* Card sizing to match screenshot */
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* Optional: tweak headings and spacing */
+.login-card .h4 {
+  font-weight: 600;
+}
+
+/* On small screens, show image as top background and keep form full width */
+@media (max-width: 767.98px) {
+  .bg-login-image {
+    min-height: 240px;
+    width: 100%;
+  }
+  .login-right { padding: 2rem 1rem; }
+  .login-card { margin-top: -60px; }
+}
+
+/* Register page image uses same sizing — reuse or override image path here */
+.bg-register-image {
+  background-image: url('../images/register-left.jpg'); /* replace with your register image */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
