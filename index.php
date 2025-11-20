@@ -82,7 +82,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 	 <div class="container">
 		 <div class="content-grids">
 			 <div class="col-md-6 content-left">
-				 <img src="images/w1.jpg" class="img-responsive" alt=""/>
+				 <img src='Asset/Lab.jpg' class="img-responsive" alt=""/>
 			 </div>
 			 <div class="col-md-6 content-right">
 				 <h2>Etiam ornare nisi eget quam pretium ipsum semper.</h2>
@@ -99,8 +99,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <div id="services" class="services">
 	 <div class="container">
 			<div class="service-info">
-				<h3>Services</h3>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel risus non mauris volutpat pellentesque. Sed rhoncus, arcu nec euismod ultrices tellus nulla varius tellus ac blandit nunc ex vel felis pellentesque imperdiet imperdiet nibh</p>
+				<h3>Peralatan Lab</h3>
 			</div>
 			<div class="specialty-grids-top">
 				<div class="col-md-4 service-box" style="visibility: visible; -webkit-animation-delay: 0.4s;">
