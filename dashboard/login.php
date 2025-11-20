@@ -139,9 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </form>
                             
                             <hr>
-                            <div class="text-center">
-                                <a class="small" href="register.html">No account yet? Sign Up</a>
-                            </div>
                         </div>
                     </div>
                 </div>

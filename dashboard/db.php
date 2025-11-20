@@ -3,8 +3,8 @@
 $DB_HOST = 'localhost';
 $DB_PORT = 5432;
 $DB_NAME = 'PBL';
-$DB_USER = 'user kalian';
-$DB_PASS = 'password user kalian';
+$DB_USER = 'postgres';
+$DB_PASS = '12345qwerty';
 
 // Gunakan DSN untuk PostgreSQL (pgSQL)
 $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME";
