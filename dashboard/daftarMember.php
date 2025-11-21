@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,24 +9,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
     <title>Lab IVSS - Daftar Member</title>
-
-    <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="css/login.css" rel="stylesheet">
 
 </head>
 
 <body class="bg-gradient-primary">
+
+<?php
+// Tampilkan alert jika ada error (satu alert berisi semua pesan)
+if (!empty($_SESSION['register_errors'])) {
+    $msg = implode("\\n", array_map('addslashes', $_SESSION['register_errors']));
+    // siapkan old values untuk repopulate
+    $old = $_SESSION['old'] ?? [];
+    // hapus session setelah dipakai
+    unset($_SESSION['register_errors'], $_SESSION['old']);
+    echo "<script>document.addEventListener('DOMContentLoaded', function(){ alert(\"{$msg}\"); });</script>";
+} else {
+    $old = $_SESSION['old'] ?? [];
+    unset($_SESSION['old']);
+}
+?>
 
     <div class="container-fluid p-0">
         <div class="row no-gutters">
@@ -40,28 +49,34 @@
                             <form class="user" method="post" action="daftarMember_process.php">
 
                                 <div class="form-group">
-                                    <input type="text" name="name" class="form-control form-control-user" id="name" placeholder="Nama Lengkap" required>
+                                    <input type="text" name="name" class="form-control form-control-user" id="name" placeholder="Nama Lengkap" required
+                                           value="<?php echo isset($old['name']) ? htmlspecialchars($old['name']) : ''; ?>">
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" name="nim" class="form-control form-control-user" id="nim" placeholder="NIM" required>
+                                    <input type="text" name="nim" class="form-control form-control-user" id="nim" placeholder="NIM" required
+                                           value="<?php echo isset($old['nim']) ? htmlspecialchars($old['nim']) : ''; ?>">
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <input type="text" name="jurusan" class="form-control form-control-user" id="jurusan" placeholder="Jurusan">
+                                        <input type="text" name="jurusan" class="form-control form-control-user" id="jurusan" placeholder="Jurusan"
+                                               value="<?php echo isset($old['jurusan']) ? htmlspecialchars($old['jurusan']) : ''; ?>">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <input type="text" name="prodi" class="form-control form-control-user" id="prodi" placeholder="Prodi" required>
+                                        <input type="text" name="prodi" class="form-control form-control-user" id="prodi" placeholder="Prodi" required
+                                               value="<?php echo isset($old['prodi']) ? htmlspecialchars($old['prodi']) : ''; ?>">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="text" name="dosenPembimbing" class="form-control form-control-user" id="dosenPembimbing" placeholder="Dosen Pembimbing" required>
+                                    <input type="text" name="dosenPembimbing" class="form-control form-control-user" id="dosenPembimbing" placeholder="Dosen Pembimbing" required
+                                           value="<?php echo isset($old['dosenPembimbing']) ? htmlspecialchars($old['dosenPembimbing']) : ''; ?>">
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="email" name="email" class="form-control form-control-user" id="email" placeholder="Email Mahasiswa" required>
+                                    <input type="email" name="email" class="form-control form-control-user" id="email" placeholder="Email Mahasiswa" required
+                                           value="<?php echo isset($old['email']) ? htmlspecialchars($old['email']) : ''; ?>">
                                 </div>
 
                                 <div class="form-group">
