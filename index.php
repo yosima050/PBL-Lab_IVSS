@@ -1,4 +1,3 @@
-<!-- aurelliantiu.com -->
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -8,7 +7,7 @@
 <title>Flooring a Interior category Flat Bootstarp Responsive Website Template | Home :: w3layouts</title>
 
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
-<link href="css/style.css" rel='stylesheet' type='text/css' />
+<link href="css/styleube.css" rel='stylesheet' type='text/css' />
 
 <script src="js/bootstrap.js"></script>
 
