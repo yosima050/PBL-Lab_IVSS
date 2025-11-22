@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -33,6 +36,17 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 
 </head>
 <body>
+
+<?php
+// Tampilkan alert JS jika ada flash message, lalu hapus dari session
+if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
+    $alertMsg = $_SESSION['flash']['message'];
+    // Hapus flash agar tidak tampil ulang
+    unset($_SESSION['flash']);
+    echo '<script>document.addEventListener("DOMContentLoaded", function(){ alert(' . json_encode($alertMsg) . '); });</script>';
+}
+?>
+
 <?php include 'header.php'; ?>
 <script src="js/responsiveslides.min.js"></script>
 <script>
