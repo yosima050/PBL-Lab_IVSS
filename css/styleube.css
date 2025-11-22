@@ -196,23 +196,6 @@ span.menu {
 	width: 80%;
 	margin-top: 2em;
 }
-a.btn-left {
-  padding: 0.45em;
-  display:inline-block;
-  margin-top: 2em;
-  width: 18%;
-  color: #fff;
-  text-transform: capitalize;
-  font-size: 1em;
-  text-decoration: none;
-  border:2px solid #0047AB;
-   -webkit-transition: 0.5s all ease;
-  -moz-transition: 0.5s all ease;
-  -o-transition: 0.5s all ease;
-  -ms-transition: 0.5s all ease;
-  text-align:center;  
-  margin-right: 1em;
-}
 a.btn-right {
 padding: 0.6em;
   display: inline-block;
@@ -1112,10 +1095,6 @@ h3.prjt{
     line-height: 1.4em;
     width:100%;
   }
-  a.btn-left {
-    width: 20%;
-    font-size: 0.8em;
-  }
   a.btn-right {
     width: 25%;
     font-size: 0.8em;
@@ -1318,7 +1297,7 @@ h3.prjt{
     width: 100% !important;
   }
   
-  a.btn-left, a.btn-right {
+  a.btn-right {
     width: 40% !important;
     font-size: 0.9em !important;
     padding: 0.5em !important;
@@ -1338,7 +1317,7 @@ h3.prjt{
     font-size: 0.8em !important;
   }
   
-  a.btn-left, a.btn-right {
+  a.btn-right {
     width: 45% !important;
     font-size: 0.8em !important;
   }

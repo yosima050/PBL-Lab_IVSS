@@ -55,24 +55,24 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				  <div class="caption">
 					<h3>Intelligent Vision and Smart Systems</h3>
 					<p>Intelligent Vision and Smart Systems</p>
-					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
-					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
+
+					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
 					</div>
 				</div>
 				<div class="slid banner2">				  
 				  <div class="caption">
 					<h3>Intelligent Vision and Smart Systems</h3>
 					<p>Intelligent Vision and Smart Systems</p>
-					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
-					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
+					
+					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
 					</div>
 				</div>
 				<div class="slid banner3">				  
 				  <div class="caption">
 					<h3>Intelligent Vision and Smart Systems</h3>
 					<p>Intelligent Vision and Smart Systems</p>
-					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
-					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
+					
+					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
 					</div>
 				</div>
 			</ul>
