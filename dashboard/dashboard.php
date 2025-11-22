@@ -180,7 +180,7 @@ if ($role == 'ketua_lab') {
                     </div>
                     <div class="row">
                         <div class="col-lg-6">
-                            <a href="tambah_berita.php" class="btn btn-primary btn-icon-split btn-lg mb-3">
+                            <a href="berita_pengumuman.php" class="btn btn-primary btn-icon-split btn-lg mb-3">
                                 <span class="icon text-white-50"><i class="fas fa-plus"></i></span>
                                 <span class="text">Tulis Berita Baru</span>
                             </a>
