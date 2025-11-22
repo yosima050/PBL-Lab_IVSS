@@ -244,6 +244,59 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 		 </div>
 	 </div>
 </div>
+
+	<div class="team">
+			<div class="team-top heading">
+				<h3>Our Team</h3>
+			</div>
+			<div class="team-bottom">
+				<ul class="ch-grid">
+					<li>
+						<div class="ch-item ch-img-1">				
+							<div class="ch-info-wrap">
+								<div class="ch-info">
+									<div class="ch-info-front ch-img-1"></div>
+									<div class="ch-info-back">
+										<h3>Bears Type</h3>
+										<p>by Josh Schott</p>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="ch-item ch-img-2">
+							<div class="ch-info-wrap">
+								<div class="ch-info">
+									<div class="ch-info-front ch-img-2"></div>
+									<div class="ch-info-back">
+										<h3>Salon Spaces illustrations</h3>
+										<p>by Jeremy Slagle</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="ch-item ch-img-3">
+							<div class="ch-info-wrap">
+								<div class="ch-info">
+									<div class="ch-info-front ch-img-3"></div>
+									<div class="ch-info-back">
+										<h3>Leadership Series #3</h3>
+										<p>by Dustin Leer</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+	</div>
+	<!--team-end--> 
+		 </div>
+ </div>	
+
 <!-- footer -->
 <div class="footer">
 	 <div class="container">

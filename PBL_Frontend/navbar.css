@@ -1,0 +1,205 @@
+/* Reset dan base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f9fa;
+  padding-top: 0;
+}
+
+/* Header Styles */
+.header {
+  background: linear-gradient(135deg, #f9d723 0%, #f9d723 100%);
+  padding: 0;
+  height: 72px;
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem; /* sedikit padding horizontal */
+  display: flex;
+  justify-content: right; /* tetap biarkan nav ke kanan */
+  align-items: center;
+  height: 100%;
+  position: relative; /* <-- tambahkan ini */
+}
+
+/* Logo Styles */
+.logo h1 {
+  color: #0047ab;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.5px;
+}
+
+.logo-img {
+  height: 72px;
+  width: auto;
+}
+
+/* Logo Styles (tambahan untuk kotak biru di bawah logo) */
+.header { position: relative; } /* memastikan konteks posisi */
+/* 1. Container Logo */
+.logo {
+  position: absolute;
+  left: 1.5rem;
+  top: 0;
+  width: 100px;
+  height: 120px;
+  margin-top: 24px; /* (box 120 - header 72)/2 = 24 => -24 to center around header */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0047AB;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  z-index: 60;
+  overflow: visible;
+}
+
+
+@media (max-width: 768px) {
+  .header-container { justify-content: center; }
+  .logo {
+    position: static;
+    margin-top: 0;
+    width: auto;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+  }
+  .logo a { padding: 4px 0; }
+  .logo-img { max-height: 48px; }
+}
+
+/* Navigation Styles */
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #000000;
+  font-weight: 600;
+  padding: 1.7rem 1.2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.nav-link:hover {
+  background-color: #00358a;
+  color: #ffffff;
+  transform: translateY();
+}
+
+
+/* Join Us Button Styles */
+.join-btn {
+  background: linear-gradient(135deg, #0047ab 0%, #00358a 100%);
+  color: #f9d723 !important;
+  padding: 0.8rem 1.8rem !important;
+  border-radius: 25px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(0, 71, 171, 0.4);
+  border: 2px solid transparent;
+  margin-left: 0.5rem;
+}
+
+.join-btn:hover {
+  background: linear-gradient(135deg, #00358a 0%, #0047ab 100%) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 6px 20px rgba(0, 71, 171, 0.6);
+  color: #ffffff !important;
+  border-color: #ffffff;
+}
+
+/* Active state untuk halaman saat ini */
+.nav-link.active {
+  background-color: #00358a;
+  color: #ffffff;
+}
+
+.nav-link.active::after {
+  width: 70%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    height: 64px;
+  }
+  .logo-img {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-menu {
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+  }
+
+  .nav-link {
+    padding: 0.8rem 1.5rem;
+    text-align: center;
+    display: block;
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .header-container {
+    padding: 0.8rem;
+  }
+}
+
+/* ubah header-container agar menjadi reference untuk posisi absolut logo */
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem; /* sedikit padding horizontal */
+  display: flex;
+  justify-content: right; /* tetap biarkan nav ke kanan */
+  align-items: center;
+  height: 100%;
+  position: relative; /* <-- tambahkan ini */
+}
+
+/* tempatkan logo absolut di kiri, tanpa mengganggu layout nav */
+.logo {
+  position: absolute; /* ambil dari normal flow */
+  left: 1.5rem;       /* jarak dari kiri header */
+  top: 50%;
+  transform: translateY(-50%); /* vertical center relatif ke header */
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* responsive: pada layar kecil, kembalikan logo ke aliran normal agar tidak menimpa nav */
+@media (max-width: 768px) {
+  .header-container {
+    justify-content: center; /* nav & logo berada di tengah pada mobile (atau sesuaikan) */
+  }
+  .logo {
+    position: static;
+    transform: none;
+    margin-right: 1rem;
+  }
+}
