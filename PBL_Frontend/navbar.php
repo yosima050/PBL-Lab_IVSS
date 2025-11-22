@@ -10,8 +10,8 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="ProfilLab.php">
-                    <img src="logo-polinema.png" alt="Politeknik Negeri Malang" class="logo-img">
+                <a href="../index.php">
+                    <img src="/images/logo.png" alt="Politeknik Negeri Malang" class="logo-img">
                 </a>
             </div>
             <nav class="navigation">
@@ -23,11 +23,6 @@
                     <li><a href="join.php" class="nav-link join-btn">Join Us!</a></li>
                 </ul>
             </nav>
-        </div>
-        <!-- Hero banner sesuai class di navbar.css -->
-        <div class="hero-banner">
-            <div class="banner-content">
-            </div>
         </div>
     </header>
 
