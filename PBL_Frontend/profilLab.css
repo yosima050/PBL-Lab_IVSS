@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: #f5f5f5;
   color: #333;
   padding: 0;
@@ -22,10 +22,15 @@ body {
 
 /* Header */
 .header {
-  background: linear-gradient(135deg, #f9d723 0%, #f9d723 100%);
+  background: #f9d723;
   padding: 15px 30px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  border-radius: 25px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  margin-top: 20px;
 }
 
 .header h1 {
@@ -39,7 +44,10 @@ body {
   display: flex;
   gap: 30px;
   padding: 30px;
-  background: white;
+  background: #e6f0ff;
+  margin: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .image-section {
@@ -69,11 +77,27 @@ body {
 
 /* Vision and Mission Header */
 .vision-mission-header {
-  background: linear-gradient(135deg, #f9d723 0%, #f9d723 100%);
+  background: #f9d723;
   padding: 15px 30px;
   text-align: center;
   margin-top: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  border-radius: 25px;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.vision-mission-title {
+  background: #f9d723;
+  padding: 10px 30px;
+  text-align: left;
+  margin-top: 20px;
+  margin-left: 30px; /* Diubah dari 10% menjadi px untuk konsistensi */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  border-radius: 25px;
+  width: auto; /* Pastikan lebar sesuai konten */
 }
 
 .vision-mission-header h2 {
@@ -82,33 +106,37 @@ body {
   font-weight: bold;
 }
 
-/* Section Container */
+/* Section Container - VISI DAN MISI */
 .section-container {
   background: white;
   margin: 20px 30px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .section-title {
-  background: linear-gradient(135deg, #f9d723 0%, #f9d723 100%);
+  background: #f9d723;
   color: #333;
   padding: 12px 20px;
   font-size: 18px;
   font-weight: bold;
+  display: block;
+  border-radius: 10px 10px 0 0;
 }
 
 .section-content {
-  padding: 20px;
-  background: #f9f9f9;
+  padding: 25px;
+  background: #e6f0ff;
+  color: #333;
+  border-radius: 0 0 10px 10px;
 }
 
 .section-content p {
   text-align: justify;
-  color: #333;
   font-size: 14px;
   line-height: 1.8;
+  color: #333;
 }
 
 .section-content ul {
@@ -122,12 +150,19 @@ body {
   text-align: justify;
   font-size: 14px;
   line-height: 1.8;
+  color: #333;
+}
+
+/* Jarak antara visi dan misi */
+.vision-section {
+  margin-bottom: 30px;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .main-content {
     flex-direction: column;
+    margin: 15px;
   }
 
   .image-section {
@@ -141,9 +176,5 @@ body {
 
   .section-container {
     margin: 15px;
-  }
-
-  body {
-    padding: 10px;
   }
 }
