@@ -69,24 +69,8 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				  <div class="caption">
 					<h3>Intelligent Vision and Smart Systems</h3>
 					<p>Intelligent Vision and Smart Systems</p>
-
-					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
-					</div>
-				</div>
-				<div class="slid banner2">				  
-				  <div class="caption">
-					<h3>Intelligent Vision and Smart Systems</h3>
-					<p>Intelligent Vision and Smart Systems</p>
-					
-					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
-					</div>
-				</div>
-				<div class="slid banner3">				  
-				  <div class="caption">
-					<h3>Intelligent Vision and Smart Systems</h3>
-					<p>Intelligent Vision and Smart Systems</p>
-					
-					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
+					<a class="hvr-bounce-to-left btn-kontak" href="#">Kontak Kami</a>
+					<i class="fa fa-envelope"></i>
 					</div>
 				</div>
 			</ul>
@@ -118,23 +102,23 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				<h3>Peralatan Lab</h3>
 			</div>
 			<div class="specialty-grids-top">
-				<div class="col-md-4 service-box" style="visibility: visible; -webkit-animation-delay: 0.4s;">
+				<div class="col-md-4 service-box" style="visibility: visible;">
 					<figure class="icon">
-						<span class="glyphicon3 glyphicon-home" aria-hidden="true"></span>
+						<img src="Asset/Rosa-Andrie-Asmara_2.jpg" alt="Alat 1">
 					</figure>
 					<h5>Proin eget ipsum ultrices</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
 				</div>
-				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible; -webkit-animation-delay: 0.4s;">
+				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible;">
 					<figure class="icon">
-						<span class="glyphicon3 glyphicon-time" aria-hidden="true"></span>
+						<img src="Asset/IMG_20251105_123108.jpg" alt="Alat 2">
 					</figure>
 					<h5>Proin eget ipsum ultrices</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
 				</div>
-				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible; -webkit-animation-delay: 0.4s;">
+				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible;">
 					<figure class="icon">
-						<span class="glyphicon3 glyphicon-edit" aria-hidden="true"></span>
+						<img src="Asset/IMG_20251105_123108.jpg">
 					</figure>
 					<h5>Proin eget ipsum ultrices</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
@@ -150,7 +134,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 						$(function () {
 						  $("#slider2").responsiveSlides({
 							auto: true,
-							pager: true,
+							pager: false,
 							nav: false,
 							speed: 500,
 							namespace: "callbacks",
@@ -169,12 +153,12 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 							<li>
 								<div class="testimonial-grids">
 									<div class="testimonial-left">
-										<img src="images/t1.jpg" alt="" />
+										<img src="Asset/Rosa-Andrie-Asmara_2.jpg" alt="" />
 									</div>
 									<div class="testimonial-right">
-										<h5>Mary Wilson</h5>
-										<p><span>"</span> Lorem ipsum dolor sit amet consec tetuer adi piscing elit Praesent vestibulum 
-											molestie lacus consec tetuer piscing voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra elit Praesent vestibulum lacus<span>"</span>
+										<h5>Pak Rosa</h5>
+										<p><span>"</span> Sebagai seorang profesional di bidang desain dengan pengalaman lebih dari 8 tahun, saya memiliki passion dalam menciptakan solusi visual yang tidak hanya estetis tetapi juga fungsional.
+										Pendekatan saya menggabungkan pemikiran strategis dengan perhatian terhadap detail untuk menghasilkan karya yang sesuai dengan identitas merek dan kebutuhan pengguna.<span>"</span>
 										</p>
 									</div>
 									<div class="clearfix"> </div>
@@ -183,12 +167,12 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 							<li>
 								<div class="testimonial-grids">
 									<div class="testimonial-left">
-										<img src="images/t3.jpg" alt="" />
+										<img src="Asset/unnamed.jpg" alt="" />
 									</div>
 									<div class="testimonial-right">
 										<h5>David Smith</h5>
-										<p><span>"</span> Lorem ipsum dolor sit amet consec tetuer adi piscing elit Praesent vestibulum 
-											molestie lacus consec tetuer piscing voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra elit Praesent vestibulum lacus<span>"</span>
+										<p><span>"</span>Creative Director dengan spesialisasi dalam brand development dan digital design.
+										Berpengalaman memimpin tim untuk menciptakan kampanye yang impactful dan konsisten across berbagai platform.<span>"</span>
 										</p>
 									</div>
 									<div class="clearfix"> </div>
@@ -197,12 +181,12 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 							<li>
 								<div class="testimonial-grids">
 									<div class="testimonial-left">
-										<img src="images/t2.jpg" alt="" />
+										<img src="Asset/Gemini_Generated_Image_8liqz88liqz88liq.png" alt="" />
 									</div>
-									<div class="testimonial-right">
+									 <div class="testimonial-right">
 										<h5>Lora  Alance</h5>
-										<p><span>"</span> Lorem ipsum dolor sit amet consec tetuer adi piscing elit Praesent vestibulum 
-											molestie lacus consec tetuer piscing voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra elit Praesent vestibulum lacus<span>"</span>
+										<p><span>"</span>Senior Graphic Designer yang berfokus pada pengembangan brand identity dan visual storytelling.
+										Berpengalaman menciptakan desain yang tidak hanya menarik secara visual, tetapi juga efektif dalam menyampaikan pesan merek.<span>"</span>
 										</p>
 									</div>
 									<div class="clearfix"> </div>
