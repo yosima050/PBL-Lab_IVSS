@@ -1,22 +1,27 @@
-<!-- aurelliantiu.com -->
+<?php
+session_start();
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
 <title>Flooring a Interior category Flat Bootstarp Responsive Website Template | Home :: w3layouts</title>
+
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+<link href="css/styleube.css" rel='stylesheet' type='text/css' />
 
 <script src="js/bootstrap.js"></script>
 
-<link href="css/style.css" rel='stylesheet' type='text/css' />
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Flooring Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
 Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 
 <script src="js/jquery.min.js"></script>
-
+<script src="js/bootstrap.js"></script>
+<script src="js/responsiveslides.min.js"></script>
 <script type="text/javascript" src="js/move-top.js"></script>
 <script type="text/javascript" src="js/easing.js"></script>
 
@@ -31,6 +36,17 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 
 </head>
 <body>
+
+<?php
+// Tampilkan alert JS jika ada flash message, lalu hapus dari session
+if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
+    $alertMsg = $_SESSION['flash']['message'];
+    // Hapus flash agar tidak tampil ulang
+    unset($_SESSION['flash']);
+    echo '<script>document.addEventListener("DOMContentLoaded", function(){ alert(' . json_encode($alertMsg) . '); });</script>';
+}
+?>
+
 <?php include 'header.php'; ?>
 <script src="js/responsiveslides.min.js"></script>
 <script>
@@ -51,38 +67,38 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 			  <ul class="rslides" id="slider">
 				<div class="slid banner1">				  
 				  <div class="caption">
-					<h3>Donec ut turpis sit amet enim mattis commodo velit.</h3>
-					<p>FOURNIER Timber carefully selects from a wide range of quality hardwoods to customers exact requirements which minimises wastage.</p>
-					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
-					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
+					<h3>Intelligent Vision and Smart Systems</h3>
+					<p>Intelligent Vision and Smart Systems</p>
+
+					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
 					</div>
 				</div>
 				<div class="slid banner2">				  
 				  <div class="caption">
-					<h3>Donec ut turpis sit amet enim mattis commodo velit.</h3>
-					<p>FOURNIER Timber carefully selects from a wide range of quality hardwoods to customers exact requirements which minimises wastage.</p>
-					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
-					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
+					<h3>Intelligent Vision and Smart Systems</h3>
+					<p>Intelligent Vision and Smart Systems</p>
+					
+					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
 					</div>
 				</div>
 				<div class="slid banner3">				  
 				  <div class="caption">
-					<h3>Donec ut turpis sit amet enim mattis commodo velit.</h3>
-					<p>FOURNIER Timber carefully selects from a wide range of quality hardwoods to customers exact requirements which minimises wastage.</p>
-					<a class="hvr-bounce-to-right btn-left" href="#">Click</a>	
-					<a class="hvr-bounce-to-left  btn-right" href="#">learn more</a>
+					<h3>Intelligent Vision and Smart Systems</h3>
+					<p>Intelligent Vision and Smart Systems</p>
+					
+					<a class="hvr-bounce-to-left btn-right" href="#">Kontak Kami</a>
 					</div>
 				</div>
 			</ul>
 		  </div>
 	  </div>
-</div>	 
-<!---->
+</div>
+
 <div class="content">
 	 <div class="container">
 		 <div class="content-grids">
 			 <div class="col-md-6 content-left">
-				 <img src="images/w1.jpg" class="img-responsive" alt=""/>
+				 <img src='Asset/Lab.jpg' class="img-responsive" alt=""/>
 			 </div>
 			 <div class="col-md-6 content-right">
 				 <h2>Etiam ornare nisi eget quam pretium ipsum semper.</h2>
@@ -99,8 +115,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <div id="services" class="services">
 	 <div class="container">
 			<div class="service-info">
-				<h3>Services</h3>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel risus non mauris volutpat pellentesque. Sed rhoncus, arcu nec euismod ultrices tellus nulla varius tellus ac blandit nunc ex vel felis pellentesque imperdiet imperdiet nibh</p>
+				<h3>Peralatan Lab</h3>
 			</div>
 			<div class="specialty-grids-top">
 				<div class="col-md-4 service-box" style="visibility: visible; -webkit-animation-delay: 0.4s;">
@@ -198,7 +213,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 		</div>
  </div>
 
-<!-- projects -->
 <div class="projects">
 	 <div class="container">
 			<div class="projects-info">

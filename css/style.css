@@ -63,7 +63,6 @@ a#toTop{
   font-family: 'Roboto', sans-serif;
   text-decoration:none;
 }
-/* PNG logo styling: use when an image logo is present at images/logo.png */
 .logo img{
   max-height:72px;
   height:auto;
@@ -156,17 +155,17 @@ span.menu {
   top: 0;
   }
 .banner1{
-	background:url(../images/banner3.jpg) no-repeat 0px -230px;
+	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
 	background-size:cover;
 	min-height:620px;
 }
 .banner2{
-	background:url(../images/banner2.jpg) no-repeat 0px 0px;
+	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
 	background-size:cover;
 	min-height:620px;
 }
 .banner3{
-	background:url(../images/banner3.jpg) no-repeat 0px -230px;
+	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
 	background-size:cover;
 	min-height:620px;
 }
