@@ -159,22 +159,13 @@ span.menu {
 	background-size:cover;
 	min-height:620px;
 }
-.banner2{
-	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
-	background-size:cover;
-	min-height:620px;
-}
-.banner3{
-	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
-	background-size:cover;
-	min-height:620px;
-}
 .rslides img {
   display: block;
   height: auto;
   float: left;
   width: 100%;
   border: 0;
+  margin-top: 10px;
   }
 .caption{
 	width: 45%;
@@ -194,7 +185,6 @@ span.menu {
 	font-weight: 400;
 	color:#ffffff;
 	width: 80%;
-	margin-top: 2em;
 }
 a.btn-right {
 padding: 0.6em;
@@ -206,10 +196,7 @@ padding: 0.6em;
   font-size: 1em;
   text-decoration: none;
   background: #0047AB;
-   -webkit-transition: 0.5s all ease;
-  -moz-transition: 0.5s all ease;
-  -o-transition: 0.5s all ease;
-  -ms-transition: 0.5s all ease;
+  -webkit-transition: 0.5s all ease;
   text-align:center;  
 }
 .callbacks_tabs a:after {
@@ -290,7 +277,6 @@ a.button {
   text-decoration: none;
   border: 1px solid #999;
 }
-/* Bounce To Right */
 .hvr-bounce-to-right {
   display: inline-block;
   vertical-align: middle;
@@ -351,6 +337,7 @@ a.button {
   transition-property: color;
   -webkit-transition-duration: 0.5s;
   transition-duration: 0.5s;
+  overflow: visible !important;
 }
 .hvr-bounce-to-left:before {
   content: "";
@@ -360,18 +347,7 @@ a.button {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #333;
-  border:2px solid #0047AB;
-  -webkit-transform: scaleX(0);
-  transform: scaleX(0);
-  -webkit-transform-origin: 100% 50%;
-  transform-origin: 100% 50%;
-  -webkit-transition-property: transform;
-  transition-property: transform;
-  -webkit-transition-duration: 0.5s;
-  transition-duration: 0.5s;
-  -webkit-transition-timing-function: ease-out;
-  transition-timing-function: ease-out;
+  display: none !important;
 }
 .hvr-bounce-to-left:hover, .hvr-bounce-to-left:focus, .hvr-bounce-to-left:active {
   color: white;
@@ -455,10 +431,7 @@ a.button {
         line-height: 1.5em;
     }
 }
-/*-- testimonial --*/
-.slider2{
-	position:relative;
-}
+
 .testimonial{
   background:url(../images/pst.jpg) no-repeat 0px -295px;
   background-size:cover;
@@ -820,46 +793,6 @@ color: #333333;
 .social ul li {
   display: inline-block;
   padding: 0em;
-}
-i.facebok {
-	width: 45px;
-	height: 45px;
-	background:url(../images/social-icons.png)no-repeat -47px 2px ;
-	float: left;
-	vertical-align: middle;
-}
-i.facebok:hover{
-	background: url(../images/social-icons.png)no-repeat 1px 2px;
-}
-i.twiter {
-	width: 45px;
-	height: 45px;
-	background:url(../images/social-icons.png)no-repeat -47px -46px;
-	float: left;
-	vertical-align: middle;
-}
-i.twiter:hover{
-	background: url(../images/social-icons.png)no-repeat 1px -46px;
-}
-i.in{
-	width: 45px;
-	height: 45px;
-	background:url(../images/social-icons.png)no-repeat -47px -93px;
-	float: left;
-	vertical-align: middle;
-}
-i.in:hover{
-	background:url(../images/social-icons.png)no-repeat 1px -93px;
-}
-i.goog {
-	width: 45px;
-	height: 45px;
-	background: url(../images/social-icons.png)no-repeat -47px -141px;
-	float: left;
-	vertical-align: middle;
-}
-i.goog:hover{
-	background: url(../images/social-icons.png)no-repeat 1px -141px;
 }
 .news-ltr form input[type="text"] {
   width: 72%;
@@ -1321,4 +1254,28 @@ h3.prjt{
     width: 45% !important;
     font-size: 0.8em !important;
   }
+}
+.btn-kontak {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.7em 1.4em;
+    margin-top: 15px;
+    background: #0057d9;
+    color: #fff;
+    font-size: 1em;
+    font-weight: 500;
+    border-radius: 40px;
+    text-decoration: none;
+    border: none;
+    transition: 0.25s ease;
+}
+
+.btn-kontak:hover {
+    background: #0047b8;
+    transform: translateY(-2px);
+}
+
+.btn-kontak i {
+    font-size: 1.1em;
 }

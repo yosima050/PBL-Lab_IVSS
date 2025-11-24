@@ -19,11 +19,9 @@ body {
   padding: 0;
   height: 72px;
   display: block;
-  box-shadow: 0 2px 15px #f9d723;
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 3px solid #0047ab;
 }
 
 .header-container {
@@ -31,9 +29,10 @@ body {
   margin: 0 auto;
   padding: 0 1.5rem; /* sedikit padding horizontal */
   display: flex;
-  justify-content: space-between;
+  justify-content: right; /* tetap biarkan nav ke kanan */
   align-items: center;
-  height: 100%; /* gunakan tinggi dari .header */
+  height: 100%;
+  position: relative; /* <-- tambahkan ini */
 }
 
 /* Logo Styles */
@@ -46,19 +45,42 @@ body {
 }
 
 .logo-img {
-  height: 48px;
+  height: 72px;
   width: auto;
 }
 
-.hero-banner {
-  margin-top: 0;
-  height: 300px;
-  background: url("../images/labivss.jpg") center/cover no-repeat;
+/* Logo Styles (tambahan untuk kotak biru di bawah logo) */
+.header { position: relative; } /* memastikan konteks posisi */
+/* 1. Container Logo */
+.logo {
+  position: absolute;
+  left: 1.5rem;
+  top: 0;
+  width: 100px;
+  height: 120px;
+  margin-top: 24px; /* (box 120 - header 72)/2 = 24 => -24 to center around header */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  max-width: 100%;
+  background: #0047AB;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  z-index: 60;
+  overflow: visible;
+}
+
+
+@media (max-width: 768px) {
+  .header-container { justify-content: center; }
+  .logo {
+    position: static;
+    margin-top: 0;
+    width: auto;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+  }
+  .logo a { padding: 4px 0; }
+  .logo-img { max-height: 48px; }
 }
 
 /* Navigation Styles */
@@ -71,36 +93,20 @@ body {
 
 .nav-link {
   text-decoration: none;
-  color: #0047ab;
+  color: #000000;
   font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  padding: 1.7rem 1.2rem;
   transition: all 0.3s ease;
   position: relative;
   font-size: 0.95rem;
 }
 
 .nav-link:hover {
-  background-color: rgba(0, 71, 171, 0.15);
-  color: #00358a;
-  transform: translateY(-2px);
+  background-color: #00358a;
+  color: #ffffff;
+  transform: translateY();
 }
 
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: #0047ab;
-  transition: all 0.3s ease;
-  transform: translateX(-50%);
-}
-
-.nav-link:hover::after {
-  width: 70%;
-}
 
 /* Join Us Button Styles */
 .join-btn {
@@ -118,14 +124,14 @@ body {
   background: linear-gradient(135deg, #00358a 0%, #0047ab 100%) !important;
   transform: translateY(-2px) scale(1.05) !important;
   box-shadow: 0 6px 20px rgba(0, 71, 171, 0.6);
-  color: #f9d723 !important;
-  border-color: #f9d723;
+  color: #ffffff !important;
+  border-color: #ffffff;
 }
 
 /* Active state untuk halaman saat ini */
 .nav-link.active {
-  background-color: rgba(0, 71, 171, 0.2);
-  color: #00358a;
+  background-color: #00358a;
+  color: #ffffff;
 }
 
 .nav-link.active::after {
@@ -162,15 +168,38 @@ body {
   }
 }
 
-/* Tambahan untuk konten demo */
-.content {
+/* ubah header-container agar menjadi reference untuk posisi absolut logo */
+.header-container {
   max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
-  text-align: center;
+  margin: 0 auto;
+  padding: 0 1.5rem; /* sedikit padding horizontal */
+  display: flex;
+  justify-content: right; /* tetap biarkan nav ke kanan */
+  align-items: center;
+  height: 100%;
+  position: relative; /* <-- tambahkan ini */
 }
 
-.content h2 {
-  color: #0047ab;
-  margin-bottom: 1rem;
+/* tempatkan logo absolut di kiri, tanpa mengganggu layout nav */
+.logo {
+  position: absolute; /* ambil dari normal flow */
+  left: 1.5rem;       /* jarak dari kiri header */
+  top: 50%;
+  transform: translateY(-50%); /* vertical center relatif ke header */
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* responsive: pada layar kecil, kembalikan logo ke aliran normal agar tidak menimpa nav */
+@media (max-width: 768px) {
+  .header-container {
+    justify-content: center; /* nav & logo berada di tengah pada mobile (atau sesuaikan) */
+  }
+  .logo {
+    position: static;
+    transform: none;
+    margin-right: 1rem;
+  }
 }
