@@ -7,10 +7,11 @@ session_start();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>Flooring a Interior category Flat Bootstarp Responsive Website Template | Home :: w3layouts</title>
+<title>Beranda</title>
 
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <link href="css/styleube.css" rel='stylesheet' type='text/css' />
+<link href="PBL_Frontend/navbar.css" rel='stylesheet' type='text/css' />
 
 <script src="js/bootstrap.js"></script>
 
@@ -47,7 +48,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 }
 ?>
 
-<?php include 'header.php'; ?>
+<?php include 'PBL_Frontend/navbar.php'; ?>
 <script src="js/responsiveslides.min.js"></script>
 <script>
     $(function () {
@@ -61,6 +62,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
     });
 	
 </script>
+
 <div class="header-slider">
 		<div class="slider">
 			<div class="callbacks_container">
@@ -201,7 +203,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 	 <div class="container">
 			<div class="projects-info">
 				<h3>Berita & Pengumuman</h3>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel risus non mauris volutpat pellentesque. Sed rhoncus, arcu nec euismod ultrices tellus nulla varius tellus ac blandit nunc ex vel felis pellentesque imperdiet imperdiet nibh</p>
 			</div>
 		 <div class="event-grids">
 			 <div class="col-md-4 event-grid-sec">
@@ -211,9 +212,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 <div class="event-grid_pic">
 					 <img src="Asset/pp.png" alt=""/>
 					 <h3><a href="#">Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih juara 2 umum pada Kompetensi Mahasiswa Informatika Politeknik Nasional (KMIPN) 2025 yang berlangsung pada tanggal 13 – 16 Oktober 2025 di Politeknik Negeri Padang dengan perolehan 1 emas, 1 perak dan 1 perunggu</a></h3>
-					 <p>Nullam placerat aliquet nisl id finibus. Nulla mollis mattis magna in hendrerit. Pellentesque nunc nisl, dapibus eget erat non,
-					 sagittis accumsan dolor.</p>
-					 <div class="more"><a href="single.php">> Read More</a></div>
+					 <p>Dengan penuh kebanggaan dan rasa syukur, Jurusan Teknologi Informasi Politeknik Negeri Malang (TI Polinema) kembali menorehkan prestasi gemilang di tingkat</p>
 				 </div>
 			 </div>
 			 <div class="col-md-4 event-grid-sec">
@@ -223,9 +222,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 <div class="event-grid_pic">
 					 <img src="Asset/peng.png" alt=""/>
 					 <h3><a href="#">Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang Raih Juara 3 Hackathon – IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda</a></h3>
-					 <p>Nullam placerat aliquet nisl id finibus. Nulla mollis mattis magna in hendrerit. Pellentesque nunc nisl, dapibus eget erat non,
-					 sagittis accumsan dolor.</p>
-					 <div class="more"><a href="single.php">> Read More</a></div>
+					 <p>Malang, 30 Oktober 2025 – Kabar membanggakan datang dari Jurusan Teknologi Informasi Politeknik Negeri Malang! Tim terbaik kita berhasil meraih Juara</p>
 				 </div>
 			 </div>
 			 <div class="col-md-4 event-grid-sec">
@@ -235,9 +232,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 <div class="event-grid_pic">
 					 <img src="Asset/asd.png" alt=""/>
 					 <h3><a href="#">Mahasiswa Jurusan Teknologi Informasi kembali menorehkan prestasi membanggakan dalam ajang CREANOMIC 2025 yang diselenggarakan oleh BEM Fakultas Vokasi Universitas Brawijaya</a></h3>
-					 <p>Nullam placerat aliquet nisl id finibus. Nulla mollis mattis magna in hendrerit. Pellentesque nunc nisl, dapibus eget erat non,
-					 sagittis accumsan dolor.</p>
-					 <div class="more"><a href="single.php">> Read More</a></div>
+					 <p>Selamat untuk Tim Delta Dev – Juara 1 CREANOMIC 2025! Kabar membanggakan kembali datang dari Jurusan Teknologi Informasi Politeknik Negeri</p>
 				 </div>
 			 </div>
 			 <div class="clearfix"></div>
@@ -245,9 +240,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 	 </div>
 </div>
 
-
-
-<!-- footer -->
 <div class="footer">
 	 <div class="container">
 		 <div class="footer-grids">
@@ -298,6 +290,5 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 </script>
 <a href="#to-top" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
 
-	 
 </body>
 </html>
