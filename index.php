@@ -211,7 +211,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 </div>
 				 <div class="event-grid_pic">
 					 <img src="Asset/pp.png" alt=""/>
-					 <h3><a href="#">Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih juara 2 umum pada Kompetensi Mahasiswa Informatika Politeknik Nasional (KMIPN) 2025 yang berlangsung pada tanggal 13 – 16 Oktober 2025 di Politeknik Negeri Padang dengan perolehan 1 emas, 1 perak dan 1 perunggu</a></h3>
+					 <h3><a href="https://jti.polinema.ac.id/jurusan-teknologi-informasi-politeknik-negeri-malang-berhasil-meraih-juara-2-umum-pada-kompetensi-mahasiswa-informatika-politeknik-nasional-kmipn-2025-yang-berlangsung-pada-tanggal-13-16-oktober-2/" target="_blank">Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih juara 2 umum pada Kompetensi Mahasiswa Informatika Politeknik Nasional (KMIPN) 2025 yang berlangsung pada tanggal 13 – 16 Oktober 2025 di Politeknik Negeri Padang dengan perolehan 1 emas, 1 perak dan 1 perunggu</a></h3>
 					 <p>Dengan penuh kebanggaan dan rasa syukur, Jurusan Teknologi Informasi Politeknik Negeri Malang (TI Polinema) kembali menorehkan prestasi gemilang di tingkat</p>
 				 </div>
 			 </div>
@@ -221,7 +221,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 </div>
 				 <div class="event-grid_pic">
 					 <img src="Asset/peng.png" alt=""/>
-					 <h3><a href="#">Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang Raih Juara 3 Hackathon – IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda</a></h3>
+					 <h3><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-politeknik-negeri-malang-raih-juara-3-hackathon-it-fest-2025-yang-diselenggarakan-oleh-himpunan-jurusan-teknologi-informasi-politeknik-negeri-samarinda/" target="_blank">Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang Raih Juara 3 Hackathon – IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda</a></h3>
 					 <p>Malang, 30 Oktober 2025 – Kabar membanggakan datang dari Jurusan Teknologi Informasi Politeknik Negeri Malang! Tim terbaik kita berhasil meraih Juara</p>
 				 </div>
 			 </div>
@@ -231,7 +231,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 </div>
 				 <div class="event-grid_pic">
 					 <img src="Asset/asd.png" alt=""/>
-					 <h3><a href="#">Mahasiswa Jurusan Teknologi Informasi kembali menorehkan prestasi membanggakan dalam ajang CREANOMIC 2025 yang diselenggarakan oleh BEM Fakultas Vokasi Universitas Brawijaya</a></h3>
+					 <h3><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-kembali-menorehkan-prestasi-membanggakan-dalam-ajang-creanomic-2025-yang-diselenggarakan-oleh-bem-fakultas-vokasi-universitas-brawijaya/" target="_blank">Mahasiswa Jurusan Teknologi Informasi kembali menorehkan prestasi membanggakan dalam ajang CREANOMIC 2025 yang diselenggarakan oleh BEM Fakultas Vokasi Universitas Brawijaya</a></h3>
 					 <p>Selamat untuk Tim Delta Dev – Juara 1 CREANOMIC 2025! Kabar membanggakan kembali datang dari Jurusan Teknologi Informasi Politeknik Negeri</p>
 				 </div>
 			 </div>
@@ -239,58 +239,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 		 </div>
 	 </div>
 </div>
-
-	<div class="team">
-			<div class="team-top heading">
-				<h3>Our Team</h3>
-			</div>
-			<div class="team-bottom">
-				<ul class="ch-grid">
-					<li>
-						<div class="ch-item ch-img-1">				
-							<div class="ch-info-wrap">
-								<div class="ch-info">
-									<div class="ch-info-front ch-img-1"></div>
-									<div class="ch-info-back">
-										<h3>Bears Type</h3>
-										<p>by Josh Schott</p>
-									</div>	
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="ch-item ch-img-2">
-							<div class="ch-info-wrap">
-								<div class="ch-info">
-									<div class="ch-info-front ch-img-2"></div>
-									<div class="ch-info-back">
-										<h3>Salon Spaces illustrations</h3>
-										<p>by Jeremy Slagle</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="ch-item ch-img-3">
-							<div class="ch-info-wrap">
-								<div class="ch-info">
-									<div class="ch-info-front ch-img-3"></div>
-									<div class="ch-info-back">
-										<h3>Leadership Series #3</h3>
-										<p>by Dustin Leer</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-	</div>
-	<!--team-end--> 
-		 </div>
- </div>	
 
 <?php include __DIR__ . '/PBL_Frontend/footer.php'; ?>
 

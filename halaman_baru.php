@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="PBL_Frontend/navbar.css">
 
     <style>
-        
+        body.bg-profile {
+            background-color: #dbeafe;
+        }
         .profile-container {
             background: #fff;
             border-radius: 15px;
@@ -72,7 +74,7 @@
         }
 
         .tag-badge {
-            background-color: #f1f3f5;
+            background-color: #dbeafe;
             color: #555;
             padding: 5px 15px;
             border-radius: 20px;
@@ -197,9 +199,9 @@
                         <a href="https://www.linkedin.com/" target="_blank" class="btn btn-outline-primary btn-sm">LinkedIn</a>
                         <a href="https://scholar.google.com/" target="_blank" class="btn btn-outline-primary btn-sm">Google Scholar</a>
                         <a href="https://sinta.kemdiktisaintek.go.id/home/index/" target="_blank" class="btn btn-outline-primary btn-sm">Sinta</a>
-                        <a href="#" target="_blank" class="btn btn-outline-primary btn-sm">Email</a>
+                        <a href="https://rosiani@polinema.ac.id" target="_blank" class="btn btn-outline-primary btn-sm">Email</a>
                         <a href="#" target="_blank" class="btn btn-outline-primary btn-sm">CV</a>
-                    </div>
+                </div>
 
                     <div class="section-title">Pendidikan, Sertifikasi & Mata Kuliah</div>
 
