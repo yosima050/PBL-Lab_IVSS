@@ -7,10 +7,11 @@ session_start();
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>Flooring a Interior category Flat Bootstarp Responsive Website Template | Home :: w3layouts</title>
+<title>Beranda</title>
 
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <link href="css/styleube.css" rel='stylesheet' type='text/css' />
+<link href="PBL_Frontend/navbar.css" rel='stylesheet' type='text/css' />
 
 <script src="js/bootstrap.js"></script>
 
@@ -47,7 +48,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 }
 ?>
 
-<?php include 'header.php'; ?>
+<?php include 'PBL_Frontend/navbar.php'; ?>
 <script src="js/responsiveslides.min.js"></script>
 <script>
     $(function () {
@@ -61,6 +62,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
     });
 	
 </script>
+
 <div class="header-slider">
 		<div class="slider">
 			<div class="callbacks_container">
@@ -200,8 +202,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 <div class="projects">
 	 <div class="container">
 			<div class="projects-info">
-				<h3>Our Projects</h3>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel risus non mauris volutpat pellentesque. Sed rhoncus, arcu nec euismod ultrices tellus nulla varius tellus ac blandit nunc ex vel felis pellentesque imperdiet imperdiet nibh</p>
+				<h3>Berita & Pengumuman</h3>
 			</div>
 		 <div class="event-grids">
 			 <div class="col-md-4 event-grid-sec">
@@ -209,11 +210,9 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					 <p>03/2015</p>
 				 </div>
 				 <div class="event-grid_pic">
-					 <img src="images/pc.jpg" alt=""/>
-					 <h3><a href="#">Morbi pellentesque urna scelerisque justo rutrum.</a></h3>
-					 <p>Nullam placerat aliquet nisl id finibus. Nulla mollis mattis magna in hendrerit. Pellentesque nunc nisl, dapibus eget erat non,
-					 sagittis accumsan dolor.</p>
-					 <div class="more"><a href="single.php">> Read More</a></div>
+					 <img src="Asset/pp.png" alt=""/>
+					 <h3><a href="https://jti.polinema.ac.id/jurusan-teknologi-informasi-politeknik-negeri-malang-berhasil-meraih-juara-2-umum-pada-kompetensi-mahasiswa-informatika-politeknik-nasional-kmipn-2025-yang-berlangsung-pada-tanggal-13-16-oktober-2/" target="_blank">Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih juara 2 umum pada Kompetensi Mahasiswa Informatika Politeknik Nasional (KMIPN) 2025 yang berlangsung pada tanggal 13 – 16 Oktober 2025 di Politeknik Negeri Padang dengan perolehan 1 emas, 1 perak dan 1 perunggu</a></h3>
+					 <p>Dengan penuh kebanggaan dan rasa syukur, Jurusan Teknologi Informasi Politeknik Negeri Malang (TI Polinema) kembali menorehkan prestasi gemilang di tingkat</p>
 				 </div>
 			 </div>
 			 <div class="col-md-4 event-grid-sec">
@@ -221,11 +220,9 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					 <p>02/2015</p>
 				 </div>
 				 <div class="event-grid_pic">
-					 <img src="images/pc1.jpg" alt=""/>
-					 <h3><a href="#">Morbi pellentesque urna scelerisque justo rutrum.</a></h3>
-					 <p>Nullam placerat aliquet nisl id finibus. Nulla mollis mattis magna in hendrerit. Pellentesque nunc nisl, dapibus eget erat non,
-					 sagittis accumsan dolor.</p>
-					 <div class="more"><a href="single.php">> Read More</a></div>
+					 <img src="Asset/peng.png" alt=""/>
+					 <h3><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-politeknik-negeri-malang-raih-juara-3-hackathon-it-fest-2025-yang-diselenggarakan-oleh-himpunan-jurusan-teknologi-informasi-politeknik-negeri-samarinda/" target="_blank">Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang Raih Juara 3 Hackathon – IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda</a></h3>
+					 <p>Malang, 30 Oktober 2025 – Kabar membanggakan datang dari Jurusan Teknologi Informasi Politeknik Negeri Malang! Tim terbaik kita berhasil meraih Juara</p>
 				 </div>
 			 </div>
 			 <div class="col-md-4 event-grid-sec">
@@ -233,11 +230,9 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					 <p>04/2015</p>
 				 </div>
 				 <div class="event-grid_pic">
-					 <img src="images/pc2.jpg" alt=""/>
-					 <h3><a href="#">Morbi pellentesque urna scelerisque justo rutrum.</a></h3>
-					 <p>Nullam placerat aliquet nisl id finibus. Nulla mollis mattis magna in hendrerit. Pellentesque nunc nisl, dapibus eget erat non,
-					 sagittis accumsan dolor.</p>
-					 <div class="more"><a href="single.php">> Read More</a></div>
+					 <img src="Asset/asd.png" alt=""/>
+					 <h3><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-kembali-menorehkan-prestasi-membanggakan-dalam-ajang-creanomic-2025-yang-diselenggarakan-oleh-bem-fakultas-vokasi-universitas-brawijaya/" target="_blank">Mahasiswa Jurusan Teknologi Informasi kembali menorehkan prestasi membanggakan dalam ajang CREANOMIC 2025 yang diselenggarakan oleh BEM Fakultas Vokasi Universitas Brawijaya</a></h3>
+					 <p>Selamat untuk Tim Delta Dev – Juara 1 CREANOMIC 2025! Kabar membanggakan kembali datang dari Jurusan Teknologi Informasi Politeknik Negeri</p>
 				 </div>
 			 </div>
 			 <div class="clearfix"></div>
@@ -245,109 +240,15 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 	 </div>
 </div>
 
-	<div class="team">
-			<div class="team-top heading">
-				<h3>Our Team</h3>
-			</div>
-			<div class="team-bottom">
-				<ul class="ch-grid">
-					<li>
-						<div class="ch-item ch-img-1">				
-							<div class="ch-info-wrap">
-								<div class="ch-info">
-									<div class="ch-info-front ch-img-1"></div>
-									<div class="ch-info-back">
-										<h3>Bears Type</h3>
-										<p>by Josh Schott</p>
-									</div>	
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="ch-item ch-img-2">
-							<div class="ch-info-wrap">
-								<div class="ch-info">
-									<div class="ch-info-front ch-img-2"></div>
-									<div class="ch-info-back">
-										<h3>Salon Spaces illustrations</h3>
-										<p>by Jeremy Slagle</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div class="ch-item ch-img-3">
-							<div class="ch-info-wrap">
-								<div class="ch-info">
-									<div class="ch-info-front ch-img-3"></div>
-									<div class="ch-info-back">
-										<h3>Leadership Series #3</h3>
-										<p>by Dustin Leer</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-	</div>
-	<!--team-end--> 
-		 </div>
- </div>	
+<?php include __DIR__ . '/PBL_Frontend/footer.php'; ?>
 
-<!-- footer -->
-<div class="footer">
-	 <div class="container">
-		 <div class="footer-grids">
-			 <div class="col-md-6 ftr-grid1">
-				 <h4>About</h4>
-				 <p>Nam ac interdum dui, eget iaculis augue. Cras sagittis orci leo, quis luctus diam sollicitudin in. Nullam in convallis sem. Aliquam erat felis, iaculis ac semper et, congue feugiat nibh. Nullam commodo fermentum venenatis.</p>
-				 <div class="social">
-					<ul>
-						<li><a href="#"><i class="facebok"> </i></a></li>
-						<li><a href="#"><i class="twiter"> </i></a></li>
-						<li><a href="#"><i class="in"> </i></a></li>
-						<li><a href="#"><i class="goog"> </i></a></li>						
-							<div class="clearfix"></div>	
-					</ul>
-				 </div>
-			 </div>
-			 <div class="col-md-6 news-ltr">
-				 <h4>Newsletter</h4>
-				 <p>Aenean sagittis est eget elit pulvinar cursus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus non purus at risus consequat finibus.</p>
-				 <form>					 
-					  <input type="text" class="text" value="Enter Email" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Enter Email';}">
-					 <input type="submit" value="Subscribe">
-					 <div class="clearfix"></div>
-				 </form>
-			</div>
-			 <div class="clearfix"></div>
-		 </div>		 
-	 </div>
-</div>
-<div class="copywrite">
-	 <div class="container">
-			 <p> © 2015 Flooring. All rights reserved | Design by <a href="http://w3layouts.com/">W3layouts</a></p>
-	 </div>
-</div>
-<!---->
+<!-- tetapkan skrip UItoTop dan anchor (tidak dihapus) -->
 <script type="text/javascript">
-		$(document).ready(function() {
-				/*
-				var defaults = {
-				containerID: 'toTop', // fading element id
-				containerHoverID: 'toTopHover', // fading element hover id
-				scrollSpeed: 1200,
-				easingType: 'linear' 
-				};
-				*/
-		$().UItoTop({ easingType: 'easeOutQuart' });
+        $(document).ready(function() {
+        $().UItoTop({ easingType: 'easeOutQuart' });
 });
 </script>
 <a href="#to-top" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
 
-	 
 </body>
 </html>
