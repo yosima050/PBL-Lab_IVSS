@@ -1,11 +1,5 @@
 <?php
 session_start();
-<<<<<<< HEAD
-require '../dashboard/db.php';
-
-// Ambil username dari session
-$username = $_SESSION['nama'] ?? 'Admin';
-=======
 
 // --- 1. VALIDASI AKSES (KEAMANAN) ---
 // Cek apakah user sudah login?
@@ -32,26 +26,27 @@ require_once __DIR__ . '/db.php';
 // Ambil username dari session (sesuaikan dengan login.php: 'nama_users')
 $username = $_SESSION['nama_users'] ?? 'Admin';
 $id_user_login = $_SESSION['user_id']; // ID user yang sedang login
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
 
 // ---------------------------
 // DELETE
 // ---------------------------
-if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
-    $id = $_GET['id'];
-<<<<<<< HEAD
-=======
-    
-    // Ambil data foto lama untuk dihapus dari folder (Opsional tapi disarankan)
+if (isset($_GET['aksi']) && $_GET['aksi'] === 'hapus' && isset($_GET['id'])) {
+    $id = (int) $_GET['id'];
+
+    // Ambil nama file lama
     $stmt = $pdo->prepare("SELECT foto_berita FROM berita WHERE id_berita = :id");
     $stmt->execute(['id' => $id]);
     $fotoLama = $stmt->fetchColumn();
-    
-    if ($fotoLama && file_exists("../uploads/" . $fotoLama)) {
-        unlink("../uploads/" . $fotoLama); // Hapus file fisik
+
+    // Hapus file fisik jika ada
+    if (!empty($fotoLama)) {
+        $filePath = __DIR__ . '/../uploads/' . $fotoLama;
+        if (file_exists($filePath)) {
+            @unlink($filePath);
+        }
     }
 
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
+    // Hapus record dari database
     $stmt = $pdo->prepare("DELETE FROM berita WHERE id_berita = :id");
     $stmt->execute(['id' => $id]);
 
@@ -72,14 +67,9 @@ if (isset($_POST['update'])) {
     $kategori  = $_POST['kategori_berita'];
     $link      = $_POST['link_berita'] ?? '';
 
-<<<<<<< HEAD
-    if (!empty($_FILES['foto_berita']['name'])) {
-        $foto = $_FILES['foto_berita']['name'];
-=======
     // Cek apakah ada upload foto baru?
     if (!empty($_FILES['foto_berita']['name'])) {
         $foto = time() . '_' . $_FILES['foto_berita']['name']; // Tambah time() biar unik
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
         $tmp  = $_FILES['foto_berita']['tmp_name'];
         move_uploaded_file($tmp, "../uploads/".$foto);
     } else {
@@ -103,11 +93,7 @@ if (isset($_POST['update'])) {
         'id'    => $id
     ]);
 
-<<<<<<< HEAD
-    $_SESSION['message'] = "Berita berhasil diupdate!";
-=======
     $_SESSION['message'] = "Berita berhasil diperbarui!";
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
     $_SESSION['msg_type'] = "success";
 
     header("Location: berita_pengumuman.php");
@@ -122,14 +108,6 @@ if (isset($_POST['tambah'])) {
     $isi      = $_POST['isi_berita'];
     $kategori = $_POST['kategori_berita'];
 
-<<<<<<< HEAD
-    $foto = $_FILES['foto_berita']['name'];
-    $tmp  = $_FILES['foto_berita']['tmp_name'];
-    move_uploaded_file($tmp, "../uploads/" . $foto);
-
-    $author  = $_SESSION['nama'] ?? 'Admin';
-    $id_users = $_SESSION['id_users'] ?? 1;
-=======
     // Upload Foto
     $foto = time() . '_' . $_FILES['foto_berita']['name'];
     $tmp  = $_FILES['foto_berita']['tmp_name'];
@@ -137,7 +115,6 @@ if (isset($_POST['tambah'])) {
 
     $author   = $username; // Gunakan nama dari session login
     $id_users = $id_user_login; // Gunakan ID dari session login
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
 
     $stmt = $pdo->prepare("INSERT INTO berita 
         (judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita)
@@ -166,21 +143,12 @@ if (isset($_POST['tambah_tautan'])) {
     $judul = $_POST['judul_berita'];
     $link  = $_POST['link_berita'];
 
-<<<<<<< HEAD
-    $foto = $_FILES['foto_berita']['name'];
-    $tmp  = $_FILES['foto_berita']['tmp_name'];
-    move_uploaded_file($tmp, "../uploads/" . $foto);
-
-    $author  = $_SESSION['nama'] ?? 'Admin';
-    $id_users = $_SESSION['id_users'] ?? 1;
-=======
     $foto = time() . '_' . $_FILES['foto_berita']['name'];
     $tmp  = $_FILES['foto_berita']['tmp_name'];
     move_uploaded_file($tmp, "../uploads/" . $foto);
 
     $author   = $username;
     $id_users = $id_user_login;
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
 
     $stmt = $pdo->prepare("INSERT INTO berita 
         (judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita, link_berita)
@@ -201,12 +169,6 @@ if (isset($_POST['tambah_tautan'])) {
     exit;
 }
 
-<<<<<<< HEAD
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-=======
 $role = $_SESSION['role'] ?? null;
 
 // Hitung badge (Opsional, untuk sidebar)
@@ -219,7 +181,6 @@ $pendingCount = $waitingApproval = 0;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
     <title>Manajemen Berita - LAB IVSS</title>
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -263,13 +224,6 @@ $pendingCount = $waitingApproval = 0;
                 <h1 class="h3 mb-4 text-gray-800">Berita / Pengumuman</h1>
 
                 <?php if (isset($_SESSION['message'])): ?>
-<<<<<<< HEAD
-                    <div class="alert alert-<?= $_SESSION['msg_type'] ?>"><?= $_SESSION['message'] ?></div>
-                    <?php unset($_SESSION['message'], $_SESSION['msg_type']); ?>
-                <?php endif; ?>
-
-                <?php
-=======
                     <div class="alert alert-<?= $_SESSION['msg_type'] ?> alert-dismissible fade show" role="alert">
                         <?= $_SESSION['message'] ?>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -282,18 +236,11 @@ $pendingCount = $waitingApproval = 0;
                 <!-- KONTEN UTAMA (Tabel/Form) SESUAI LOGIKA SEBELUMNYA -->
                 <?php
                 // --- FORM EDIT ---
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                 if (isset($_GET['aksi']) && $_GET['aksi'] == 'edit') {
                     $id = $_GET['id'];
                     $stmt = $pdo->prepare("SELECT * FROM berita WHERE id_berita = :id");
                     $stmt->execute(['id' => $id]);
                     $d = $stmt->fetch();
-<<<<<<< HEAD
-                ?>
-                <!-- Form Edit Berita -->
-                <div class="card shadow mb-4">
-                    <div class="card-header"><h6 class="m-0 font-weight-bold text-primary">Edit Berita</h6></div>
-=======
                     
                     // Cek apakah data ditemukan
                     if (!$d) {
@@ -307,32 +254,11 @@ $pendingCount = $waitingApproval = 0;
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
                     </div>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                     <div class="card-body">
                         <form method="post" enctype="multipart/form-data">
                             <input type="hidden" name="id_berita" value="<?= $d['id_berita'] ?>">
                             <input type="hidden" name="foto_lama" value="<?= $d['foto_berita'] ?>">
 
-<<<<<<< HEAD
-                            <label>Judul Berita</label>
-                            <input type="text" name="judul_berita" class="form-control" value="<?= $d['judul_berita'] ?>">
-
-                            <label>Isi Berita</label>
-                            <textarea name="isi_berita" class="form-control" rows="5"><?= $d['isi_berita'] ?></textarea>
-
-                            <label>Kategori</label>
-                            <input type="text" name="kategori_berita" class="form-control" value="<?= $d['kategori_berita'] ?>">
-
-                            <label>URL Link (Opsional)</label>
-                            <input type="url" name="link_berita" class="form-control" value="<?= $d['link_berita'] ?>">
-
-                            <label>Foto</label><br>
-                            <img src="../uploads/<?= $d['foto_berita'] ?>" width="120">
-                            <input type="file" name="foto_berita" class="form-control mt-2">
-
-                            <button name="update" class="btn btn-warning mt-3">Update</button>
-                            <a href="berita_pengumuman.php" class="btn btn-secondary mt-3">Kembali</a>
-=======
                             <div class="form-group">
                                 <label>Judul Berita</label>
                                 <input type="text" name="judul_berita" class="form-control" value="<?= htmlspecialchars($d['judul_berita']) ?>" required>
@@ -368,37 +294,10 @@ $pendingCount = $waitingApproval = 0;
 
                             <button type="submit" name="update" class="btn btn-warning">Update Data</button>
                             <a href="berita_pengumuman.php" class="btn btn-secondary">Batal</a>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                         </form>
                     </div>
                 </div>
 
-<<<<<<< HEAD
-                <?php
-                } elseif (isset($_GET['aksi']) && $_GET['aksi'] == 'tambah') {
-                ?>
-                <!-- Form Tambah Berita -->
-                <div class="card shadow mb-4">
-                    <div class="card-header"><h6 class="m-0 font-weight-bold text-primary">Tambah Berita</h6></div>
-                    <div class="card-body">
-                        <form method="post" enctype="multipart/form-data">
-
-                            <label>Judul Berita</label>
-                            <input type="text" name="judul_berita" class="form-control" required>
-
-                            <label>Isi Berita</label>
-                            <textarea name="isi_berita" class="form-control" rows="5" required></textarea>
-
-                            <label>Kategori</label>
-                            <input type="text" name="kategori_berita" class="form-control">
-
-                            <label>Foto Berita</label>
-                            <input type="file" name="foto_berita" class="form-control" required>
-
-                            <button name="tambah" class="btn btn-primary mt-3">Simpan</button>
-                            <a href="berita_pengumuman.php" class="btn btn-secondary mt-3">Kembali</a>
-
-=======
                 <?php 
                     }
                 // --- FORM TAMBAH ---
@@ -434,33 +333,10 @@ $pendingCount = $waitingApproval = 0;
                             </div>
                             <button type="submit" name="tambah" class="btn btn-primary">Simpan</button>
                             <a href="berita_pengumuman.php" class="btn btn-secondary">Batal</a>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                         </form>
                     </div>
                 </div>
 
-<<<<<<< HEAD
-                <?php
-                } elseif (isset($_GET['aksi']) && $_GET['aksi'] == 'tambah_tautan') {
-                ?>
-                <!-- Form Tambah Tautan Berita -->
-                <div class="card shadow mb-4">
-                    <div class="card-header"><h6 class="m-0 font-weight-bold text-info">Tambah Tautan Berita</h6></div>
-                    <div class="card-body">
-                        <form method="post" enctype="multipart/form-data">
-
-                            <label>Judul Berita</label>
-                            <input type="text" name="judul_berita" class="form-control" required>
-
-                            <label>URL Link</label>
-                            <input type="url" name="link_berita" class="form-control" placeholder="https://example.com" required>
-
-                            <label>Foto Berita</label>
-                            <input type="file" name="foto_berita" class="form-control" required>
-
-                            <button name="tambah_tautan" class="btn btn-info mt-3">Simpan</button>
-                            <a href="berita_pengumuman.php" class="btn btn-secondary mt-3">Kembali</a>
-=======
                 <?php 
                 // --- FORM TAMBAH TAUTAN ---
                 } elseif (isset($_GET['aksi']) && $_GET['aksi'] == 'tambah_tautan') {
@@ -488,63 +364,10 @@ $pendingCount = $waitingApproval = 0;
                             </div>
                             <button type="submit" name="tambah_tautan" class="btn btn-info">Simpan Tautan</button>
                             <a href="berita_pengumuman.php" class="btn btn-secondary">Batal</a>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                         </form>
                     </div>
                 </div>
 
-<<<<<<< HEAD
-                <?php
-                } else {
-                    $stmt = $pdo->query("SELECT * FROM berita ORDER BY created_at_berita DESC");
-                    $data = $stmt->fetchAll();
-                ?>
-                <!-- Tabel Data Berita -->
-                <div class="card shadow mb-4">
-                    <div class="card-header d-flex justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Data Berita</h6>
-                        <div>
-                            <a href="berita_pengumuman.php?aksi=tambah" class="btn btn-primary btn-sm">+ Tambah Berita</a>
-                            <a href="berita_pengumuman.php?aksi=tambah_tautan" class="btn btn-info btn-sm">+ Tautan Berita</a>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <table id="dataTable" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Foto</th>
-                                    <th>Judul</th>
-                                    <th>Kategori</th>
-                                    <th>Author</th>
-                                    <th>Tanggal</th>
-                                    <th>Tautan</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $no = 1; foreach ($data as $d): ?>
-                                <tr>
-                                    <td><?= $no++ ?></td>
-                                    <td><img src="../uploads/<?= $d['foto_berita'] ?>" width="70"></td>
-                                    <td><?= $d['judul_berita'] ?></td>
-                                    <td><?= $d['kategori_berita'] ?></td>
-                                    <td><?= $d['author'] ?></td>
-                                    <td><?= $d['created_at_berita'] ?></td>
-                                    <td>
-                                        <?php if (!empty($d['link_berita'])): ?>
-                                            <a href="<?= htmlspecialchars($d['link_berita']) ?>" target="_blank" class="btn btn-info btn-sm">Lihat Tautan</a>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <a href="berita_pengumuman.php?aksi=edit&id=<?= $d['id_berita'] ?>" class="btn btn-warning btn-sm">Edit</a>
-                                        <a href="berita_pengumuman.php?aksi=hapus&id=<?= $d['id_berita'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus berita ini?')">Hapus</a>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-=======
                 <?php 
                 // --- TABEL DATA (DEFAULT) ---
                 } else { 
@@ -602,7 +425,6 @@ $pendingCount = $waitingApproval = 0;
                                 </tbody>
                             </table>
                         </div>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                     </div>
                 </div>
                 <?php } ?>
@@ -622,36 +444,13 @@ $pendingCount = $waitingApproval = 0;
     </div>
 </div>
 
-<<<<<<< HEAD
-=======
-<!-- Logout Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Yakin ingin keluar?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Klik "Logout" di bawah jika Anda ingin mengakhiri sesi ini.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
-                <a class="btn btn-primary" href="logout.php">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Logout modal removed (provided by sidebar.php include). Avoid duplicate modals with same id -->
 
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-<<<<<<< HEAD
-=======
 <script src="js/sb-admin-2.min.js"></script>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
 
 <script>
 $(document).ready(function() {
@@ -660,8 +459,4 @@ $(document).ready(function() {
 </script>
 
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1

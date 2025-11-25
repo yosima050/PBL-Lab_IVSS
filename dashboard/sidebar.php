@@ -112,13 +112,8 @@ function collapse_show($names) {
     <?php if (isset($role) && $role === 'admin_berita') : ?>
         <div class="sidebar-heading">Konten Publik</div>
 
-<<<<<<< HEAD
-        <li class="nav-item">
-            <a class="nav-link" href="berita_pengumuman.php">
-=======
         <li class="nav-item <?= is_active('berita_pengumuman.php') ?>">
             <a class="nav-link <?= is_active('berita_pengumuman.php') ?>" href="berita_pengumuman.php">
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                 <i class="fas fa-fw fa-newspaper"></i>
                 <span>Berita &amp; Pengumuman</span>
             </a>
@@ -129,13 +124,8 @@ function collapse_show($names) {
                 <span>Aktivitas &amp; Galeri</span>
             </a>
         </li>
-<<<<<<< HEAD
-        <li class="nav-item">
-            <a class="nav-link" href="fasilitas_lab.php">
-=======
         <li class="nav-item <?= is_active('fasilitas_lab.php') ?>">
             <a class="nav-link <?= is_active('fasilitas_lab.php') ?>" href="fasilitas_lab.php">
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
                 <i class="fas fa-fw fa-tools"></i>
                 <span>Fasilitas Lab</span>
             </a>

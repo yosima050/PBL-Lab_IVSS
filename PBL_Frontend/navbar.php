@@ -1,12 +1,19 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Lab - Politeknik Negeri Malang</title>
-    <link rel="stylesheet" href="navbar.css">
-</head>
-<body>
+<?php
+if (defined('NAVBAR_PHP_INCLUDED')) return;
+define('NAVBAR_PHP_INCLUDED', true);
+
+$current = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+function is_active($names) {
+    global $current;
+    $names = (array) $names;
+    foreach ($names as $n) {
+        if (basename($n) === $current) return ' active';
+    }
+    return '';
+}
+?>
+<div class="polinema-navbar">
     <header class="header">
         <div class="header-container">
             <div class="logo">
@@ -16,15 +23,13 @@
             </div>
             <nav class="navigation">
                 <ul class="nav-menu">
-                    <li><a href="index.php" class="nav-link">Beranda</a></li>
-                    <li><a href="profil.php" class="nav-link active">Profil Lab</a></li>
-                    <li><a href="anggota.php" class="nav-link">Anggota & Riset</a></li>
-                    <li><a href="berita.php" class="nav-link">Berita & Aktivitas</a></li>
-                    <li><a href="join.php" class="nav-link join-btn">Join Us!</a></li>
+                <li><a href="../index.php" class="nav-link<?= is_active('../index.php') ?>">Beranda</a></li>
+                <li><a href="profilLab.php" class="nav-link<?= is_active(['profilLab.php','profil.php']) ?>">Profil Lab</a></li>
+                <li><a href="anggota.php" class="nav-link<?= is_active('anggota.php') ?>">Anggota & Riset</a></li>
+                <li><a href="berita.php" class="nav-link<?= is_active(['berita.php','berita_pengumuman.php']) ?>">Berita & Aktivitas</a></li>
+                <li><a href="join.php" class="nav-link join-btn<?= is_active('join.php') ?>">Join Us!</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
-</body>
-</html>
+</div>

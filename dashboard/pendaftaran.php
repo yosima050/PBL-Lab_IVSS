@@ -95,9 +95,6 @@ try {
 <body id="page-top">
 <div id="wrapper">
 
-<<<<<<< HEAD
-<?php include 'sidebar.php'; ?>
-=======
 <?php
 $role = $_SESSION['role'] ?? null;
 try {
@@ -117,7 +114,6 @@ try {
 
 include __DIR__ . '/sidebar.php';
 ?>
->>>>>>> d75a146cd181a649b06c01c6c905354ce40a84e1
 
 <div id="content-wrapper" class="d-flex flex-column">
 <div id="content">

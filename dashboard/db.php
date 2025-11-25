@@ -2,9 +2,9 @@
 // Sesuaikan credential DB di bawah
 $DB_HOST = 'localhost';
 $DB_PORT = 5432;
-$DB_NAME = 'DB_LabIVSS';
+$DB_NAME = 'PBL';
 $DB_USER = 'postgres';
-$DB_PASS = '01101979';
+$DB_PASS = '12345qwerty';
 
 // Gunakan DSN untuk PostgreSQL (pgSQL)
 $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME";
