@@ -50,7 +50,7 @@
         <div class="sidebar-heading">Konten Publik</div>
 
         <li class="nav-item">
-            <a class="nav-link" href="berita.php">
+            <a class="nav-link" href="berita_pengumuman.php">
                 <i class="fas fa-fw fa-newspaper"></i>
                 <span>Berita &amp; Pengumuman</span>
             </a>
@@ -62,7 +62,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="fasilitas.php">
+            <a class="nav-link" href="fasilitas_lab.php">
                 <i class="fas fa-fw fa-tools"></i>
                 <span>Fasilitas Lab</span>
             </a>
