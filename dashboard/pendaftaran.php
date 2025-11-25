@@ -95,7 +95,25 @@ try {
 <body id="page-top">
 <div id="wrapper">
 
-<?php include 'sidebar.php'; ?>
+<?php
+$role = $_SESSION['role'] ?? null;
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+
+include __DIR__ . '/sidebar.php';
+?>
 
 <div id="content-wrapper" class="d-flex flex-column">
 <div id="content">

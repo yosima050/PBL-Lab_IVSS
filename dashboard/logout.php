@@ -1,21 +1,22 @@
 <?php
 session_start();
 
-// Kosongkan semua variabel session
+// Unset all session variables
 $_SESSION = [];
 
-// Hapus cookie session jika ada
+// If there's a session cookie, remove it
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
-        $params['path'], $params['domain'],
-        $params['secure'], $params['httponly']
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
     );
 }
 
-// Hancurkan session di server
+// Destroy the session
 session_destroy();
 
-// Redirect ke halaman login (ubah target jika perlu)
-header('Location: login.php?logged_out=1');
+// Redirect to login or homepage (sesuaikan path jika perlu)
+header('Location: ../index.php');
 exit;
+?>

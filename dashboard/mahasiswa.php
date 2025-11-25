@@ -33,7 +33,7 @@ if ($action === 'delete' && isset($_GET['id'])) {
         $_SESSION['message'] = "Gagal menghapus: " . $e->getMessage();
         $_SESSION['msg_type'] = "danger";
     }
-    header("Location: data_mahasiswa.php");
+    header("Location: mahasiswa.php");
     exit;
 }
 
@@ -69,7 +69,7 @@ if ($action === 'edit' && isset($_POST['id'])) {
         $_SESSION['msg_type'] = "danger";
     }
 
-    header("Location: data_mahasiswa.php");
+    header("Location: mahasiswa.php");
     exit;
 }
 
@@ -98,7 +98,26 @@ try {
 <body id="page-top">
 
 <div id="wrapper">
-<?php include 'sidebar.php'; ?>
+
+<?php
+$role = $_SESSION['role'] ?? null;
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+
+include __DIR__ . '/sidebar.php';
+?>
 
 <div id="content-wrapper" class="d-flex flex-column">
 <div id="content">
@@ -106,7 +125,7 @@ try {
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 shadow">
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown no-arrow">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
                 <span class="mr-2 text-gray-600 small">Halo, <b><?= htmlspecialchars($username) ?></b></span>
                 <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
             </a>
@@ -268,6 +287,25 @@ $(document).ready(function() {
     $('#dataTable').DataTable();
 });
 </script>
+
+<!-- Logout confirmation modal (sama seperti file dashboard.php) -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Yakin ingin keluar?</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">Klik "Logout" di bawah jika Anda ingin mengakhiri sesi ini.</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+        <a class="btn btn-primary" href="logout.php">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
