@@ -305,7 +305,7 @@ if (isset($_POST['tambah'])) {
                 <div class="card shadow mb-4">
                     <div class="card-header d-flex justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Data Aktivitas</h6>
-                        <a href="aktivitas_galeri.php?aksi=tambah" class="btn btn-primary btn-sm">+ Tambah Aktivitas</a>
+                        <a href="aktivitas.php?aksi=tambah" class="btn btn-primary btn-sm">+ Tambah Aktivitas</a>
                     </div>
 
                     <div class="card-body">
@@ -334,8 +334,8 @@ if (isset($_POST['tambah'])) {
                                     <td><?= $d['tanggal_selesai_aktivitas'] ?></td>
                                     <td><?= $d['created_at_aktivitas'] ?></td>
                                     <td>
-                                        <a href="aktivitas_galeri.php?aksi=edit&id=<?= $d['id_aktivitas'] ?>" class="btn btn-warning btn-sm">Edit</a>
-                                        <a href="aktivitas_galeri.php?aksi=hapus&id=<?= $d['id_aktivitas'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')">Hapus</a>
+                                        <a href="aktivitas.php?aksi=edit&id=<?= $d['id_aktivitas'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                        <a href="aktivitas.php?aksi=hapus&id=<?= $d['id_aktivitas'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')">Hapus</a>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
