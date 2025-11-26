@@ -106,9 +106,8 @@
             font-size: 1rem;
         }
 
-        /* Kartu Informasi (Pendidikan, Sertifikasi, MK) */
         .info-card {
-            border: 1.5px solid #0047AB; /* Border biru */
+            border: 1.5px solid #0047AB;
             border-radius: 10px;
             padding: 20px;
             background: #fff;
