@@ -1,6 +1,6 @@
 <?php
 $team_members = [
-    'member1.jpg', // Ganti dengan path gambar yang sebenarnya
+    'member1.jpg', // Ganti dengan path gambar
     // ... dan seterusnya
 ];
 
@@ -15,36 +15,31 @@ $team_members = [
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
-        /* --- DEFINISI WARNA BARU --- */
         :root {
-            /* Implementasi Warna Sesuai Permintaan */
             --color-dark-blue: #0047AB;
-            --color-light-blue: #DFECFF;
+            --color-light-blue: #F5F9FF
+;
 
-            /* Mapping variable fungsional ke warna baru */
-            /* Header dan Border menggunakan Dark Blue (#0047AB) */
-            --color-table-header-border: var(--color-dark-blue); 
-            
-            /* Striping Baris Ganjil menggunakan Light Blue (#DFECFF) */
-            --color-table-striped: var(--color-light-blue); 
+            --color-table-header-border: var(--color-dark-blue);
+
+            --color-table-striped: var(--color-light-blue);
         }
 
-        /* CSS Tambahan untuk Layout Halaman */
         .container {
-            max-width: 100%; 
-            padding-left: 50px; 
+            max-width: 100%;
+            padding-left: 50px;
             padding-right: 50px;
             padding-top: 20px;
         }
         
         @media (min-width: 768px) {
             .container {
-                max-width: 1300px; 
+                max-width: 1300px;
             }
         }
         
         .team-member-circle {
-            width: 100px; 
+            width: 100px;
             height: 90px;
             object-fit: cover;
             border-radius: 50%;
@@ -54,12 +49,12 @@ $team_members = [
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px; 
+            gap: 15px;
             margin-bottom: 20px;
         }
         .category-header {
-            background-color: #F9D723; 
-            color: #212529;
+            background-color: #F9D723;
+            color: #0047AB;
             padding: 5px 15px;
             border-radius: 5px;
             display: inline-block;
@@ -70,46 +65,37 @@ $team_members = [
             margin-bottom: 15px;
         }
         
-        /* --- STYLING TABEL --- */
-        
         .table-custom-layout {
             width: 100%;
             margin-bottom: 0;
-            border-collapse: collapse; /* Penting untuk border 1px */
+            border-collapse: collapse;
         }
-        
-        /* Header Tabel (Background menggunakan Dark Blue) */
+ 
         .table-custom-layout thead th {
-            background-color: var(--color-table-header-border); /* #0047AB */
-            color: #fff; /* Teks Putih */
+            background-color: var(--color-table-header-border);
+            color: #fff;
             font-weight: bold;
-            border: 1px solid var(--color-table-header-border); /* #0047AB */
+            border: 1px solid var(--color-table-header-border);
             height: 38px; 
             padding: 0.5rem;
             text-align: center;
         }
 
-        /* Border Sel (Border menggunakan Dark Blue) */
-        .table-custom-layout th, 
+        .table-custom-layout th,
         .table-custom-layout td {
-            border: 1px solid var(--color-table-header-border); /* #0047AB */
-            height: 38px; 
+            border: 1px solid var(--color-table-header-border);
+            height: 38px;
             padding: 0.5rem;
             text-align: center;
-            font-weight: normal; 
+            font-weight: normal;
         }
-        
-        /* Striping Baris (Baris Ganjil menggunakan Light Blue) */
-        .table-custom-layout tbody tr:nth-child(odd) {
-            background-color: var(--color-table-striped); /* #DFECFF */
+        .table-custom-layout tbody tr:nth-child(odd) td {
+            background-color: #F5F9FF
+        }
+        .table-custom-layout tbody tr:nth-child(even) td {
+            background-color: #fff;
         }
 
-        /* Striping Baris (Baris Genap Putih) */
-        .table-custom-layout tbody tr:nth-child(even) {
-            background-color: #fff; 
-        }
-        
-        /* Atur lebar kolom agar merata (20% tiap kolom) */
         .table-custom-layout th:nth-child(1), .table-custom-layout td:nth-child(1),
         .table-custom-layout th:nth-child(2), .table-custom-layout td:nth-child(2),
         .table-custom-layout th:nth-child(3), .table-custom-layout td:nth-child(3),
@@ -117,8 +103,6 @@ $team_members = [
         .table-custom-layout th:nth-child(5), .table-custom-layout td:nth-child(5) {
             width: 20%; 
         }
-
-        /* Styling Input Group */
         .input-search-custom {
             border-right: 1px solid #ced4da !important; 
             border-color: #ced4da;
@@ -140,20 +124,19 @@ $team_members = [
         }
 
         .btn-filter-custom {
-            background-color: #fff; 
-            color: #000; 
-            border: 1px solid #ced4da; 
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #ced4da;
             padding: .375rem 1rem;
-            height: 38px; 
+            height: 38px;
             border-radius: .25rem;
         }
 
-        /* Styling Avatar */
         .rounded-avatar-wrapper {
             display: inline-block;
             border-radius: 50%;
-            padding: 2px; 
-            border: 1px solid #adb5bd; 
+            padding: 2px;
+            border: 1px solid #adb5bd;
         }
     </style>
 </head>
@@ -228,17 +211,16 @@ $team_members = [
         <table class="table table-custom-layout">
             <thead>
                 <tr>
-                    <th>Kolom 1</th>
-                    <th>Kolom 2</th>
-                    <th>Kolom 3</th>
-                    <th>Kolom 4</th>
-                    <th>Kolom 5</th>
+                    <th>Nim</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>Jurusan</th>
+                    <th>Prodi</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
-                <?php 
-                // Loop untuk membuat 15 baris kosong
-                for ($i = 0; $i < 15; $i++): 
+                <?php
+                for ($i = 0; $i < 15; $i++):
                 ?>
                 <tr>
                     <td></td>

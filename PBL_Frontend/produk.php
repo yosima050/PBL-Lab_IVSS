@@ -7,16 +7,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         .custom-yellow-header {
-            background-color: #F9D723; /* Warna kuning Bootstrap */
+            background-color: #F9D723;
             padding: 8px 15px;
             border-radius: 5px;
             font-weight: bold;
             display: inline-block;
             margin-bottom: 20px;
+            color: #0047AB;
         }
         .custom-card-title {
-            background-color: #F9D723; /* Warna kuning Bootstrap */
-            color: #212529; /* Dark text */
+            background-color: #F9D723;
+            color: #212529;
             padding: 2px 8px;
             border-radius: 3px;
             font-size: 0.85rem;
@@ -25,7 +26,7 @@
             margin-bottom: 10px;
         }
         .custom-badge-active {
-            background-color: #0d6efd; /* Warna biru Bootstrap */
+            background-color: #0047AB;
             color: white;
             padding: 4px 8px;
             border-radius: 5px;
@@ -33,7 +34,7 @@
             font-weight: normal;
         }
         .custom-badge-published {
-            background-color: #0d6efd; /* Warna biru Bootstrap */
+            background-color: #0047AB;
             color: white;
             padding: 4px 8px;
             border-radius: 5px;
@@ -41,7 +42,7 @@
             font-weight: normal;
         }
         .custom-badge-progress {
-            background-color: #198754; /* Warna hijau Bootstrap */
+            background-color: #0047AB;
             color: white;
             padding: 4px 8px;
             border-radius: 5px;
@@ -49,20 +50,20 @@
             font-weight: normal;
         }
         .custom-detail-button {
-            background-color: #FFF4BA; /* Warna kuning Bootstrap */
-            color: #212529; /* Dark text */
+            background-color: #FFFCED;
+            color: #212529;
             font-weight: bold;
             width: 100%;
             border: none;
         }
         .custom-card {
-            border: 1px solid rgba(0, 0, 0, 0.125);
+            border: 2px solid #0047AB !important;
             border-radius: 0.375rem;
             margin-bottom: 15px;
             padding: 15px;
         }
         .bg-light-gray {
-            background-color: #F5F9FF; /* Light background for the main panel */
+            background-color: #F5F9FF;
             border-radius: 0.375rem;
             padding: 20px;
         }
@@ -92,7 +93,7 @@
             </button>
         </div>
 
-        <div class="custom-card border-0 shadow-sm">
+        <div class="custom-card shadow-sm">
             <div class="custom-card-title">
                 Produk Riset
             </div>
