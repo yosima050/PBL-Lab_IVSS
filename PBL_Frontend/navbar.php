@@ -40,8 +40,8 @@ function is_active($names) {
                             Profil Lab
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="profilLab.php">Tentang Kami</a></li>
-                            <li><a class="dropdown-item" href="visi_misi.php">Visi & Misi</a></li>
+                            <li><a class="dropdown-item" href="../PBL_Frontend/profilLab.php">Tentang Kami</a></li>
+                            <li><a class="dropdown-item" href="../PBL_Frontend/profilLab.php#visi-misi">Visi & Misi</a></li>
                         </ul>
                     </li>
 

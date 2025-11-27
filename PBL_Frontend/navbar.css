@@ -1,20 +1,24 @@
-/* Reset dan base styles */
-* {
+/* Scope everything to .polinema-navbar to avoid global overrides */
+
+/* Reset dan base styles - scoped */
+.polinema-navbar * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
+/* Scoped base for navbar container (replaces global body rules) */
+.polinema-navbar {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: #333;
-  background-color: #f8f9fa;
+  /* background-color dihapus agar transparan */
   padding-top: 0;
+  width: 100%;
 }
 
 /* Header Styles */
-.header {
+.polinema-navbar .header {
   background: linear-gradient(135deg, #f9d723 0%, #f9d723 100%);
   padding: 0;
   height: 72px;
@@ -24,41 +28,42 @@ body {
   z-index: 1000;
 }
 
-.header-container {
+.polinema-navbar .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem; /* sedikit padding horizontal */
+  padding: 0 1.5rem;
   display: flex;
-  justify-content: right; /* tetap biarkan nav ke kanan */
+  justify-content: right;
   align-items: center;
   height: 100%;
-  position: relative; /* <-- tambahkan ini */
+  position: relative;
 }
 
 /* Logo Styles */
-.logo h1 {
+.polinema-navbar .logo h1 {
   color: #0047ab;
   font-size: 1.8rem;
   font-weight: 700;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
   letter-spacing: -0.5px;
+  margin: 0; /* Reset margin h1 BS5 */
 }
 
-.logo-img {
+.polinema-navbar .logo-img {
   height: 72px;
   width: auto;
 }
 
-/* Logo Styles (tambahan untuk kotak biru di bawah logo) */
-.header { position: relative; } /* memastikan konteks posisi */
-/* 1. Container Logo */
-.logo {
+/* Logo Styles (Posisi Absolut) */
+.polinema-navbar .header { position: relative; } 
+
+.polinema-navbar .logo {
   position: absolute;
   left: 1.5rem;
   top: 0;
   width: 100px;
   height: 120px;
-  margin-top: 24px; /* (box 120 - header 72)/2 = 24 => -24 to center around header */
+  margin-top: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,10 +73,9 @@ body {
   overflow: visible;
 }
 
-
 @media (max-width: 768px) {
-  .header-container { justify-content: center; }
-  .logo {
+  .polinema-navbar .header-container { justify-content: center; }
+  .polinema-navbar .logo {
     position: static;
     margin-top: 0;
     width: auto;
@@ -79,37 +83,40 @@ body {
     background: transparent;
     box-shadow: none;
   }
-  .logo a { padding: 4px 0; }
-  .logo-img { max-height: 48px; }
+  .polinema-navbar .logo a { padding: 4px 0; }
+  .polinema-navbar .logo-img { max-height: 48px; }
 }
 
 /* Navigation Styles */
-.nav-menu {
+.polinema-navbar .nav-menu {
   display: flex;
-  list-style: none;
+  list-style: none !important; /* Paksa hapus bullet */
   gap: 1.5rem;
   align-items: center;
+  margin: 0 !important; /* Reset margin ul BS5 */
+  padding: 0 !important; /* Reset padding ul BS5 */
 }
 
-.nav-link {
-  text-decoration: none;
+.polinema-navbar .nav-link {
+  text-decoration: none !important; /* Paksa hapus underline BS5 */
   color: #000000;
   font-weight: 600;
   padding: 1.7rem 1.2rem;
   transition: all 0.3s ease;
   position: relative;
   font-size: 0.95rem;
+  display: block;
 }
 
-.nav-link:hover {
+.polinema-navbar .nav-link:hover {
   background-color: #00358a;
   color: #ffffff;
-  transform: translateY();
+  transform: translateY(0);
 }
 
 
 /* Join Us Button Styles */
-.join-btn {
+.polinema-navbar .join-btn {
   background: linear-gradient(135deg, #0047ab 0%, #00358a 100%);
   color: #f9d723 !important;
   padding: 0.8rem 1.8rem !important;
@@ -120,7 +127,7 @@ body {
   margin-left: 0.5rem;
 }
 
-.join-btn:hover {
+.polinema-navbar .join-btn:hover {
   background: linear-gradient(135deg, #00358a 0%, #0047ab 100%) !important;
   transform: translateY(-2px) scale(1.05) !important;
   box-shadow: 0 6px 20px rgba(0, 71, 171, 0.6);
@@ -129,33 +136,31 @@ body {
 }
 
 /* Active state untuk halaman saat ini */
-.nav-link.active {
-  background-color: #00358a;
-  color: #ffffff;
+.polinema-navbar .nav-link.active {
+  background-color: #00358a !important;
+  color: #ffffff !important;
 }
 
-.nav-link.active::after {
-  width: 70%;
-}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .header {
+  .polinema-navbar .header {
     height: 64px;
   }
-  .logo-img {
+  .polinema-navbar .logo-img {
     height: 40px;
   }
 }
 
 @media (max-width: 480px) {
-  .nav-menu {
+  .polinema-navbar .nav-menu {
     flex-direction: column;
     gap: 0.8rem;
     width: 100%;
   }
 
-  .nav-link {
+  .polinema-navbar .nav-link {
     padding: 0.8rem 1.5rem;
     text-align: center;
     display: block;
@@ -163,76 +168,78 @@ body {
     max-width: 250px;
   }
 
-  .header-container {
+  .polinema-navbar .header-container {
     padding: 0.8rem;
   }
 }
 
 /* ubah header-container agar menjadi reference untuk posisi absolut logo */
-.header-container {
+.polinema-navbar .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem; /* sedikit padding horizontal */
+  padding: 0 1.5rem; 
   display: flex;
-  justify-content: right; /* tetap biarkan nav ke kanan */
+  justify-content: right; 
   align-items: center;
   height: 100%;
-  position: relative; /* <-- tambahkan ini */
+  position: relative; 
 }
 
-/* tempatkan logo absolut di kiri, tanpa mengganggu layout nav */
-.logo {
-  position: absolute; /* ambil dari normal flow */
-  left: 1.5rem;       /* jarak dari kiri header */
+/* tempatkan logo absolut di kiri */
+.polinema-navbar .logo {
+  position: absolute; 
+  left: 1.5rem;       
   top: 50%;
-  transform: translateY(-50%); /* vertical center relatif ke header */
+  transform: translateY(-50%); 
   z-index: 30;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* responsive: pada layar kecil, kembalikan logo ke aliran normal agar tidak menimpa nav */
+/* responsive logo */
 @media (max-width: 768px) {
-  .header-container {
-    justify-content: center; /* nav & logo berada di tengah pada mobile (atau sesuaikan) */
+  .polinema-navbar .header-container {
+    justify-content: center; 
   }
-  .logo {
+  .polinema-navbar .logo {
     position: static;
     transform: none;
     margin-right: 1rem;
   }
 }
 
-/* --- DROPDOWN STYLES (BARU) --- */
-
-/* Container Dropdown (di li) */
 .polinema-navbar .nav-item.dropdown {
-    position: relative; /* Wajib relative agar menu anak bisa absolute */
+    position: relative;
 }
 
-/* Menu Dropdown (Awalnya sembunyi) */
 .polinema-navbar .dropdown-menu {
-    display: none; /* Sembunyikan */
+    display: none;
     position: absolute;
-    top: 100%; /* Tepat di bawah menu induk */
+    top: 100%;
     left: 0;
     background-color: #fff;
     min-width: 200px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     border-radius: 0 0 8px 8px;
     z-index: 1000;
-    padding: 10px 0;
-    border-top: 3px solid #0047ab; /* Aksen biru di atas dropdown */
+    border-top: 3px solid #0047ab;
+    
+    /* FIX BS5: Reset Padding, Margin, dan List Style */
+    padding: 10px 0 !important; 
+    margin: 0 !important; 
+    list-style: none !important; /* Mencegah indentasi */
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
 }
 
-/* Tampilkan Dropdown saat Hover (Desktop) */
+/* Tampilkan Dropdown saat Hover */
 .polinema-navbar .nav-item.dropdown:hover .dropdown-menu {
     display: block;
-    animation: fadeIn 0.3s ease; /* Efek muncul halus */
+    animation: fadeIn 0.3s ease;
 }
 
-/* Animasi Fade In */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -241,47 +248,36 @@ body {
 /* Item Link dalam Dropdown */
 .polinema-navbar .dropdown-item {
     display: block;
-    padding: 10px 20px;
-    color: #333; /* Warna teks item default */
-    text-decoration: none;
+    width: 100%; /* Pastikan lebar penuh */
+    padding: 10px 20px !important; /* Paksa padding konsisten */
+    color: #333 !important; /* Warna teks hitam */
+    text-decoration: none !important; /* Hapus underline BS5 */
     font-size: 0.9rem;
     font-weight: 500;
     transition: background 0.2s;
+    background-color: transparent !important; /* Hapus biru active BS5 */
+    border: none;
+    clear: both;
+    text-align: inherit;
 }
 
+/* Hover State Dropdown Item */
 .polinema-navbar .dropdown-item:hover {
-    background-color: rgba(0, 71, 171, 0.1); /* Biru muda saat hover */
-    color: #0047ab;
+    background-color: rgba(0, 71, 171, 0.1) !important;
+    color: #0047ab !important;
 }
 
-/* Panah Kecil di sebelah Menu Induk (Indikator Dropdown) */
-.polinema-navbar .nav-link.dropdown-toggle::after {
-    content: "▼"; /* Simbol panah */
-    font-size: 0.7em;
-    margin-left: 5px;
-    display: inline-block;
-    vertical-align: middle;
-    transition: transform 0.3s;
-}
 
-/* Putar panah saat hover */
-.polinema-navbar .nav-item.dropdown:hover .nav-link.dropdown-toggle::after {
-    transform: rotate(180deg);
-}
-
-/* Responsif Mobile: Dropdown Statis */
+/* Responsif Mobile: Dropdown */
 @media (max-width: 768px) {
     .polinema-navbar .dropdown-menu {
-        position: static; /* Tidak melayang di mobile */
+        position: static;
         box-shadow: none;
         border-top: none;
-        padding-left: 20px; /* Indentasi anak menu */
+        padding-left: 0 !important; /* Hapus indent mobile */
         background-color: #f8f9fa;
-        display: none; /* Tetap sembunyi, butuh JS/Click untuk buka */
-    }
-    
-    /* Tampilkan menu di mobile saat class 'show' ditambahkan (butuh JS sederhana) */
-    .polinema-navbar .nav-item.dropdown.show .dropdown-menu {
-        display: block;
+        display: none;
+        width: 100%;
+        text-align: center;
     }
 }
