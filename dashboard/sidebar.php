@@ -65,7 +65,7 @@ function collapse_show($names) {
 
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.php">
         <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-microchip"></i>
+            <i class="fas fa-users-cog"></i>
         </div>
         <div class="sidebar-brand-text mx-3">LAB IVSS</div>
     </a>
