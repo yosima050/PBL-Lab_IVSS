@@ -130,6 +130,12 @@ function collapse_show($names) {
                 <span>Fasilitas Lab</span>
             </a>
         </li>
+        <li class="nav-item <?= is_active('profil_lab.php') ?>">
+            <a class="nav-link <?= is_active('profil_lab.php') ?>" href="profil_lab.php">
+                <i class="fas fa-fw fa-info-circle"></i>
+                <span>Profil Lab</span>
+            </a>
+        </li>
     <?php endif; ?>
 
     <?php if (isset($role) && $role === 'ketua_lab') : ?>
