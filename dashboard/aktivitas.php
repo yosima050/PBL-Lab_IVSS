@@ -20,6 +20,31 @@ require_once __DIR__ . '/db.php';
 
 $username = $_SESSION['nama_users'] ?? 'Admin';
 
+// --- Sidebar variables: make sure sidebar.php can read role and counters ---
+$role = $_SESSION['role'] ?? null;
+$pendingCount = 0;
+$waitingApproval = 0;
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+
+// pastikan folder uploads ada (menghindari warning move_uploaded_file)
+$uploadDir = __DIR__ . '/../uploads/';
+if (!is_dir($uploadDir)) {
+    @mkdir($uploadDir, 0755, true);
+}
+
 // =======================================================
 // DELETE
 // =======================================================
@@ -31,8 +56,8 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
     $stmt->execute(['id' => $id]);
     $foto = $stmt->fetchColumn();
 
-    if ($foto && file_exists("../uploads/" . $foto)) {
-        unlink("../uploads/" . $foto);
+    if ($foto && file_exists($uploadDir . $foto)) {
+        @unlink($uploadDir . $foto);
     }
 
     $stmt = $pdo->prepare("DELETE FROM aktivitas WHERE id_aktivitas = :id");
@@ -57,8 +82,8 @@ if (isset($_POST['update'])) {
 
     // jika upload foto baru
     if (!empty($_FILES['foto_aktivitas']['name'])) {
-        $foto = time() . "_" . $_FILES['foto_aktivitas']['name'];
-        move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], "../uploads/" . $foto);
+        $foto = time() . "_" . preg_replace('/[^A-Za-z0-9_.-]/', '_', basename($_FILES['foto_aktivitas']['name']));
+        move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], $uploadDir . $foto);
     } else {
         $foto = $_POST['foto_lama'];
     }
@@ -92,27 +117,73 @@ if (isset($_POST['update'])) {
 // INSERT
 // =======================================================
 if (isset($_POST['tambah'])) {
-    $judul  = $_POST['judul_aktivitas'];
-    $isi    = $_POST['isi_aktivitas'];
-    $mulai  = $_POST['tanggal_mulai_aktivitas'];
-    $selesai = $_POST['tanggal_selesai_aktivitas'];
-    $tag    = $_POST['tag_aktivitas'];
+    $judul   = $_POST['judul_aktivitas'] ?? '';
+    $isi     = $_POST['isi_aktivitas'] ?? '';
+    $mulai   = $_POST['tanggal_mulai_aktivitas'] ?? null;
+    $selesai = $_POST['tanggal_selesai_aktivitas'] ?? null;
+    $tag     = $_POST['tag_aktivitas'] ?? '';
 
-    $foto = time() . "_" . $_FILES['foto_aktivitas']['name'];
-    move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], "../uploads/" . $foto);
+    // sanitasi nama file dan simpan ke folder uploads
+    $foto = null;
+    if (!empty($_FILES['foto_aktivitas']['name'])) {
+        $safeName = preg_replace('/[^A-Za-z0-9_.-]/', '_', basename($_FILES['foto_aktivitas']['name']));
+        $foto = time() . "_" . $safeName;
+        $target = $uploadDir . $foto;
+        if (!move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], $target)) {
+            $_SESSION['message'] = "Upload gagal: tidak dapat menyimpan file.";
+            $_SESSION['msg_type'] = "danger";
+            header("Location: aktivitas.php");
+            exit;
+        }
+    }
 
-    $stmt = $pdo->prepare("INSERT INTO aktivitas
-        (judul_aktivitas, isi_aktivitas, tanggal_mulai_aktivitas, tanggal_selesai_aktivitas, created_at_aktivitas, tag_aktivitas, foto_aktivitas)
-        VALUES (:judul, :isi, :mulai, :selesai, NOW(), :tag, :foto)");
+    // ambil daftar kolom yang tersedia di tabel aktivitas
+    try {
+        $colStmt = $pdo->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'aktivitas' AND table_schema = CURRENT_SCHEMA()");
+        $colStmt->execute();
+        $columns = $colStmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch (Exception $e) {
+        // fallback untuk MySQL (jika driver bukan Postgres)
+        $colStmt = $pdo->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'aktivitas'");
+        $colStmt->execute();
+        $columns = $colStmt->fetchAll(PDO::FETCH_COLUMN);
+    }
 
-    $stmt->execute([
-        'judul' => $judul,
-        'isi'   => $isi,
-        'mulai' => $mulai,
-        'selesai' => $selesai,
-        'tag'   => $tag,
-        'foto'  => $foto
-    ]);
+    // mapping data yang mungkin akan disimpan
+    $possible = [
+        'judul_aktivitas' => $judul,
+        'isi_aktivitas' => $isi,
+        'tanggal_mulai_aktivitas' => $mulai,
+        'tanggal_selesai_aktivitas' => $selesai,
+        'tag_aktivitas' => $tag,
+        'foto_aktivitas' => $foto,
+        'created_at_aktivitas' => date('Y-m-d H:i:s')
+    ];
+
+    // build insert sesuai kolom yang ada
+    $insertCols = [];
+    $placeholders = [];
+    $params = [];
+
+    foreach ($possible as $col => $val) {
+        if (in_array($col, $columns)) {
+            $insertCols[] = $col;
+            $placeholders[] = ':' . $col;
+            // gunakan null jika nilai kosong dan kolom ada
+            $params[$col] = $val;
+        }
+    }
+
+    if (empty($insertCols)) {
+        $_SESSION['message'] = "Konfigurasi tabel aktivitas tidak mendukung insert otomatis.";
+        $_SESSION['msg_type'] = "danger";
+        header("Location: aktivitas.php");
+        exit;
+    }
+
+    $sql = "INSERT INTO aktivitas (" . implode(', ', $insertCols) . ") VALUES (" . implode(', ', $placeholders) . ")";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
 
     $_SESSION['message'] = "Aktivitas berhasil ditambahkan!";
     $_SESSION['msg_type'] = "success";
