@@ -55,7 +55,7 @@
                 </div>
                 <div class="activity-meta">
                     <div class="activity-stats">5 foto, 3 video</div>
-                    <a href="#" class="detail-link">
+                    <a href="https://e-journals.unmul.ac.id/index.php/INF/article/view/21593/0" target="_blank" class="detail-link">
                         Lihat Detail
                         <i class="fas fa-arrow-right"></i>
                     </a>
