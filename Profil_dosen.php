@@ -9,6 +9,7 @@
     <link href="dashboard/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/styleube.css">
     <link rel="stylesheet" href="PBL_Frontend/navbar.css">
+    <link rel="stylesheet" href="PBL_Frontend/footer.css">
 
     <style>
         .banner1{
@@ -16,6 +17,7 @@
             background-size:cover;
             min-height:300px;
         }
+
         body.bg-profile {
             background-color: #dbeafe;
         }
@@ -261,5 +263,6 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.js"></script>
     
+    <?php include 'PBL_Frontend/footer.php'; ?>
 </body>
 </html>
