@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="PBL_Frontend/navbar.css">
 
     <style>
+        .banner1{
+            background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
+            background-size:cover;
+            min-height:300px;
+        }
         body.bg-profile {
             background-color: #dbeafe;
         }
@@ -143,6 +148,8 @@
 <body>
 
     <?php include 'PBL_Frontend/navbar.php'; ?>
+    
+        <div class="banner1"> </div>
 
     <div class="container">
         <div class="profile-container">

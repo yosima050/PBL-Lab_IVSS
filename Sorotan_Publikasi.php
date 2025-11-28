@@ -56,7 +56,7 @@
                     <div class="pub-card-item">
                         <h3 class="pub-title">Sistem Pengambil Keputusan Rekomendasi Lokasi Wisata Malang Raya Dengan Metode MOORA</h3>
                         <p class="pub-date">3 Dec 2025</p>
-                        <a href="#" target="_blank" class="pub-button">Baca</a>
+                        <a href="https://ejurnal.poliban.ac.id/index.php/Positif/article/view/1091" target="_blank" class="pub-button">Baca</a>
                     </div>
                     <div class="pub-card-item">
                         <h3 class="pub-title">Penerapan Facial Landmark Point Untuk Klasifikasi Jenis Kelamin Berdasarkan Citra Wajah</h3>

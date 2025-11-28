@@ -1,7 +1,7 @@
 .banner1{
-	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
+	background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
 	background-size:cover;
-	min-height:620px;
+	min-height:300px;
 }
 
 .content{
@@ -11,12 +11,12 @@
 .tag1, .tag2 {
     display: inline-flex;
     align-items: center;
-    background: #f7d528;
+    background: #F9D723;
     padding: 12px 28px;
     border-radius: 20px;
     font-family: Arial, sans-serif;
     font-weight: bold;
-    color: #0056a3;
+    color: #0047AB;
     gap: 10px;
 }
 
