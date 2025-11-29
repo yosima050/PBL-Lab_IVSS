@@ -36,11 +36,11 @@ if (isset($_POST['create'])) {
     $id_role   = $_POST['id_role'];
     $nama      = $_POST['nama_users'];
     $email     = $_POST['email_users'];
-    $password  = password_hash($_POST['password_users'], PASSWORD_DEFAULT);
+    $password  = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     // Query INSERT
     $stmt = $pdo->prepare("
-        INSERT INTO users (id_role, nama_users, email_users, password_users)
+        INSERT INTO users (id_role, nama_users, email_users, password)
         VALUES (?, ?, ?, ?)
     ");
 
@@ -66,12 +66,12 @@ if (isset($_POST['update'])) {
     $email     = $_POST['email_users'];
 
     // Cek apakah password diubah atau tidak
-    if (!empty($_POST['password_users'])) {
-        $password = password_hash($_POST['password_users'], PASSWORD_DEFAULT);
+    if (!empty($_POST['password'])) {
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare("
             UPDATE users 
-            SET id_role = ?, nama_users = ?, email_users = ?, password_users = ?
+            SET id_role = ?, nama_users = ?, email_users = ?, password = ?
             WHERE id_users = ?
         ");
 

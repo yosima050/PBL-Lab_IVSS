@@ -11,7 +11,10 @@ $team_members = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team & Student List (Tampilan Desktop Full Lebar)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- stylesheet navbar (pastikan file ada di folder yang sama) -->
+    <link rel="stylesheet" href="navbar.css">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
@@ -31,8 +34,6 @@ $team_members = [
             background-size:cover;
             min-height:250px;
         }
-
-        /* Terapkan font-family Roboto ke seluruh body */
         body {
             font-family: 'Roboto', sans-serif;
         }
@@ -153,7 +154,11 @@ $team_members = [
     </style>
 </head>
 <body>
+
+<?php include __DIR__ . '/navbar.php'; ?>
+
 <div class="banner1"> </div>
+
 <div class="container">
 
     <div class="category-header">
@@ -247,6 +252,8 @@ $team_members = [
     </div>
 
 </div>
+
+<?php include __DIR__ . '/footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
