@@ -30,23 +30,18 @@ $id_user_login = $_SESSION['user_id']; // ID user yang sedang login
 // ---------------------------
 // DELETE
 // ---------------------------
-if (isset($_GET['aksi']) && $_GET['aksi'] === 'hapus' && isset($_GET['id'])) {
-    $id = (int) $_GET['id'];
-
-    // Ambil nama file lama
+if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
+    $id = $_GET['id'];
+    
+    // Ambil data foto lama untuk dihapus dari folder (Opsional tapi disarankan)
     $stmt = $pdo->prepare("SELECT foto_berita FROM berita WHERE id_berita = :id");
     $stmt->execute(['id' => $id]);
     $fotoLama = $stmt->fetchColumn();
-
-    // Hapus file fisik jika ada
-    if (!empty($fotoLama)) {
-        $filePath = __DIR__ . '/../uploads/' . $fotoLama;
-        if (file_exists($filePath)) {
-            @unlink($filePath);
-        }
+    
+    if ($fotoLama && file_exists("../uploads/" . $fotoLama)) {
+        unlink("../uploads/" . $fotoLama); // Hapus file fisik
     }
 
-    // Hapus record dari database
     $stmt = $pdo->prepare("DELETE FROM berita WHERE id_berita = :id");
     $stmt->execute(['id' => $id]);
 
@@ -108,13 +103,12 @@ if (isset($_POST['tambah'])) {
     $isi      = $_POST['isi_berita'];
     $kategori = $_POST['kategori_berita'];
 
-    // Upload Foto
-    $foto = time() . '_' . $_FILES['foto_berita']['name'];
+    $foto = $_FILES['foto_berita']['name'];
     $tmp  = $_FILES['foto_berita']['tmp_name'];
     move_uploaded_file($tmp, "../uploads/" . $foto);
 
-    $author   = $username; // Gunakan nama dari session login
-    $id_users = $id_user_login; // Gunakan ID dari session login
+    $author  = $_SESSION['nama'] ?? 'Admin';
+    $id_users = $_SESSION['id_users'] ?? 1;
 
     $stmt = $pdo->prepare("INSERT INTO berita 
         (judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita)
@@ -143,12 +137,12 @@ if (isset($_POST['tambah_tautan'])) {
     $judul = $_POST['judul_berita'];
     $link  = $_POST['link_berita'];
 
-    $foto = time() . '_' . $_FILES['foto_berita']['name'];
+    $foto = $_FILES['foto_berita']['name'];
     $tmp  = $_FILES['foto_berita']['tmp_name'];
     move_uploaded_file($tmp, "../uploads/" . $foto);
 
-    $author   = $username;
-    $id_users = $id_user_login;
+    $author  = $_SESSION['nama'] ?? 'Admin';
+    $id_users = $_SESSION['id_users'] ?? 1;
 
     $stmt = $pdo->prepare("INSERT INTO berita 
         (judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita, link_berita)
@@ -368,63 +362,56 @@ $pendingCount = $waitingApproval = 0;
                     </div>
                 </div>
 
-                <?php 
-                // --- TABEL DATA (DEFAULT) ---
-                } else { 
+                <?php
+                } else {
                     $stmt = $pdo->query("SELECT * FROM berita ORDER BY created_at_berita DESC");
                     $data = $stmt->fetchAll();
                 ?>
+                <!-- Tabel Data Berita -->
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 font-weight-bold text-primary">Daftar Berita</h6>
+                    <div class="card-header d-flex justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Data Berita</h6>
                         <div>
-                            <a href="berita_pengumuman.php?aksi=tambah" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Tambah Berita</a>
-                            <a href="berita_pengumuman.php?aksi=tambah_tautan" class="btn btn-info btn-sm"><i class="fas fa-link"></i> Tambah Tautan</a>
+                            <a href="berita_pengumuman.php?aksi=tambah" class="btn btn-primary btn-sm">+ Tambah Berita</a>
+                            <a href="berita_pengumuman.php?aksi=tambah_tautan" class="btn btn-info btn-sm">+ Tautan Berita</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Foto</th>
-                                        <th>Judul</th>
-                                        <th>Kategori</th>
-                                        <th>Author</th>
-                                        <th>Tanggal</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $no = 1; foreach ($data as $d): ?>
-                                    <tr>
-                                        <td><?= $no++ ?></td>
-                                        <td>
-                                            <?php if(!empty($d['foto_berita'])): ?>
-                                                <img src="../uploads/<?= htmlspecialchars($d['foto_berita']) ?>" width="80" class="img-thumbnail">
-                                            <?php else: ?>
-                                                <span class="text-muted">No Image</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?= htmlspecialchars($d['judul_berita']) ?>
-                                            <?php if(!empty($d['link_berita'])): ?>
-                                                <br><a href="<?= htmlspecialchars($d['link_berita']) ?>" target="_blank" class="badge badge-light text-info"><i class="fas fa-external-link-alt"></i> Link</a>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><span class="badge badge-secondary"><?= htmlspecialchars($d['kategori_berita']) ?></span></td>
-                                        <td><?= htmlspecialchars($d['author']) ?></td>
-                                        <td><?= date('d M Y', strtotime($d['created_at_berita'])) ?></td>
-                                        <td>
-                                            <a href="berita_pengumuman.php?aksi=edit&id=<?= $d['id_berita'] ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                            <a href="berita_pengumuman.php?aksi=hapus&id=<?= $d['id_berita'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus berita ini?')"><i class="fas fa-trash"></i></a>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                        <table id="dataTable" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Foto</th>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Author</th>
+                                    <th>Tanggal</th>
+                                    <th>Tautan</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; foreach ($data as $d): ?>
+                                <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td><img src="../uploads/<?= $d['foto_berita'] ?>" width="70"></td>
+                                    <td><?= $d['judul_berita'] ?></td>
+                                    <td><?= $d['kategori_berita'] ?></td>
+                                    <td><?= $d['author'] ?></td>
+                                    <td><?= $d['created_at_berita'] ?></td>
+                                    <td>
+                                        <?php if (!empty($d['link_berita'])): ?>
+                                            <a href="<?= htmlspecialchars($d['link_berita']) ?>" target="_blank" class="btn btn-info btn-sm">Lihat Tautan</a>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="berita_pengumuman.php?aksi=edit&id=<?= $d['id_berita'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                        <a href="berita_pengumuman.php?aksi=hapus&id=<?= $d['id_berita'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus berita ini?')">Hapus</a>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <?php } ?>
@@ -444,7 +431,24 @@ $pendingCount = $waitingApproval = 0;
     </div>
 </div>
 
-<!-- Logout modal removed (provided by sidebar.php include). Avoid duplicate modals with same id -->
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Yakin ingin keluar?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Klik "Logout" di bawah jika Anda ingin mengakhiri sesi ini.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                <a class="btn btn-primary" href="logout.php">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

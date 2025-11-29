@@ -15,6 +15,28 @@ if (!in_array($_SESSION['role'], ['admin_sistem'])) {
 
 $username = $_SESSION['nama_users'] ?? 'User';
 
+<<<<<<< HEAD
+=======
+// --- Sidebar variables: make sure sidebar.php can read role and counters ---
+$role = $_SESSION['role'] ?? null;
+$pendingCount = 0;
+$waitingApproval = 0;
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+
+>>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 /* ============================
    READ DATA DOSEN
 ============================ */

@@ -65,7 +65,7 @@ function collapse_show($names) {
 
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.php">
         <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-microchip"></i>
+            <i class="fas fa-users-cog"></i>
         </div>
         <div class="sidebar-brand-text mx-3">LAB IVSS</div>
     </a>
@@ -128,6 +128,12 @@ function collapse_show($names) {
             <a class="nav-link <?= is_active('fasilitas_lab.php') ?>" href="fasilitas_lab.php">
                 <i class="fas fa-fw fa-tools"></i>
                 <span>Fasilitas Lab</span>
+            </a>
+        </li>
+        <li class="nav-item <?= is_active('profil_lab.php') ?>">
+            <a class="nav-link <?= is_active('profil_lab.php') ?>" href="profil_lab.php">
+                <i class="fas fa-fw fa-info-circle"></i>
+                <span>Profil Lab</span>
             </a>
         </li>
     <?php endif; ?>
