@@ -60,7 +60,7 @@ if (!function_exists('is_active')) {
                         </ul>
                     </li>
                     
-                    <li class="nav-item"><a href="join.php" class="nav-link join-btn<?= is_active('join.php') ?>">Join Us!</a></li>
+                    <li class="nav-item"><a href="../dashboard/daftarMember.php" class="nav-link join-btn<?= is_active('../dashboard/daftarMember.php') ?>">Join Us!</a></li>
                 </ul>
             </nav>
         </div>
