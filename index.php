@@ -87,11 +87,12 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 <img src='Asset/Lab.jpg' class="img-responsive" alt=""/>
 			 </div>
 			 <div class="col-md-6 content-right">
-				 <h2>Etiam ornare nisi eget quam pretium ipsum semper.</h2>
-				 <p>Vestibulum augue nisi, mattis et mattis sed, commodo id turpis. Maecenas quis felis enim. Integer lacinia in ex quis laoreet.
-				 Aliquam justo urna, ullamcorper non pellentesque sit amet, ultrices in lacus. Curabitur vitae nisl vel tellus rutrum ullamcorper.
-				 Proin volutpat, magna eget posuere laoreet, est massa lobortis mi, a commodo dui nisi eget risus.</p>
-				 <p>Maecenas eget magna volutpat, tincidunt urna id, imperdiet mi. Suspendisse dignissim eros sit amet nulla faucibus tristique quis ac libero.Vestibulum molestie maximus felis, rhoncus dignissim metus.</p>
+				 <h2>Selamat Datang di Laboratorium Visi Cerdas dan Sistem Cerdas</h2>
+				 <p>Sebuah ruang kolaborasi di mana kami mengeksplorasi masa depan kecerdasan buatan. Kami percaya pada kekuatan mesin yang tidak hanya dapat melihat lingkungannya dengan cerdas, tetapi juga memahami, mempelajari,
+					dan mengambil keputusan autonom untuk menyelesaikan masalah yang kompleks. Inilah tempat di mana data visual dan algoritma cerdas bertemu, membentuk solusi inovatif untuk tantangan dunia nyata.
+				 </p>
+				 <p>Visi Komputer (Computer Vision): Meneliti dan mengembangkan algoritma untuk memahami, menganalisis, dan memproses informasi visual dari dunia nyata, seperti pengenalan objek, klasifikasi citra, dan segmentasi.</p>
+				 <p>Sistem Cerdas (Intelligent Systems): Merancang dan membangun sistem yang mengintegrasikan kecerdasan buatan, pembelajaran mesin, dan logika untuk menciptakan solusi otonom dan adaptif yang dapat menyelesaikan masalah kompleks.</p>
 			 </div>
 			 <div class="clearfix"></div>
 		 </div>
@@ -108,21 +109,21 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					<figure class="icon">
 						<img src="Asset/perlab2.jpg" alt="Alat 1">
 					</figure>
-					<h5>Proin eget ipsum ultrices</h5>
+					<h5>Proyektor LCD Epson</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
 				</div>
 				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible;">
 					<figure class="icon">
 						<img src="Asset/IMG_20251105_123108.jpg" alt="Alat 2">
 					</figure>
-					<h5>Proin eget ipsum ultrices</h5>
+					<h5>Sony Alpha a6400</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
 				</div>
 				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible;">
 					<figure class="icon">
 						<img src="Asset/perlab1.jpg">
 					</figure>
-					<h5>Proin eget ipsum ultrices</h5>
+					<h5>Kamera Lentern Softbox</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
 				</div>
 				<div class="clearfix"> </div>
