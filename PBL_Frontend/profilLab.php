@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Laboratorium</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <link rel="stylesheet" href="navbar.css"> 
+    <link rel="stylesheet" href="navbar.css">
     <style>
+        .banner1{
+            background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
+            background-size:cover;
+            min-height:250px;
+        }
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Roboto";
             background-color: #FFFFFF;
             color: #333;
             line-height: 1.6;
@@ -91,7 +96,7 @@
 <body>
     
     <?php include __DIR__ . '/navbar.php'; ?>
-
+<div class="banner1"> </div>
     <div class="container-fluid p-0">
         <div class="text-center">
             <div class="custom-header d-inline-block">
