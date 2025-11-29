@@ -95,15 +95,15 @@ function collapse_show($names) {
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed <?= (in_array($current, ['mahasiswa.php','dosen.php','users.php'])) ? 'active' : '' ?>" href="#" data-toggle="collapse" data-target="#collapseData" aria-expanded="true" aria-controls="collapseData">
+            <a class="nav-link collapsed <?= (in_array($current, ['mahasiswa.php','dosen.php','manajemen_admin.php'])) ? 'active' : '' ?>" href="#" data-toggle="collapse" data-target="#collapseData" aria-expanded="true" aria-controls="collapseData">
                 <i class="fas fa-fw fa-database"></i>
                 <span>Data Master</span>
             </a>
-            <div id="collapseData" class="collapse <?= collapse_show(['mahasiswa.php','dosen.php','users.php']) ?>" data-parent="#accordionSidebar">
+            <div id="collapseData" class="collapse <?= collapse_show(['mahasiswa.php','dosen.php','manajemen_admin.php']) ?>" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= is_active('mahasiswa.php') ?>" href="mahasiswa.php">Data Mahasiswa</a>
                     <a class="collapse-item <?= is_active('dosen.php') ?>" href="dosen.php">Data Dosen &amp; Riset</a>
-                    <a class="collapse-item <?= is_active('users.php') ?>" href="users.php">Manajemen User</a>
+                    <a class="collapse-item <?= is_active('manajemen_admin.php') ?>" href="manajemen_admin.php">Manajemen User</a>
                 </div>
             </div>
         </li>

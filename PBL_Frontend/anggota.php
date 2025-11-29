@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 <?php
 $team_members = [
     'member1.jpg', // Ganti dengan path gambar
@@ -7,118 +5,16 @@ $team_members = [
 ];
 
 ?>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>Anggota Tim</title>
-    <link rel="stylesheet" href="anggota.css">
-</head>
-<body>
-    <div class="container">
-        <!-- Judul Halaman -->
-        <h1 class="page-title">Anggota Tim</h1>
-            
-            <!-- Profile Photos Section -->
-            <div class="profile-section">
-                <div class="profile-row">
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                </div>
-                <div class="profile-row">
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                    <div class="profile-item">
-                        <div class="photo-circle"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filter Section -->
-            <div class="filter-section">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="cari-kategori">
-                    <label for="cari-kategori">Cari Kategori...</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="filter">
-                    <label for="filter">Filter</label>
-                </div>
-            </div>
-
-            <!-- Table Section -->
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>NIM</th>
-                            <th>Program Studi</th>
-                            <th>Peran</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Baris kosong untuk tabel -->
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-=======
     <title>Team & Student List (Tampilan Desktop Full Lebar)</title>
+
+    <!-- stylesheet navbar (pastikan file ada di folder yang sama) -->
+    <link rel="stylesheet" href="navbar.css">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
@@ -131,6 +27,12 @@ $team_members = [
             --color-table-header-border: var(--color-dark-blue);
 
             --color-table-striped: var(--color-light-blue);
+        }
+
+        .banner1{
+            background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
+            background-size:cover;
+            min-height:250px;
         }
 
         .container {
@@ -250,6 +152,10 @@ $team_members = [
 </head>
 <body>
 
+<?php include __DIR__ . '/navbar.php'; ?>
+
+<div class="banner1"> </div>
+
 <div class="container">
 
     <div class="category-header">
@@ -344,8 +250,9 @@ $team_members = [
 
 </div>
 
+<?php include __DIR__ . '/footer.php'; ?>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 </body>
 </html>

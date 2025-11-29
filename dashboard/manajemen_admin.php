@@ -16,6 +16,25 @@ if (!in_array($_SESSION['role'], ['admin_sistem', 'ketua_lab'])) {
 
 $username = $_SESSION['nama_users'] ?? 'User';
 
+// --- variabel untuk sidebar.php (role + badge counters) ---
+$role = $_SESSION['role'] ?? null;
+$pendingCount = 0;
+$waitingApproval = 0;
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+
 /* =======================
    READ DATA USERS
 ========================== */

@@ -34,7 +34,7 @@ if (!function_exists('is_active')) {
                     <li class="nav-item"><a href="../index.php" class="nav-link<?= is_active('../index.php') ?>">Beranda</a></li>
                     
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['profilLab.php','visi_misi.php','sejarah.php']) ?>">Profil Lab</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['profilLab.php','visi_misi.php']) ?>">Profil Lab</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="../PBL_Frontend/profilLab.php">Tentang Kami</a></li>
                             <li><a class="dropdown-item" href="../PBL_Frontend/profilLab.php#visi-misi">Visi & Misi</a></li>
@@ -42,21 +42,21 @@ if (!function_exists('is_active')) {
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['anggota.php','dosen.php','sorotanpublikasi.php','produkriset.php']) ?>">Anggota & Riset</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['../PBL_Frontend/anggota.php','../PBL_Frontend/dosen.php','../Sorotan_Publikasi.php','../PBL_Frontend/produk.php']) ?>">Anggota & Riset</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="anggota.php">Anggota Lab</a></li>
-                            <li><a class="dropdown-item" href="dosen.php">Dosen Peneliti</a></li>
-                            <li><a class="dropdown-item" href="riset.php">Fokus Riset</a></li>
-                            <li><a class="dropdown-item" href="sorotanpublikasi.php">Sorotan Publikasi</a></li>
-                            <li><a class="dropdown-item" href="produkriset.php">Produk dan Riset</a></li>
+                            <li><a class="dropdown-item" href="../PBL_Frontend/anggota.php">Anggota Lab</a></li>
+                            <li><a class="dropdown-item" href="../PBL_Frontend/anggota.php">Dosen Peneliti</a></li>
+                            <li><a class="dropdown-item" href="../Sorotan_Publikasi.php">Fokus Riset</a></li>
+                            <li><a class="dropdown-item" href="../Sorotan_Publikasi.php">Sorotan Publikasi</a></li>
+                            <li><a class="dropdown-item" href="../PBL_Frontend/produk.php">Produk dan Riset</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="berita.php" class="nav-link dropdown-toggle<?= is_active(['berita.php','berita_pengumuman.php']) ?>">Berita & Aktivitas</a>
+                        <a href="berita.php" class="nav-link dropdown-toggle<?= is_active(['../Berita_Pengumuman.php','../Aktivitas_Dokumen.php']) ?>">Berita & Aktivitas</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="berita.php">Berita dan Pengumuman</a></li>
-                            <li><a class="dropdown-item" href="aktivitasdokumentasi.php">Aktivitas dan Dokumentasi</a></li>
+                            <li><a class="dropdown-item" href="../Berita_Pengumuman.php">Berita dan Pengumuman</a></li>
+                            <li><a class="dropdown-item" href="../Aktivitas_Dokumen.php">Aktivitas dan Dokumentasi</a></li>
                         </ul>
                     </li>
                     
