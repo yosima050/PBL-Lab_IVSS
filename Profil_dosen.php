@@ -15,7 +15,7 @@
         .banner1{
             background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
             background-size:cover;
-            min-height:300px;
+            min-height:250px;
         }
 
         body.bg-profile {

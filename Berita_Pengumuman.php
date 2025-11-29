@@ -32,7 +32,8 @@
                 </div>
                 <div class="berita-content">
                     <p class="berita-title featured">
-                        Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang Raih Juara II Hackathon - IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda
+                        Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang 
+                        Raih Juara 3 Hackathon  IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda
                     </p>
                     <p class="berita-date">Oktober 2025</p>
                 </div>
@@ -44,7 +45,7 @@
                 </div>
                 <div class="berita-content">
                     <p class="berita-title regular">
-                        Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih 2 emas dan 2 perunggu Kompetisi Mahasiswa Informatika Politeknik Nasional (KMIPN) Bidang IT Networking pada tanggal 13 - 16 Oktober 2025 di Politeknik Negeri Padang. Tim tersebut bernama "Rontex Timnas" dan 1 perunggu
+                        Mahasiswa Jurusan Teknologi Informasi kembali menorehkan prestasi membanggakan dalam ajang CREANOMIC 2025 yang diselenggarakan oleh BEM Fakultas Vokasi Universitas Brawijaya.
                     </p>
                     <p class="berita-date">Oktober 2025</p>
                 </div>
@@ -52,39 +53,16 @@
 
             <div class="berita-card regular">
                 <div class="berita-image regular">
-                    <img src="images/berita3.jpg" alt="Berita 3">
+                    <img src="Asset/pp.png" alt="Berita 3">
                 </div>
                 <div class="berita-content">
                     <p class="berita-title regular">
-                        Mahasiswa Jurusan Teknologi Informasi berhasil meraih penghargaan dengan memenangkan presentasi mempresentasikan nilai yang terkandung pada lagu CREAMONC 2025 yang diselenggarakan oleh BEM Jurusan Teknologi Informasi Brawisaya.
+                        Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih juara 2 umum pada Kompetensi Mahasiswa Informatika Politeknik Nasional (KMIPN) 2025
                     </p>
                     <p class="berita-date">Oktober 2025</p>
                 </div>
             </div>
 
-            <div class="berita-card regular">
-                <div class="berita-image regular">
-                    <img src="images/berita4.jpg" alt="Berita 4">
-                </div>
-                <div class="berita-content">
-                    <p class="berita-title regular">
-                        Asesmen Lapangan Program Studi Magister Terapan Rekayasa Teknologi Informasi Polimema
-                    </p>
-                    <p class="berita-date">September 2025</p>
-                </div>
-            </div>
-
-            <div class="berita-card regular">
-                <div class="berita-image regular">
-                    <img src="images/berita5.jpg" alt="Berita 5">
-                </div>
-                <div class="berita-content">
-                    <p class="berita-title regular">
-                        Kegiatan Praktikum Mahasiswa Baru Tahun Akademik 2025/2026 Jurusan Teknologi Informasi Politeknik Negeri Malang
-                    </p>
-                    <p class="berita-date">September 2025</p>
-                </div>
-            </div>
         </div>
 
         <div class="sidebar-section">
