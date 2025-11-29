@@ -20,8 +20,6 @@ require_once __DIR__ . '/db.php';
 
 $username = $_SESSION['nama_users'] ?? 'Admin';
 
-<<<<<<< HEAD
-=======
 // --- Sidebar variables: make sure sidebar.php can read role and counters ---
 $role = $_SESSION['role'] ?? null;
 $pendingCount = 0;
@@ -47,37 +45,35 @@ if (!is_dir($uploadDir)) {
     @mkdir($uploadDir, 0755, true);
 }
 
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 // =======================================================
 // DELETE
 // =======================================================
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
     $id = $_GET['id'];
 
-    // Hapus foto
-    $stmt = $pdo->prepare("SELECT foto_aktivitas FROM aktivitas WHERE id_aktivitas = :id");
+        // ambil semua foto yang ada di galeri
+        $stmt = $pdo->prepare("SELECT foto_galeri FROM galeri WHERE id_aktivitas = :id");
+        $stmt->execute(['id' => $id]);
+        $galeriFiles = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // hapus file-file foto dari folder
+        foreach ($galeriFiles as $file) {
+            if ($file && file_exists($uploadDir . $file)) {
+            @unlink($uploadDir . $file);
+            }
+        }
+
+     // 3. Hapus galeri dari database
+    $stmt = $pdo->prepare("DELETE FROM galeri WHERE id_aktivitas = :id");
     $stmt->execute(['id' => $id]);
-    $foto = $stmt->fetchColumn();
 
-<<<<<<< HEAD
-    if ($foto && file_exists("../uploads/" . $foto)) {
-        unlink("../uploads/" . $foto);
-=======
-    if ($foto && file_exists($uploadDir . $foto)) {
-        @unlink($uploadDir . $foto);
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
-    }
-
+    // 4. Hapus aktivitas
     $stmt = $pdo->prepare("DELETE FROM aktivitas WHERE id_aktivitas = :id");
     $stmt->execute(['id' => $id]);
 
     $_SESSION['message'] = "Aktivitas berhasil dihapus!";
     $_SESSION['msg_type'] = "success";
-<<<<<<< HEAD
     header("Location: aktivitas.php");
-=======
-    header("Location: aktivitas_galeri.php");
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
     exit;
 }
 
@@ -88,19 +84,14 @@ if (isset($_POST['update'])) {
     $id     = $_POST['id_aktivitas'];
     $judul  = $_POST['judul_aktivitas'];
     $isi    = $_POST['isi_aktivitas'];
-    $mulai  = $_POST['tanggal_mulai_aktivitas'];
-    $selesai = $_POST['tanggal_selesai_aktivitas'];
+    $mulai  = $_POST['tanggal_mulai'];
+    $selesai = $_POST['tanggal_selesai'];
     $tag    = $_POST['tag_aktivitas'];
 
     // jika upload foto baru
     if (!empty($_FILES['foto_aktivitas']['name'])) {
-<<<<<<< HEAD
-        $foto = time() . "_" . $_FILES['foto_aktivitas']['name'];
-        move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], "../uploads/" . $foto);
-=======
         $foto = time() . "_" . preg_replace('/[^A-Za-z0-9_.-]/', '_', basename($_FILES['foto_aktivitas']['name']));
         move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], $uploadDir . $foto);
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
     } else {
         $foto = $_POST['foto_lama'];
     }
@@ -108,15 +99,10 @@ if (isset($_POST['update'])) {
     $stmt = $pdo->prepare("UPDATE aktivitas SET 
         judul_aktivitas = :judul,
         isi_aktivitas = :isi,
-<<<<<<< HEAD
         tanggal_mulai = :mulai,
         tanggal_selesai = :selesai,
-=======
-        tanggal_mulai_aktivitas = :mulai,
-        tanggal_selesai_aktivitas = :selesai,
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
         tag_aktivitas = :tag,
-        foto_aktivitas = :foto
+        foto_galeri = :foto
         WHERE id_aktivitas = :id");
 
     $stmt->execute([
@@ -131,11 +117,7 @@ if (isset($_POST['update'])) {
 
     $_SESSION['message'] = "Aktivitas berhasil diupdate!";
     $_SESSION['msg_type'] = "warning";
-<<<<<<< HEAD
     header("Location: aktivitas.php");
-=======
-    header("Location: aktivitas_galeri.php");
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
     exit;
 }
 
@@ -143,58 +125,10 @@ if (isset($_POST['update'])) {
 // INSERT
 // =======================================================
 if (isset($_POST['tambah'])) {
-<<<<<<< HEAD
-    $judul  = $_POST['judul_aktivitas'];
-    $isi    = $_POST['isi_aktivitas'];
-    $mulai  = $_POST['tanggal_mulai_aktivitas'];
-    $selesai = $_POST['tanggal_selesai_aktivitas'];
-    $tag    = $_POST['tag_aktivitas'];
-
-    // INSERT KE TABEL AKTIVITAS DULU
-    $stmt = $pdo->prepare("INSERT INTO aktivitas
-        (judul_aktivitas, isi_aktivitas, tanggal_mulai, tanggal_selesai, created_at_aktivitas, tag_aktivitas)
-        VALUES (:judul, :isi, :mulai, :selesai, NOW(), :tag)");
-
-    $stmt->execute([
-        'judul' => $judul,
-        'isi'   => $isi,
-        'mulai' => $mulai,
-        'selesai' => $selesai,
-        'tag'   => $tag
-    ]);
-
-    // AMBIL ID AKTIVITAS BARU
-    $idAktivitas = $pdo->lastInsertId();
-
-    // 2. Upload foto dan masukkan ke tabel GALERI
-    if (!empty($_FILES['foto_aktivitas']['name'])) {
-
-        $foto = time() . "_" . $_FILES['foto_aktivitas']['name'];
-        move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], "../uploads/" . $foto);
-
-        $stmt2 = $pdo->prepare("INSERT INTO galeri
-            (judul_foto, foto_galeri, created_at_galeri, id_aktivitas)
-            VALUES (:judul_foto, :foto, NOW(), :id_aktivitas)");
-
-        $stmt2->execute([
-            'judul_foto'  => $judul,
-            'foto'        => $foto,
-            'id_aktivitas'=> $idAktivitas
-        ]);
-    }
-
-    $_SESSION['message'] = "Aktivitas & foto berhasil ditambahkan!";
-    $_SESSION['msg_type'] = "success";
-    header("Location: aktivitas.php");
-    exit;
-}
-
-
-=======
     $judul   = $_POST['judul_aktivitas'] ?? '';
     $isi     = $_POST['isi_aktivitas'] ?? '';
-    $mulai   = $_POST['tanggal_mulai_aktivitas'] ?? null;
-    $selesai = $_POST['tanggal_selesai_aktivitas'] ?? null;
+    $mulai   = $_POST['tanggal_mulai'] ?? null;
+    $selesai = $_POST['tanggal_selesai'] ?? null;
     $tag     = $_POST['tag_aktivitas'] ?? '';
 
     // sanitasi nama file dan simpan ke folder uploads
@@ -230,7 +164,7 @@ if (isset($_POST['tambah'])) {
         'tanggal_mulai_aktivitas' => $mulai,
         'tanggal_selesai_aktivitas' => $selesai,
         'tag_aktivitas' => $tag,
-        'foto_aktivitas' => $foto,
+        'foto_galeri' => $foto,
         'created_at_aktivitas' => date('Y-m-d H:i:s')
     ];
 
@@ -265,7 +199,6 @@ if (isset($_POST['tambah'])) {
     exit;
 }
 
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 ?>
 
 <!DOCTYPE html>
@@ -330,6 +263,9 @@ if (isset($_POST['tambah'])) {
                     $stmt = $pdo->prepare("SELECT * FROM aktivitas WHERE id_aktivitas = :id");
                     $stmt->execute(['id' => $id]);
                     $d = $stmt->fetch();
+
+                    // Jika foto tidak ada, gunakan placeholder
+                    $fotoAktif = !empty($d['foto_aktivitas']) ? $d['foto_aktivitas'] : 'noimage.png';
                 ?>
 
                 <div class="card shadow mb-4">
@@ -339,7 +275,7 @@ if (isset($_POST['tambah'])) {
                     <div class="card-body">
                         <form method="post" enctype="multipart/form-data">
                             <input type="hidden" name="id_aktivitas" value="<?= $d['id_aktivitas'] ?>">
-                            <input type="hidden" name="foto_lama" value="<?= $d['foto_aktivitas'] ?>">
+                            <input type="hidden" name="foto_lama" value="<?= !empty($d['foto_aktivitas']) ? $d['foto_aktivitas'] : '' ?>">
 
                             <div class="form-group">
                                 <label>Judul</label>
@@ -353,12 +289,12 @@ if (isset($_POST['tambah'])) {
 
                             <div class="form-group">
                                 <label>Tanggal Mulai</label>
-                                <input type="date" name="tanggal_mulai_aktivitas" class="form-control" value="<?= $d['tanggal_mulai_aktivitas'] ?>">
+                                <input type="date" name="tanggal_mulai" class="form-control" value="<?= $d['tanggal_mulai'] ?>">
                             </div>
 
                             <div class="form-group">
                                 <label>Tanggal Selesai</label>
-                                <input type="date" name="tanggal_selesai_aktivitas" class="form-control" value="<?= $d['tanggal_selesai_aktivitas'] ?>">
+                                <input type="date" name="tanggal_selesai" class="form-control" value="<?= $d['tanggal_selesai'] ?>">
                             </div>
 
                             <div class="form-group">
@@ -372,12 +308,19 @@ if (isset($_POST['tambah'])) {
 
                             <div class="form-group">
                                 <label>Foto Lama:</label><br>
-                                <img src="../uploads/<?= $d['foto_aktivitas'] ?>" width="140"><br><br>
-                                <input type="file" name="foto_aktivitas">
+
+                                <?php if (!empty($d['foto_aktivitas'])): ?>
+                                    <img src="../uploads/<?= $d['foto_aktivitas'] ?>" width="140" class="mb-2"><br>
+                                <?php else: ?>
+                                    <p><i>Tidak ada foto</i></p>
+                                <?php endif; ?>
+
+                                <label>Ganti Foto (opsional)</label>
+                                <input type="file" name="foto_aktivitas" class="form-control">
                             </div>
 
                             <button type="submit" name="update" class="btn btn-warning">Update</button>
-                            <a href="aktivitas_galeri.php" class="btn btn-secondary">Batal</a>
+                            <a href="aktivitas.php" class="btn btn-secondary">Batal</a>
                         </form>
                     </div>
                 </div>
@@ -432,11 +375,7 @@ if (isset($_POST['tambah'])) {
                             </div>
 
                             <button type="submit" name="tambah" class="btn btn-primary">Simpan</button>
-<<<<<<< HEAD
                             <a href="aktivitas.php" class="btn btn-secondary">Batal</a>
-=======
-                            <a href="aktivitas_galeri.php" class="btn btn-secondary">Batal</a>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 
                         </form>
 
@@ -459,15 +398,10 @@ if (isset($_POST['tambah'])) {
                     </div>
 
                     <div class="card-body">
-<<<<<<< HEAD
-                        <table class="table table-bordered" id="dataTable">
-                            <thead>
-=======
                         <div class="table-responsive"> 
                             
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
                                 <tr>
                                     <th>No</th>
                                     <th>Foto</th>
@@ -484,7 +418,6 @@ if (isset($_POST['tambah'])) {
                                 <?php $no=1; foreach($data as $d): ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
-<<<<<<< HEAD
                                     <td>
                                         <?php if (!empty($d['semua_foto'])): ?>
                                             <?php 
@@ -501,13 +434,6 @@ if (isset($_POST['tambah'])) {
                                     <td><?= $d['tag_aktivitas'] ?></td>
                                     <td><?= $d['tanggal_mulai'] ?></td>
                                     <td><?= $d['tanggal_selesai'] ?></td>
-=======
-                                    <td><img src="../uploads/<?= $d['foto_aktivitas'] ?>" width="70"></td>
-                                    <td><?= $d['judul_aktivitas'] ?></td>
-                                    <td><?= $d['tag_aktivitas'] ?></td>
-                                    <td><?= $d['tanggal_mulai_aktivitas'] ?></td>
-                                    <td><?= $d['tanggal_selesai_aktivitas'] ?></td>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
                                     <td><?= $d['created_at_aktivitas'] ?></td>
                                     <td>
                                         <a href="aktivitas.php?aksi=edit&id=<?= $d['id_aktivitas'] ?>" class="btn btn-warning btn-sm">Edit</a>
