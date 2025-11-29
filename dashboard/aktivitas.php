@@ -195,7 +195,7 @@ if (isset($_POST['tambah'])) {
 
     $_SESSION['message'] = "Aktivitas berhasil ditambahkan!";
     $_SESSION['msg_type'] = "success";
-    header("Location: aktivitas_galeri.php");
+    header("Location: aktivitas.php");
     exit;
 }
 
