@@ -15,8 +15,6 @@ if (!in_array($_SESSION['role'], ['admin_sistem'])) {
 
 $username = $_SESSION['nama_users'] ?? 'User';
 
-<<<<<<< HEAD
-=======
 // --- Sidebar variables: make sure sidebar.php can read role and counters ---
 $role = $_SESSION['role'] ?? null;
 $pendingCount = 0;
@@ -36,7 +34,6 @@ try {
     $waitingApproval = 0;
 }
 
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 /* ============================
    READ DATA DOSEN
 ============================ */

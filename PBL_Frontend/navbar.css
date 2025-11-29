@@ -209,20 +209,6 @@
   }
 }
 
-<<<<<<< HEAD
-/* --- DROPDOWN STYLES (BARU) --- */
-
-/* Container Dropdown (di li) */
-.polinema-navbar .nav-item.dropdown {
-    position: relative; /* Wajib relative agar menu anak bisa absolute */
-}
-
-/* Menu Dropdown (Awalnya sembunyi) */
-.polinema-navbar .dropdown-menu {
-    display: none; /* Sembunyikan */
-    position: absolute;
-    top: 100%; /* Tepat di bawah menu induk */
-=======
 .polinema-navbar .nav-item.dropdown {
     position: relative;
 }
@@ -231,26 +217,12 @@
     display: none;
     position: absolute;
     top: 100%;
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
     left: 0;
     background-color: #fff;
     min-width: 200px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     border-radius: 0 0 8px 8px;
     z-index: 1000;
-<<<<<<< HEAD
-    padding: 10px 0;
-    border-top: 3px solid #0047ab; /* Aksen biru di atas dropdown */
-}
-
-/* Tampilkan Dropdown saat Hover (Desktop) */
-.polinema-navbar .nav-item.dropdown:hover .dropdown-menu {
-    display: block;
-    animation: fadeIn 0.3s ease; /* Efek muncul halus */
-}
-
-/* Animasi Fade In */
-=======
     border-top: 3px solid #0047ab;
     
     /* FIX BS5: Reset Padding, Margin, dan List Style */
@@ -268,7 +240,6 @@
     animation: fadeIn 0.3s ease;
 }
 
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -277,50 +248,6 @@
 /* Item Link dalam Dropdown */
 .polinema-navbar .dropdown-item {
     display: block;
-<<<<<<< HEAD
-    padding: 10px 20px;
-    color: #333; /* Warna teks item default */
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-
-.polinema-navbar .dropdown-item:hover {
-    background-color: rgba(0, 71, 171, 0.1); /* Biru muda saat hover */
-    color: #0047ab;
-}
-
-/* Panah Kecil di sebelah Menu Induk (Indikator Dropdown) */
-.polinema-navbar .nav-link.dropdown-toggle::after {
-    content: "▼"; /* Simbol panah */
-    font-size: 0.7em;
-    margin-left: 5px;
-    display: inline-block;
-    vertical-align: middle;
-    transition: transform 0.3s;
-}
-
-/* Putar panah saat hover */
-.polinema-navbar .nav-item.dropdown:hover .nav-link.dropdown-toggle::after {
-    transform: rotate(180deg);
-}
-
-/* Responsif Mobile: Dropdown Statis */
-@media (max-width: 768px) {
-    .polinema-navbar .dropdown-menu {
-        position: static; /* Tidak melayang di mobile */
-        box-shadow: none;
-        border-top: none;
-        padding-left: 20px; /* Indentasi anak menu */
-        background-color: #f8f9fa;
-        display: none; /* Tetap sembunyi, butuh JS/Click untuk buka */
-    }
-    
-    /* Tampilkan menu di mobile saat class 'show' ditambahkan (butuh JS sederhana) */
-    .polinema-navbar .nav-item.dropdown.show .dropdown-menu {
-        display: block;
-=======
     width: 100%; /* Pastikan lebar penuh */
     padding: 10px 20px !important; /* Paksa padding konsisten */
     color: #333 !important; /* Warna teks hitam */
@@ -352,6 +279,5 @@
         display: none;
         width: 100%;
         text-align: center;
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
     }
 }

@@ -38,12 +38,7 @@ if ($cssHref) {
     <div class="footer-content">
       <div class="footer-col-1">
         <div class="footer-logo-area">
-<<<<<<< HEAD
-          <!-- adjust src if image path differs -->
-          <img src="/PBL_Frontend/images/logo-ivss.png" alt="Logo" class="footer-logo-img" style="width:72px">
-=======
           <img src="../images/lablogo.png" alt="Logo" class="footer-logo-img" style="width:72px">
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
           <div class="footer-brand-text">
             <h3>LABORATORIUM <br><span>IVSS</span></h3>
           </div>
