@@ -13,7 +13,8 @@
 
 <body>
     <?php include 'PBL_Frontend/navbar.php'; ?>
-<div class="banner1"> </div>
+    <div class="banner1">
+    </div>
     <div class="content">
         <div class="container">
             <div class="tag1">
@@ -75,7 +76,6 @@
                     </div>
                 </div>
         </div>
-
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.js"></script>
 </body>

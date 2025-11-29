@@ -70,8 +70,8 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				<div class="slid banner1">				  
 				  <div class="caption">
 					<h3>Intelligent Vision and Smart Systems</h3>
-					<p>Intelligent Vision and Smart Systems</p>
-					<a class="hvr-bounce-to-left btn-kontak" href="#">Kontak Kami</a>
+					<p>Sistem Visi Cerdas dan Sistem Pintar</p>
+					<a class="hvr-bounce-to-left btn-kontak" href="PBL_Frontend/profilLab.php">Kenali Kami Lebih Lanjut</a>
 					<i class="fa fa-envelope"></i>
 					</div>
 				</div>
@@ -106,7 +106,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 			<div class="specialty-grids-top">
 				<div class="col-md-4 service-box" style="visibility: visible;">
 					<figure class="icon">
-						<img src="Asset/Rosa-Andrie-Asmara_2.jpg" alt="Alat 1">
+						<img src="Asset/perlab2.jpg" alt="Alat 1">
 					</figure>
 					<h5>Proin eget ipsum ultrices</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
@@ -120,7 +120,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				</div>
 				<div class="col-md-4 service-box wow bounceIn animated" data-wow-delay="0.4s" style="visibility: visible;">
 					<figure class="icon">
-						<img src="Asset/IMG_20251105_123108.jpg">
+						<img src="Asset/perlab1.jpg">
 					</figure>
 					<h5>Proin eget ipsum ultrices</h5>
 					<p>Sed ut perspiciis iste natus error sit voluptatem accusantium doloremque laudantium elerisque ipsum vehicula pharetra laoreet.</p>
@@ -213,10 +213,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					 <img src="Asset/pp.png" alt=""/>
 					 <h3><a href="https://jti.polinema.ac.id/jurusan-teknologi-informasi-politeknik-negeri-malang-berhasil-meraih-juara-2-umum-pada-kompetensi-mahasiswa-informatika-politeknik-nasional-kmipn-2025-yang-berlangsung-pada-tanggal-13-16-oktober-2/" target="_blank">Jurusan Teknologi Informasi Politeknik Negeri Malang berhasil meraih juara 2 umum pada Kompetensi Mahasiswa Informatika Politeknik Nasional (KMIPN) 2025 yang berlangsung pada tanggal 13 – 16 Oktober 2025 di Politeknik Negeri Padang dengan perolehan 1 emas, 1 perak dan 1 perunggu</a></h3>
 					 <p>Dengan penuh kebanggaan dan rasa syukur, Jurusan Teknologi Informasi Politeknik Negeri Malang (TI Polinema) kembali menorehkan prestasi gemilang di tingkat</p>
-<<<<<<< HEAD
-=======
-					 <div class="more"><a href="https://jti.polinema.ac.id/jurusan-teknologi-informasi-politeknik-negeri-malang-berhasil-meraih-juara-2-umum-pada-kompetensi-mahasiswa-informatika-politeknik-nasional-kmipn-2025-yang-berlangsung-pada-tanggal-13-16-oktober-2/" target="_blank">> Read More</a></div>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 				 </div>
 			 </div>
 			 <div class="col-md-4 event-grid-sec">
@@ -227,10 +223,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					 <img src="Asset/peng.png" alt=""/>
 					 <h3><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-politeknik-negeri-malang-raih-juara-3-hackathon-it-fest-2025-yang-diselenggarakan-oleh-himpunan-jurusan-teknologi-informasi-politeknik-negeri-samarinda/" target="_blank">Mahasiswa Jurusan Teknologi Informasi Politeknik Negeri Malang Raih Juara 3 Hackathon – IT Fest 2025 yang diselenggarakan oleh Himpunan Jurusan Teknologi Informasi Politeknik Negeri Samarinda</a></h3>
 					 <p>Malang, 30 Oktober 2025 – Kabar membanggakan datang dari Jurusan Teknologi Informasi Politeknik Negeri Malang! Tim terbaik kita berhasil meraih Juara</p>
-<<<<<<< HEAD
-=======
-					 <div class="more"><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-politeknik-negeri-malang-raih-juara-3-hackathon-it-fest-2025-yang-diselenggarakan-oleh-himpunan-jurusan-teknologi-informasi-politeknik-negeri-samarinda/" target="_blank">> Read More</a></div>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 				 </div>
 			 </div>
 			 <div class="col-md-4 event-grid-sec">
@@ -241,10 +233,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 					 <img src="Asset/asd.png" alt=""/>
 					 <h3><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-kembali-menorehkan-prestasi-membanggakan-dalam-ajang-creanomic-2025-yang-diselenggarakan-oleh-bem-fakultas-vokasi-universitas-brawijaya/" target="_blank">Mahasiswa Jurusan Teknologi Informasi kembali menorehkan prestasi membanggakan dalam ajang CREANOMIC 2025 yang diselenggarakan oleh BEM Fakultas Vokasi Universitas Brawijaya</a></h3>
 					 <p>Selamat untuk Tim Delta Dev – Juara 1 CREANOMIC 2025! Kabar membanggakan kembali datang dari Jurusan Teknologi Informasi Politeknik Negeri</p>
-<<<<<<< HEAD
-=======
-					 <div class="more"><a href="https://jti.polinema.ac.id/mahasiswa-jurusan-teknologi-informasi-kembali-menorehkan-prestasi-membanggakan-dalam-ajang-creanomic-2025-yang-diselenggarakan-oleh-bem-fakultas-vokasi-universitas-brawijaya/" target="_blank">> Read More</a></div>
->>>>>>> 90301ecd3d451330be25094abe264ab394e9b779
 				 </div>
 			 </div>
 			 <div class="clearfix"></div>
@@ -254,7 +242,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 
 <?php include __DIR__ . '/PBL_Frontend/footer.php'; ?>
 
-<!-- tetapkan skrip UItoTop dan anchor (tidak dihapus) -->
 <script type="text/javascript">
         $(document).ready(function() {
         $().UItoTop({ easingType: 'easeOutQuart' });

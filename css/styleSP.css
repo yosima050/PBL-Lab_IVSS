@@ -1,7 +1,14 @@
+.body {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+}
+
 .banner1{
 	background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
 	background-size:cover;
-	min-height:300px;
+	min-height:250px;
 }
 
 .content{
@@ -48,9 +55,16 @@
     margin-right: 10px;
 }
 
+.container1 {
+    width: 100%;;
+}
+
 .bangzek {
-    margin-top: 20px;
-    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+    padding: 10px 0;
 }
 
 .btn-outline-primary {
