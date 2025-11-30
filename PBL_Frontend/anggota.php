@@ -1,19 +1,49 @@
 <?php
-$team_members = [
-    'member1.jpg', // Ganti dengan path gambar
-    // ... dan seterusnya
-];
+// 1. HUBUNGKAN KE DATABASE
+include '../dashboard/db.php'; // Pastikan file koneksi.php sudah ada
 
+// 2. LOGIKA PENGAMBILAN DATA DOSEN (TEAM MEMBER)
+try {
+    // Mengambil maksimal 7 dosen untuk ditampilkan di lingkaran atas
+    // Diurutkan berdasarkan ID atau urutan tertentu
+    $stmt_dosen = $pdo->prepare("SELECT id_dosen, nama_dosen, foto_dosen FROM public.dosen ORDER BY id_dosen ASC LIMIT 7");
+    $stmt_dosen->execute();
+    $team_members = $stmt_dosen->fetchAll();
+} catch (PDOException $e) {
+    $team_members = []; // Jika error, set array kosong agar tidak crash
+    echo "Error fetching dosen: " . $e->getMessage();
+}
+
+// 3. LOGIKA PENGAMBILAN DATA MAHASISWA & PENCARIAN
+$keyword = isset($_GET['q']) ? $_GET['q'] : '';
+$search_param = "%" . $keyword . "%";
+
+try {
+    // Query mengambil data mahasiswa dari tabel pendaftaran
+    // Filter berdasarkan Nama atau NIM jika ada pencarian
+    $sql_mhs = "SELECT * FROM public.pendaftaran 
+                WHERE nama_mahasiswa ILIKE :keyword 
+                OR nim ILIKE :keyword 
+                ORDER BY nama_mahasiswa ASC";
+    
+    $stmt_mhs = $pdo->prepare($sql_mhs);
+    $stmt_mhs->execute(['keyword' => $search_param]);
+    $mahasiswa_list = $stmt_mhs->fetchAll();
+} catch (PDOException $e) {
+    $mahasiswa_list = [];
+    echo "Error fetching mahasiswa: " . $e->getMessage();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team & Student List (Tampilan Desktop Full Lebar)</title>
+    <title>Team & Student List - Lab IVSS</title>
 
-    <!-- stylesheet navbar (pastikan file ada di folder yang sama) -->
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="footer.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -21,11 +51,8 @@ $team_members = [
     <style>
         :root {
             --color-dark-blue: #0047AB;
-            --color-light-blue: #F5F9FF
-;
-
+            --color-light-blue: #F5F9FF;
             --color-table-header-border: var(--color-dark-blue);
-
             --color-table-striped: var(--color-light-blue);
         }
 
@@ -51,13 +78,22 @@ $team_members = [
             }
         }
         
+        /* Styling untuk Lingkaran Foto */
         .team-member-circle {
             width: 100px;
             height: 90px;
             object-fit: cover;
             border-radius: 50%;
             border: 3px solid #f8f9fa;
+            transition: transform 0.2s; /* Efek hover */
         }
+        
+        /* Efek saat foto disorot mouse */
+        .rounded-avatar-wrapper:hover .team-member-circle {
+            transform: scale(1.1);
+            border-color: #0047AB;
+        }
+
         .team-member-container {
             display: flex;
             flex-wrap: wrap;
@@ -103,12 +139,13 @@ $team_members = [
             font-weight: normal;
         }
         .table-custom-layout tbody tr:nth-child(odd) td {
-            background-color: #F5F9FF
+            background-color: #F5F9FF;
         }
         .table-custom-layout tbody tr:nth-child(even) td {
             background-color: #fff;
         }
 
+        /* Mengatur lebar kolom agar seimbang */
         .table-custom-layout th:nth-child(1), .table-custom-layout td:nth-child(1),
         .table-custom-layout th:nth-child(2), .table-custom-layout td:nth-child(2),
         .table-custom-layout th:nth-child(3), .table-custom-layout td:nth-child(3),
@@ -116,6 +153,7 @@ $team_members = [
         .table-custom-layout th:nth-child(5), .table-custom-layout td:nth-child(5) {
             width: 20%; 
         }
+        
         .input-search-custom {
             border-right: 1px solid #ced4da !important; 
             border-color: #ced4da;
@@ -150,12 +188,19 @@ $team_members = [
             border-radius: 50%;
             padding: 2px;
             border: 1px solid #adb5bd;
+            cursor: pointer; /* Indikator bisa diklik */
+        }
+        
+        /* Link styling agar tidak merusak layout */
+        a.member-link {
+            text-decoration: none;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
 
-<?php include __DIR__ . '/navbar.php'; ?>
+<?php include 'navbar.php'; ?>
 
 <div class="banner1"> </div>
 
@@ -167,41 +212,23 @@ $team_members = [
     
     <div class="team-member-container">
         <div class="row w-100 justify-content-center">
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/4e73df/ffffff?text=M1" class="team-member-circle" alt="Member 1">
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/e74a3b/ffffff?text=M2" class="team-member-circle" alt="Member 2">
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/1cc88a/ffffff?text=M3" class="team-member-circle" alt="Member 3">
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/36b9cc/ffffff?text=M4" class="team-member-circle" alt="Member 4">
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/f6c23e/ffffff?text=M5" class="team-member-circle" alt="Member 5">
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/858796/ffffff?text=M6" class="team-member-circle" alt="Member 6">
-                </div>
-            </div>
-            <div class="col-auto">
-                <div class="rounded-avatar-wrapper">
-                    <img src="https://via.placeholder.com/70/6f42c1/ffffff?text=M7" class="team-member-circle" alt="Member 7">
-                </div>
-            </div>
+            
+            <?php if (count($team_members) > 0): ?>
+                <?php foreach ($team_members as $member): ?>
+                    <div class="col-auto">
+                        <a href="detail_dosen.php?id=<?= $member['id_dosen']; ?>" class="member-link" title="<?= htmlspecialchars($member['nama_dosen']); ?>">
+                            <div class="rounded-avatar-wrapper">
+                                <img src="<?= htmlspecialchars($member['foto_dosen']); ?>" 
+                                     class="team-member-circle" 
+                                     alt="<?= htmlspecialchars($member['nama_dosen']); ?>"
+                                     onerror="this.src='../Asset/default_profile.jpg';"> </div>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center">Data anggota tim belum tersedia.</div>
+            <?php endif; ?>
+
         </div>
     </div>
     
@@ -209,20 +236,24 @@ $team_members = [
         Mahasiswa
     </div>
 
-    <div class="row search-filter-row align-items-center">
-        <div class="col-12 d-flex justify-content-between">
-            
-            <div class="input-group-custom me-2" style="max-width: 300px;"> 
-                <i class="fas fa-search"></i>
-                <input type="text" class="form-control input-search-custom" placeholder="Cari Kategori...">
+    <form action="" method="GET">
+        <div class="row search-filter-row align-items-center">
+            <div class="col-12 d-flex justify-content-between">
+                
+                <div class="input-group-custom me-2" style="max-width: 300px;"> 
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" class="form-control input-search-custom" 
+                           placeholder="Cari Nama / NIM..." 
+                           value="<?= htmlspecialchars($keyword); ?>">
+                </div>
+                
+                <button class="btn btn-filter-custom" type="submit">
+                    <i class="fas fa-filter"></i> Cari
+                </button>
+                
             </div>
-            
-            <button class="btn btn-filter-custom" type="button">
-                <i class="fas fa-filter"></i> Filter
-            </button>
-            
         </div>
-    </div>
+    </form>
     
     <div class="table-responsive">
         <table class="table table-custom-layout">
@@ -236,24 +267,28 @@ $team_members = [
                 </tr>
             </thead>
             <tbody>
-                <?php
-                for ($i = 0; $i < 15; $i++):
-                ?>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <?php endfor; ?>
+                <?php if (count($mahasiswa_list) > 0): ?>
+                    <?php foreach ($mahasiswa_list as $mhs): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($mhs['nim']); ?></td>
+                        <td><?= htmlspecialchars($mhs['nama_mahasiswa']); ?></td>
+                        <td>Teknologi Informasi</td> 
+                        <td><?= htmlspecialchars($mhs['prodi']); ?></td>
+                        <td><?= htmlspecialchars($mhs['status_mahasiswa']); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data mahasiswa ditemukan.</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 
 </div>
 
-<?php include __DIR__ . '/footer.php'; ?>
+<?php include 'footer.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
