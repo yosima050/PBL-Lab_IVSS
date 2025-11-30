@@ -1,9 +1,58 @@
+<?php
+include 'dashboard/db.php'; 
+
+$id_dosen = isset($_GET['id']) ? intval($_GET['id']) : 9;
+
+try {
+    // 3. QUERY MENGGUNAKAN PDO (Lebih Aman)
+    $stmt = $pdo->prepare("SELECT * FROM public.dosen WHERE id_dosen = :id");
+    $stmt->execute(['id' => $id_dosen]);
+    $row = $stmt->fetch();
+
+    if (!$row) {
+        die("Data dosen dengan ID $id_dosen tidak ditemukan di database.");
+    }
+
+    $pendidikan_list = [];
+    if (!empty($row['pendidikan_dosen']) && $row['pendidikan_dosen'] != '-') {
+        $pendidikan_list = explode(',', $row['pendidikan_dosen']);
+    }
+
+    $sertifikasi_list = [];
+    if (!empty($row['sertifikasi_dosen']) && $row['sertifikasi_dosen'] != '-') {
+        $sertifikasi_list = explode(',', $row['sertifikasi_dosen']);
+    }
+
+    $mk_raw = $row['mata_kuliah_dosen'];
+    $mk_genap = [];
+    $mk_ganjil = [];
+
+    if (!empty($mk_raw) && $mk_raw != '-') {
+        $semesters = explode(';', $mk_raw);
+        
+        foreach ($semesters as $sem) {
+            $sem = trim($sem);
+            if (stripos($sem, 'Semester Genap') !== false) {
+                $clean = str_ireplace('Semester Genap', '', $sem);
+                $mk_genap = explode(',', trim($clean));
+            } elseif (stripos($sem, 'Semester Ganjil') !== false) {
+                $clean = str_ireplace('Semester Ganjil', '', $sem);
+                $mk_ganjil = explode(',', trim($clean));
+            }
+        }
+    }
+
+} catch (PDOException $e) {
+    die("Error Query: " . $e->getMessage());
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Dosen - Lab IVSS</title>
+    <title>Profil Dosen - <?= htmlspecialchars($row['nama_dosen']); ?></title>
 
     <link rel="stylesheet" href="css/bootstrap.css">
     <link href="dashboard/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -29,7 +78,6 @@
             margin-top: 30px;
             margin-bottom: 30px;
             border: 1px solid #e3e6f0;
-            font-family: "Roboto";
         }
 
         /* Styling Foto Profil */
@@ -60,6 +108,7 @@
             margin-bottom: 15px;
             font-size: 0.95rem;
             line-height: 1.4;
+            word-wrap: break-word;
         }
         .contact-list {
             list-style: none;
@@ -160,21 +209,21 @@
                 
                 <div class="col-md-4 border-right-custom">
                     <div class="profile-img-box">
-                        <img src="Asset/unnamed.jpg" alt="Foto Profil Dosen">
+                        <img src="<?= htmlspecialchars($row['foto_dosen']); ?>" alt="Foto Profil Dosen" onerror="this.src='Asset/default_profile.jpg';">
                     </div>
 
                     <div class="mb-3">
                         <div class="sidebar-label">NIP</div>
-                        <div class="sidebar-value">19780327200312200</div>
+                        <div class="sidebar-value"><?= htmlspecialchars($row['nip']); ?></div>
                         
                         <div class="sidebar-label">NIDN</div>
-                        <div class="sidebar-value">4314058001</div>
+                        <div class="sidebar-value"><?= htmlspecialchars($row['nidn_dosen']); ?></div>
 
                         <div class="sidebar-label">Program Studi</div>
-                        <div class="sidebar-value">Rekayasa Teknologi Informasi</div>
+                        <div class="sidebar-value"><?= htmlspecialchars($row['prodi_dosen']); ?></div>
 
                         <div class="sidebar-label">Jabatan</div>
-                        <div class="sidebar-value">Ketua Laboratorium IVSS</div>
+                        <div class="sidebar-value"><?= htmlspecialchars($row['jabatan_dosen']); ?></div>
                     </div>
 
                     <hr class="divider">
@@ -184,15 +233,11 @@
                         <ul class="contact-list">
                             <li>
                                 <strong>EMAIL:</strong><br>
-                                rosiani@polinema.ac.id
+                                <?= htmlspecialchars($row['email_dosen']); ?>
                             </li>
                             <li>
                                 <strong>Alamat Kantor:</strong><br>
-                                Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141
-                            </li>
-                            <li>
-                                <strong>Website:</strong><br>
-                                -
+                                <?= htmlspecialchars($row['alamat_kantor']); ?>
                             </li>
                         </ul>
                     </div>
@@ -200,60 +245,88 @@
 
                 <div class="col-md-8 pl-md-4">
                     
-                    <h1 class="profile-name">Dr. Ulla Delfana Rosiani, ST., MT.</h1>
+                    <h1 class="profile-name"><?= htmlspecialchars($row['nama_dosen']); ?></h1>
                     
-                    <div class="tag-badge">Information System</div>
+                    <?php 
+                        $riset_items = explode(',', $row['bidang_riset']);
+                        foreach($riset_items as $riset): 
+                            if(trim($riset) != '-'):
+                    ?>
+                        <div class="tag-badge"><?= htmlspecialchars(trim($riset)); ?></div>
+                    <?php endif; endforeach; ?>
 
                     <div class="social-btn-group mb-4">
-                        <a href="https://www.linkedin.com/" target="_blank" class="btn btn-outline-primary btn-sm">LinkedIn</a>
-                        <a href="https://scholar.google.com/" target="_blank" class="btn btn-outline-primary btn-sm">Google Scholar</a>
-                        <a href="https://sinta.kemdiktisaintek.go.id/home/index/" target="_blank" class="btn btn-outline-primary btn-sm">Sinta</a>
-                        <a href="https://rosiani@polinema.ac.id" target="_blank" class="btn btn-outline-primary btn-sm">Email</a>
-                        <a href="#" target="_blank" class="btn btn-outline-primary btn-sm">CV</a>
-                </div>
+                        <?php if(!empty($row['link_linkedin']) && $row['link_linkedin'] != '-'): ?>
+                            <a href="<?= htmlspecialchars($row['link_linkedin']); ?>" target="_blank" class="btn btn-outline-primary btn-sm">LinkedIn</a>
+                        <?php endif; ?>
+                        
+                        <?php if(!empty($row['link_google_scholar']) && $row['link_google_scholar'] != '-'): ?>
+                            <a href="<?= htmlspecialchars($row['link_google_scholar']); ?>" target="_blank" class="btn btn-outline-primary btn-sm">Google Scholar</a>
+                        <?php endif; ?>
+                        
+                        <?php if(!empty($row['link_sinta']) && $row['link_sinta'] != '-'): ?>
+                            <a href="<?= htmlspecialchars($row['link_sinta']); ?>" target="_blank" class="btn btn-outline-primary btn-sm">Sinta</a>
+                        <?php endif; ?>
+
+                        <a href="mailto:<?= htmlspecialchars($row['email_dosen']); ?>" class="btn btn-outline-primary btn-sm">Email</a>
+                    </div>
 
                     <div class="section-title">Pendidikan, Sertifikasi & Mata Kuliah</div>
 
                     <div class="info-card">
                         <h5>Pendidikan</h5>
                         <ul>
-                            <li>
-                                <span><strong>S3 - Doktor</strong><br>
-                                Institut Teknologi Sepuluh Nopember (2021)</span>
-                            </li>
-                            <li>
-                                <span><strong>S2 - Magister Teknik</strong><br>
-                                Universitas Brawijaya (2010)</span>
-                            </li>
-                            <li>
-                                <span><strong>S1 - Sarjana Teknik</strong><br>
-                                Universitas Brawijaya (2001)</span>
-                            </li>
+                            <?php if (!empty($pendidikan_list)): ?>
+                                <?php foreach ($pendidikan_list as $pendidikan): ?>
+                                    <li>
+                                        <span><?= htmlspecialchars(trim($pendidikan)); ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li><span>Data pendidikan belum tersedia.</span></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
 
                     <div class="info-card">
                         <h5>Sertifikasi</h5>
                         <ul>
-                            <li><span>-</span></li>
+                            <?php if (!empty($sertifikasi_list)): ?>
+                                <?php foreach ($sertifikasi_list as $sertifikat): ?>
+                                    <li>
+                                        <span><?= htmlspecialchars(trim($sertifikat)); ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li><span>-</span></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
 
                     <div class="info-card">
                         <h5>Mata Kuliah</h5>
                         
-                        <div class="mb-2" style="color:#0047AB; font-weight:600;">Semester Genap</div>
-                        <ul>
-                            <li><span>Pengembangan Karir</span></li>
-                            <li><span>Analisis Proses Bisnis</span></li>
-                        </ul>
+                        <?php if (!empty($mk_genap)): ?>
+                            <div class="mb-2" style="color:#0047AB; font-weight:600;">Semester Genap</div>
+                            <ul>
+                                <?php foreach ($mk_genap as $mk): ?>
+                                    <li><span><?= htmlspecialchars(trim($mk)); ?></span></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
 
-                        <div class="mt-3 mb-2" style="color:#0047AB; font-weight:600;">Semester Ganjil</div>
-                        <ul>
-                            <li><span>Pengantar Akuntasi, Manajemen, dan Bisnis</span></li>
-                            <li><span>Manajemen Produk</span></li>
-                            <li><span>Kewirausahaan Berbasis Teknologi</span></li>
-                        </ul>
+                        <?php if (!empty($mk_ganjil)): ?>
+                            <div class="mt-3 mb-2" style="color:#0047AB; font-weight:600;">Semester Ganjil</div>
+                            <ul>
+                                <?php foreach ($mk_ganjil as $mk): ?>
+                                    <li><span><?= htmlspecialchars(trim($mk)); ?></span></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+
+                        <?php if (empty($mk_genap) && empty($mk_ganjil)): ?>
+                            <ul><li><span>Data mata kuliah belum tersedia.</span></li></ul>
+                        <?php endif; ?>
                     </div>
 
                 </div>

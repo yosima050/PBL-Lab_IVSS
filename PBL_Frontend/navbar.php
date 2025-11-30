@@ -42,7 +42,7 @@ if (!function_exists('is_active')) {
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['../PBL_Frontend/anggota.php','../PBL_Frontend/dosen.php','../Sorotan_Publikasi.php','../PBL_Frontend/produk.php']) ?>">Anggota & Riset</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['../PBL_Frontend/anggota.php','../PBL_Frontend/dosen.php','../Sorotan_Publikasi.php','../PBL_Frontend/produk.php', '../Profil_dosen.php']) ?>">Anggota & Riset</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="../PBL_Frontend/anggota.php">Anggota Lab</a></li>
                             <li><a class="dropdown-item" href="../PBL_Frontend/anggota.php">Dosen Peneliti</a></li>
