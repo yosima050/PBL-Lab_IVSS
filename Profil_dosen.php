@@ -29,6 +29,7 @@
             margin-top: 30px;
             margin-bottom: 30px;
             border: 1px solid #e3e6f0;
+            font-family: "Roboto";
         }
 
         /* Styling Foto Profil */
