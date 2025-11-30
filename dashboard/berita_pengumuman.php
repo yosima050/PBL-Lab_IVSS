@@ -215,8 +215,9 @@ $pendingCount = $waitingApproval = 0;
             <!-- End Topbar -->
 
             <div class="container-fluid">
-                <h1 class="h3 mb-4 text-gray-800">Berita / Pengumuman</h1>
 
+                <h1 class="h3 mb-4 text-gray-800">Berita / Pengumuman</h1>
+                <!-- ALERT -->
                 <?php if (isset($_SESSION['message'])): ?>
                     <div class="alert alert-<?= $_SESSION['msg_type'] ?> alert-dismissible fade show" role="alert">
                         <?= $_SESSION['message'] ?>
