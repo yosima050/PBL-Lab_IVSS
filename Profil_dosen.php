@@ -4,7 +4,6 @@ include 'dashboard/db.php';
 $id_dosen = isset($_GET['id']) ? intval($_GET['id']) : 9;
 
 try {
-    // 3. QUERY MENGGUNAKAN PDO (Lebih Aman)
     $stmt = $pdo->prepare("SELECT * FROM public.dosen WHERE id_dosen = :id");
     $stmt->execute(['id' => $id_dosen]);
     $row = $stmt->fetch();
@@ -78,6 +77,7 @@ try {
             margin-top: 30px;
             margin-bottom: 30px;
             border: 1px solid #e3e6f0;
+            font-family: "Roboto", sans-serif;
         }
 
         /* Styling Foto Profil */
