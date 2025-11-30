@@ -33,10 +33,12 @@ try {
             $sem = trim($sem);
             if (stripos($sem, 'Semester Genap') !== false) {
                 $clean = str_ireplace('Semester Genap', '', $sem);
-                $mk_genap = explode(',', trim($clean));
+                $clean = trim($clean, " ,;"); 
+                $mk_genap = explode(',', $clean);
             } elseif (stripos($sem, 'Semester Ganjil') !== false) {
                 $clean = str_ireplace('Semester Ganjil', '', $sem);
-                $mk_ganjil = explode(',', trim($clean));
+                $clean = trim($clean, " ,;");
+                $mk_ganjil = explode(',', $clean);
             }
         }
     }
@@ -306,20 +308,24 @@ try {
                     <div class="info-card">
                         <h5>Mata Kuliah</h5>
                         
-                        <?php if (!empty($mk_genap)): ?>
+                        <?php if (!empty($mk_genap) && count($mk_genap) > 0 && $mk_genap[0] != ""): ?>
                             <div class="mb-2" style="color:#0047AB; font-weight:600;">Semester Genap</div>
                             <ul>
                                 <?php foreach ($mk_genap as $mk): ?>
-                                    <li><span><?= htmlspecialchars(trim($mk)); ?></span></li>
+                                    <?php if(trim($mk) != ''):  ?>
+                                        <li><span><?= htmlspecialchars(trim($mk)); ?></span></li>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </ul>
                         <?php endif; ?>
 
-                        <?php if (!empty($mk_ganjil)): ?>
+                        <?php if (!empty($mk_ganjil) && count($mk_ganjil) > 0 && $mk_ganjil[0] != ""): ?>
                             <div class="mt-3 mb-2" style="color:#0047AB; font-weight:600;">Semester Ganjil</div>
                             <ul>
                                 <?php foreach ($mk_ganjil as $mk): ?>
-                                    <li><span><?= htmlspecialchars(trim($mk)); ?></span></li>
+                                    <?php if(trim($mk) != ''):  ?>
+                                        <li><span><?= htmlspecialchars(trim($mk)); ?></span></li>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </ul>
                         <?php endif; ?>
