@@ -91,8 +91,6 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				 <p>Sebuah ruang kolaborasi di mana kami mengeksplorasi masa depan kecerdasan buatan. Kami percaya pada kekuatan mesin yang tidak hanya dapat melihat lingkungannya dengan cerdas, tetapi juga memahami, mempelajari,
 					dan mengambil keputusan autonom untuk menyelesaikan masalah yang kompleks. Inilah tempat di mana data visual dan algoritma cerdas bertemu, membentuk solusi inovatif untuk tantangan dunia nyata.
 				 </p>
-				 <p>Visi Komputer (Computer Vision): Meneliti dan mengembangkan algoritma untuk memahami, menganalisis, dan memproses informasi visual dari dunia nyata, seperti pengenalan objek, klasifikasi citra, dan segmentasi.</p>
-				 <p>Sistem Cerdas (Intelligent Systems): Merancang dan membangun sistem yang mengintegrasikan kecerdasan buatan, pembelajaran mesin, dan logika untuk menciptakan solusi otonom dan adaptif yang dapat menyelesaikan masalah kompleks.</p>
 			 </div>
 			 <div class="clearfix"></div>
 		 </div>
