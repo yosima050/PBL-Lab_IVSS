@@ -9,6 +9,7 @@
     <link href="dashboard/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/styleSP.css">
     <link rel="stylesheet" href="PBL_Frontend/navbar.css">
+    <link rel="stylesheet" href="PBL_Frontend/footer.css">
 </head>
 
 <body>
@@ -79,9 +80,10 @@
 
         <div class="pagination">
             <button>◄ Previous</button>
-            <span>1-4 of 79</span>
+            <span>1-6 of 79</span>
             <button>Next ►</button>
         </div>
     </div>
+    <?php include 'PBL_Frontend/footer.php'; ?>
 </body>
 </html>
