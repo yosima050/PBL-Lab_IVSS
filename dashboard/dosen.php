@@ -38,7 +38,7 @@ try {
    READ DATA DOSEN
 ============================ */
 try {
-    $stmt = $pdo->query("SELECT * FROM dosen ORDER BY id_dosen ASC");
+    $stmt = $pdo->query("SELECT * FROM mv_dosen ORDER BY id_dosen ASC");
     $dosen = $stmt->fetchAll();
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
