@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <link href="dashboard/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/styleube.css">
-    <link rel="stylesheet" href="PBL_Frontend/navbar.css">
+    <link rel="stylesheet" href="navbar.css">
 
     <style>
         body.bg-profile {
@@ -143,7 +143,7 @@
 </head>
 <body>
 
-    <?php include 'PBL_Frontend/navbar.php'; ?>
+    <?php include 'navbar.php'; ?>
 
     <div class="container">
         <div class="profile-container">

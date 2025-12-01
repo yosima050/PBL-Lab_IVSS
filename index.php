@@ -11,7 +11,7 @@ session_start();
 
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <link href="css/styleube.css" rel='stylesheet' type='text/css' />
-<link href="PBL_Frontend/navbar.css" rel='stylesheet' type='text/css' />
+<link href="navbar.css" rel='stylesheet' type='text/css' />
 
 <script src="js/bootstrap.js"></script>
 
@@ -48,7 +48,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 }
 ?>
 
-<?php include 'PBL_Frontend/navbar.php'; ?>
+<?php include 'navbar.php'; ?>
 <script src="js/responsiveslides.min.js"></script>
 <script>
     $(function () {
@@ -71,7 +71,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 				  <div class="caption">
 					<h3>Intelligent Vision and Smart Systems</h3>
 					<p>Sistem Visi Cerdas dan Sistem Pintar</p>
-					<a class="hvr-bounce-to-left btn-kontak" href="PBL_Frontend/profilLab.php">Kenali Kami Lebih Lanjut</a>
+					<a class="hvr-bounce-to-left btn-kontak" href="profilLab.php">Kenali Kami Lebih Lanjut</a>
 					<i class="fa fa-envelope"></i>
 					</div>
 				</div>
@@ -239,7 +239,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 	 </div>
 </div>
 
-<?php include __DIR__ . '/PBL_Frontend/footer.php'; ?>
+<?php include __DIR__ . '/footer.php'; ?>
 
 <script type="text/javascript">
         $(document).ready(function() {

@@ -1,6 +1,6 @@
 <?php
 // 1. HUBUNGKAN KE DATABASE
-include '../dashboard/db.php'; // Pastikan file koneksi.php sudah ada
+include 'dashboard/db.php'; // Pastikan file koneksi.php sudah ada
 
 // 2. LOGIKA PENGAMBILAN DATA DOSEN (TEAM MEMBER)
 try {
@@ -57,7 +57,7 @@ try {
         }
 
         .banner1{
-            background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
+            background:url(Asset/Coba.jpg) no-repeat 0px 0px;
             background-size:cover;
             min-height:250px;
         }
@@ -221,7 +221,7 @@ try {
                                 <img src="<?= htmlspecialchars($member['foto_dosen']); ?>" 
                                      class="team-member-circle" 
                                      alt="<?= htmlspecialchars($member['nama_dosen']); ?>"
-                                     onerror="this.src='../Asset/default_profile.jpg';"> </div>
+                                     onerror="this.src='Asset/default_profile.jpg';"> </div>
                         </a>
                     </div>
                 <?php endforeach; ?>

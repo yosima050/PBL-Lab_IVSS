@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <link href="dashboard/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/styleSP.css">
-    <link rel="stylesheet" href="PBL_Frontend/navbar.css">
-    <link rel="stylesheet" href="PBL_Frontend/footer.css">
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="footer.css">
 </head>
 
 <body>
-    <?php include 'PBL_Frontend/navbar.php'; ?>
+    <?php include 'navbar.php'; ?>
     <div class="banner1">
     </div>
     <body>
@@ -84,6 +84,6 @@
             <button>Next ►</button>
         </div>
     </div>
-    <?php include 'PBL_Frontend/footer.php'; ?>
+    <?php include 'footer.php'; ?>
 </body>
 </html>

@@ -155,7 +155,7 @@ span.menu {
   top: 0;
   }
 .banner1{
-	background:url(../Asset/Lab.jpg) no-repeat 0px 0px;
+	background:url(../../Asset/Lab.jpg) no-repeat 0px 0px;
 	background-size:cover;
 	min-height:620px;
 }
@@ -434,7 +434,7 @@ a.button {
 }
 
 .testimonial{
-  background:url(../Asset/anjay.png) no-repeat 0px -295px;
+  background:url(../../Asset/anjay.png) no-repeat 0px -295px;
   background-size:cover;
   min-height:300px;
   padding: 3em 0 4em 0;
