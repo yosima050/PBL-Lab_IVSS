@@ -103,7 +103,7 @@ function collapse_show($names) {
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= is_active('mahasiswa.php') ?>" href="mahasiswa.php">Data Mahasiswa</a>
                     <a class="collapse-item <?= is_active('dosen.php') ?>" href="dosen.php">Data Dosen &amp; Riset</a>
-                    <a class="collapse-item <?= is_active('manajemen_admin.php') ?>" href="manajemen_admin.php">Manajemen User</a>
+                    <a class="collapse-item <?= is_active('manajemen_admin.php') ?>" href="manajemen_admin.php">Manajemen Admin</a>
                 </div>
             </div>
         </li>

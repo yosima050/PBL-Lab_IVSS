@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/functions_dashboard.php';
 
 // 1. Cek Login
 if (!isset($_SESSION['user_id'])) {
@@ -17,21 +18,14 @@ $username = $_SESSION['nama_users'] ?? 'User';
 
 // --- DATA UNTUK ADMIN SISTEM ---
 if ($role == 'admin_sistem') {
-    // Pendaftar Pending (tabel: pendaftaran)
-    $stmt = $pdo->query("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
-    $pendingCount = $stmt->fetchColumn();
 
-    // Total Anggota Aktif (tabel: mahasiswa)
-    $stmt = $pdo->query("SELECT COUNT(*) FROM mahasiswa JOIN pendaftaran ON mahasiswa.id_pendaftaran = pendaftaran.id_pendaftaran WHERE pendaftaran.status_mahasiswa = 'Aktif'");
-    $totalMembers = $stmt->fetchColumn();
+    $pendingCount = getPendingPendaftar($pdo);
 
-    // Total Dosen (tabel: dosen)
-    $stmt = $pdo->query("SELECT COUNT(*) FROM dosen");
-    $totalDosen = $stmt->fetchColumn();
+    $totalMembers = getTotalMahasiswaAktif($pdo);
 
-    // Total User Akun (tabel: users)
-    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
-    $totalUsers = $stmt->fetchColumn();
+    $totalDosen = getTotalDosen($pdo);
+
+    $totalUsers = getTotalUsers($pdo);
 }
 
 // --- DATA UNTUK ADMIN BERITA ---
