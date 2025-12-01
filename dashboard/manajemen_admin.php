@@ -191,7 +191,7 @@ try {
                 <footer class="sticky-footer bg-white">
                     <div class="container my-auto">
                         <div class="copyright text-center">
-                            <span>&copy; LAB IVSS</span>
+                            <span>Copyright &copy; LAB IVSS</span>
                         </div>
                     </div>
                 </footer>
