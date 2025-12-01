@@ -178,7 +178,7 @@ if (isset($_POST['tambah'])) {
 
     // insert normal (lebih simple)
     $stmt = $pdo->prepare("INSERT INTO aktivitas 
-        (judul_aktivitas, isi_aktivitas, tanggal_mulai_aktivitas, tanggal_selesai_aktivitas, tag_aktivitas, foto_galeri, created_at_aktivitas)
+        (judul_aktivitas, isi_aktivitas, tanggal_mulai_aktivitas, tanggal_selesai_aktivitas, tag_aktivitas, foto_galeri)
         VALUES (:judul, :isi, :mulai, :selesai, :tag, :foto, NOW())");
 
     $stmt->execute([
@@ -430,7 +430,6 @@ if (isset($_POST['tambah'])) {
                                     <th>Tag</th>
                                     <th>Tgl Mulai</th>
                                     <th>Tgl Selesai</th>
-                                    <th>Dibuat</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -455,7 +454,7 @@ if (isset($_POST['tambah'])) {
                                     <td><?= $d['tag_aktivitas'] ?></td>
                                     <td><?= $d['tanggal_mulai_aktivitas'] ?></td>
                                     <td><?= $d['tanggal_selesai_aktivitas'] ?></td>
-                                    <td><?= $d['created_at_aktivitas'] ?></td>
+                                    <!-- <td><?= $d['created_at_aktivitas'] ?></td> -->
                                     <td>
                                         <a href="aktivitas.php?aksi=edit&id=<?= $d['id_aktivitas'] ?>" class="btn btn-warning btn-sm">Edit</a>
                                         <a href="aktivitas.php?aksi=hapus&id=<?= $d['id_aktivitas'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')">Hapus</a>
