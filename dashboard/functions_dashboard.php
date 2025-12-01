@@ -29,4 +29,20 @@ function getTotalUsers($pdo) {
     return $stmt->fetchColumn();
 }
 
+function getTotalBerita($pdo) {
+    $stmt = $pdo->query("SELECT COUNT(*) FROM berita");
+    return $stmt->fetchColumn();
+}
+
+function getTotalAktivitas($pdo) {
+    $stmt = $pdo->query("SELECT COUNT(*) FROM aktivitas");
+    return $stmt->fetchColumn();
+}
+
+function getTotalFacilities($pdo) {
+    $stmt = $pdo->query("SELECT COUNT(*) FROM fasilitas");
+    return $stmt->fetchColumn();
+}
+
+
 ?>

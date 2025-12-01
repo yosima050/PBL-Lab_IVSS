@@ -300,7 +300,7 @@ if (isset($_POST['tambah'])) {
 
                             <div class="form-group">
                                 <label>Tanggal Mulai</label>
-                                <input type="date" name="tanggal_mulai_aktivitas" class="form-control"  readonly value="<?= $_SESSION['old_input']['tanggal_mulai_aktivitas'] ?? $d['tanggal_mulai_aktivitas'] ?? '' ?>">
+                                <input type="date" name="tanggal_mulai_aktivitas" class="form-control" readonly value="<?= $_SESSION['old_input']['tanggal_mulai_aktivitas'] ?? $d['tanggal_mulai_aktivitas'] ?? '' ?>">
                             </div>
 
                             <div class="form-group">

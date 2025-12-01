@@ -18,24 +18,24 @@ $username = $_SESSION['nama_users'] ?? 'User';
 
 // --- DATA UNTUK ADMIN SISTEM ---
 if ($role == 'admin_sistem') {
-
+    //Pending Pendaftar
     $pendingCount = getPendingPendaftar($pdo);
-
+    // Total Mahasiswa Aktif
     $totalMembers = getTotalMahasiswaAktif($pdo);
-
+    // Total Dosen
     $totalDosen = getTotalDosen($pdo);
-
+    // Total Users
     $totalUsers = getTotalUsers($pdo);
 }
 
 // --- DATA UNTUK ADMIN BERITA ---
 if ($role == 'admin_berita') {
     // Total Berita
-    $totalNews = $pdo->query("SELECT COUNT(*) FROM berita")->fetchColumn();
+    $totalNews = getTotalBerita($pdo);
     // Total Aktivitas
-    $totalActivities = $pdo->query("SELECT COUNT(*) FROM aktivitas")->fetchColumn();
+    $totalActivities = getTotalAktivitas($pdo);
     // Total Fasilitas
-    $totalFacilities = $pdo->query("SELECT COUNT(*) FROM fasilitas")->fetchColumn();
+    $totalFacilities = getTotalFacilities($pdo);
 }
 
 // --- DATA UNTUK KETUA LAB ---
