@@ -76,22 +76,41 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
     header("Location: aktivitas.php");
     exit;
 }
-
 // =======================================================
 // UPDATE
 // =======================================================
 if (isset($_POST['update'])) {
+
     $id     = $_POST['id_aktivitas'];
-    $judul  = $_POST['judul_aktivitas'];
-    $isi    = $_POST['isi_aktivitas'];
-    $mulai  = $_POST['tanggal_mulai'];
-    $selesai = $_POST['tanggal_selesai'];
+    $judul  = trim($_POST['judul_aktivitas']);
+    $isi    = trim($_POST['isi_aktivitas']);
+    $mulai  = $_POST['tanggal_mulai_aktivitas'];  // readonly
+    $selesai = $_POST['tanggal_selesai_aktivitas'];
     $tag    = $_POST['tag_aktivitas'];
 
-    // jika upload foto baru
-    if (!empty($_FILES['foto_aktivitas']['name'])) {
-        $foto = time() . "_" . preg_replace('/[^A-Za-z0-9_.-]/', '_', basename($_FILES['foto_aktivitas']['name']));
-        move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], $uploadDir . $foto);
+    // simpan input agar tidak hilang setelah error
+    $_SESSION['old_input'] = $_POST;
+
+    // VALIDASI
+    $errors = [];
+
+    if (empty($judul)) $errors[] = "Judul aktivitas wajib diisi.";
+    if (empty($mulai)) $errors[] = "Tanggal mulai wajib diisi.";
+    if (empty($selesai)) $errors[] = "Tanggal selesai wajib diisi.";
+    if (!empty($mulai) && !empty($selesai) && $mulai > $selesai)
+        $errors[] = "Tanggal selesai tidak boleh lebih kecil dari tanggal mulai.";
+
+    // Jika ada error → kembali ke form edit
+    if (!empty($errors)) {
+        $_SESSION['form_error'] = $errors;
+        header("Location: aktivitas.php?aksi=edit&id=".$id);
+        exit;
+    }
+
+    // Upload foto baru (opsional)
+    if (!empty($_FILES['foto_galeri']['name'])) {
+        $foto = time() . "_" . preg_replace('/[^A-Za-z0-9_.-]/', '_', basename($_FILES['foto_galeri']['name']));
+        move_uploaded_file($_FILES['foto_galeri']['tmp_name'], $uploadDir . $foto);
     } else {
         $foto = $_POST['foto_lama'];
     }
@@ -99,8 +118,8 @@ if (isset($_POST['update'])) {
     $stmt = $pdo->prepare("UPDATE aktivitas SET 
         judul_aktivitas = :judul,
         isi_aktivitas = :isi,
-        tanggal_mulai = :mulai,
-        tanggal_selesai = :selesai,
+        tanggal_mulai_aktivitas = :mulai,
+        tanggal_selesai_aktivitas = :selesai,
         tag_aktivitas = :tag,
         foto_galeri = :foto
         WHERE id_aktivitas = :id");
@@ -115,6 +134,8 @@ if (isset($_POST['update'])) {
         'id'    => $id
     ]);
 
+    unset($_SESSION['old_input']);
+
     $_SESSION['message'] = "Aktivitas berhasil diupdate!";
     $_SESSION['msg_type'] = "warning";
     header("Location: aktivitas.php");
@@ -125,73 +146,51 @@ if (isset($_POST['update'])) {
 // INSERT
 // =======================================================
 if (isset($_POST['tambah'])) {
-    $judul   = $_POST['judul_aktivitas'] ?? '';
-    $isi     = $_POST['isi_aktivitas'] ?? '';
-    $mulai   = $_POST['tanggal_mulai'] ?? null;
-    $selesai = $_POST['tanggal_selesai'] ?? null;
-    $tag     = $_POST['tag_aktivitas'] ?? '';
 
-    // sanitasi nama file dan simpan ke folder uploads
-    $foto = null;
-    if (!empty($_FILES['foto_aktivitas']['name'])) {
-        $safeName = preg_replace('/[^A-Za-z0-9_.-]/', '_', basename($_FILES['foto_aktivitas']['name']));
-        $foto = time() . "_" . $safeName;
-        $target = $uploadDir . $foto;
-        if (!move_uploaded_file($_FILES['foto_aktivitas']['tmp_name'], $target)) {
-            $_SESSION['message'] = "Upload gagal: tidak dapat menyimpan file.";
-            $_SESSION['msg_type'] = "danger";
-            header("Location: aktivitas.php");
-            exit;
-        }
-    }
+    $judul   = trim($_POST['judul_aktivitas']);
+    $isi     = trim($_POST['isi_aktivitas']);
+    $mulai   = $_POST['tanggal_mulai_aktivitas'];
+    $selesai = $_POST['tanggal_selesai_aktivitas'];
+    $tag     = $_POST['tag_aktivitas'];
 
-    // ambil daftar kolom yang tersedia di tabel aktivitas
-    try {
-        $colStmt = $pdo->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'aktivitas' AND table_schema = CURRENT_SCHEMA()");
-        $colStmt->execute();
-        $columns = $colStmt->fetchAll(PDO::FETCH_COLUMN);
-    } catch (Exception $e) {
-        // fallback untuk MySQL (jika driver bukan Postgres)
-        $colStmt = $pdo->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'aktivitas'");
-        $colStmt->execute();
-        $columns = $colStmt->fetchAll(PDO::FETCH_COLUMN);
-    }
+    $_SESSION['old_input'] = $_POST;
 
-    // mapping data yang mungkin akan disimpan
-    $possible = [
-        'judul_aktivitas' => $judul,
-        'isi_aktivitas' => $isi,
-        'tanggal_mulai_aktivitas' => $mulai,
-        'tanggal_selesai_aktivitas' => $selesai,
-        'tag_aktivitas' => $tag,
-        'foto_galeri' => $foto,
-        'created_at_aktivitas' => date('Y-m-d H:i:s')
-    ];
+    $errors = [];
 
-    // build insert sesuai kolom yang ada
-    $insertCols = [];
-    $placeholders = [];
-    $params = [];
+    if (empty($judul)) $errors[] = "Judul aktivitas wajib diisi.";
+    if (empty($mulai)) $errors[] = "Tanggal mulai wajib diisi.";
+    if (empty($selesai)) $errors[] = "Tanggal selesai wajib diisi.";
+    if (!empty($mulai) && !empty($selesai) && $mulai > $selesai)
+        $errors[] = "Tanggal selesai tidak boleh lebih kecil dari tanggal mulai.";
 
-    foreach ($possible as $col => $val) {
-        if (in_array($col, $columns)) {
-            $insertCols[] = $col;
-            $placeholders[] = ':' . $col;
-            // gunakan null jika nilai kosong dan kolom ada
-            $params[$col] = $val;
-        }
-    }
-
-    if (empty($insertCols)) {
-        $_SESSION['message'] = "Konfigurasi tabel aktivitas tidak mendukung insert otomatis.";
-        $_SESSION['msg_type'] = "danger";
-        header("Location: aktivitas.php");
+    if (!empty($errors)) {
+        $_SESSION['form_error'] = $errors;
+        header("Location: aktivitas.php?aksi=tambah");
         exit;
     }
 
-    $sql = "INSERT INTO aktivitas (" . implode(', ', $insertCols) . ") VALUES (" . implode(', ', $placeholders) . ")";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
+    // Upload foto
+    $foto = null;
+    if (!empty($_FILES['foto_galeri']['name'])) {
+        $foto = time() . "_" . preg_replace('/[^A-Za-z0-9_.-]/', '_', $_FILES['foto_galeri']['name']);
+        move_uploaded_file($_FILES['foto_galeri']['tmp_name'], $uploadDir . $foto);
+    }
+
+    // insert normal (lebih simple)
+    $stmt = $pdo->prepare("INSERT INTO aktivitas 
+        (judul_aktivitas, isi_aktivitas, tanggal_mulai_aktivitas, tanggal_selesai_aktivitas, tag_aktivitas, foto_galeri, created_at_aktivitas)
+        VALUES (:judul, :isi, :mulai, :selesai, :tag, :foto, NOW())");
+
+    $stmt->execute([
+        'judul' => $judul,
+        'isi'   => $isi,
+        'mulai' => $mulai,
+        'selesai' => $selesai,
+        'tag'   => $tag,
+        'foto'  => $foto
+    ]);
+
+    unset($_SESSION['old_input']);
 
     $_SESSION['message'] = "Aktivitas berhasil ditambahkan!";
     $_SESSION['msg_type'] = "success";
@@ -215,7 +214,7 @@ if (isset($_POST['tambah'])) {
 <body id="page-top">
 <div id="wrapper">
 
-    <?php include 'sidebar.php'; ?>
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
@@ -265,7 +264,7 @@ if (isset($_POST['tambah'])) {
                     $d = $stmt->fetch();
 
                     // Jika foto tidak ada, gunakan placeholder
-                    $fotoAktif = !empty($d['foto_aktivitas']) ? $d['foto_aktivitas'] : 'noimage.png';
+                    $fotoAktif = !empty($d['foto_galeri']) ? $d['foto_galeri'] : 'noimage.png';
                 ?>
 
                 <div class="card shadow mb-4">
@@ -273,13 +272,25 @@ if (isset($_POST['tambah'])) {
                         <h6>Edit Aktivitas</h6>
                     </div>
                     <div class="card-body">
+                        
+                        <?php if (isset($_SESSION['form_error'])): ?>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <?php foreach ($_SESSION['form_error'] as $e): ?>
+                                    <li><?= $e ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php unset($_SESSION['form_error']); endif; ?>
+
+
                         <form method="post" enctype="multipart/form-data">
                             <input type="hidden" name="id_aktivitas" value="<?= $d['id_aktivitas'] ?>">
-                            <input type="hidden" name="foto_lama" value="<?= !empty($d['foto_aktivitas']) ? $d['foto_aktivitas'] : '' ?>">
+                            <input type="hidden" name="foto_lama" value="<?= !empty($d['foto_galeri']) ? $d['foto_galeri'] : '' ?>">
 
                             <div class="form-group">
-                                <label>Judul</label>
-                                <input type="text" name="judul_aktivitas" class="form-control" value="<?= $d['judul_aktivitas'] ?>" required>
+                                <label>Judul Aktivitas</label>
+                                <input type="text" name="judul_aktivitas" class="form-control" value="<?= $_SESSION['old_input']['judul_aktivitas'] ?? $d['judul_aktivitas'] ?>">
                             </div>
 
                             <div class="form-group">
@@ -289,12 +300,12 @@ if (isset($_POST['tambah'])) {
 
                             <div class="form-group">
                                 <label>Tanggal Mulai</label>
-                                <input type="date" name="tanggal_mulai" class="form-control" value="<?= $d['tanggal_mulai'] ?>">
+                                <input type="date" name="tanggal_mulai_aktivitas" class="form-control"  readonly value="<?= $_SESSION['old_input']['tanggal_mulai_aktivitas'] ?? $d['tanggal_mulai_aktivitas'] ?? '' ?>">
                             </div>
 
                             <div class="form-group">
                                 <label>Tanggal Selesai</label>
-                                <input type="date" name="tanggal_selesai" class="form-control" value="<?= $d['tanggal_selesai'] ?>">
+                                <input type="date" name="tanggal_selesai_aktivitas" class="form-control" value="<?= $_SESSION['old_input']['tanggal_selesai_aktivitas'] ?? $d['tanggal_selesai_aktivitas'] ?? '' ?>">
                             </div>
 
                             <div class="form-group">
@@ -309,14 +320,14 @@ if (isset($_POST['tambah'])) {
                             <div class="form-group">
                                 <label>Foto Lama:</label><br>
 
-                                <?php if (!empty($d['foto_aktivitas'])): ?>
-                                    <img src="../uploads/<?= $d['foto_aktivitas'] ?>" width="140" class="mb-2"><br>
+                                <?php if (!empty($d['foto_galeri'])): ?>
+                                    <img src="../uploads/<?= $d['foto_galeri'] ?>" width="140" class="mb-2"><br>
                                 <?php else: ?>
                                     <p><i>Tidak ada foto</i></p>
                                 <?php endif; ?>
 
                                 <label>Ganti Foto (opsional)</label>
-                                <input type="file" name="foto_aktivitas" class="form-control">
+                                <input type="file" name="foto_galeri" class="form-control">
                             </div>
 
                             <button type="submit" name="update" class="btn btn-warning">Update</button>
@@ -337,6 +348,16 @@ if (isset($_POST['tambah'])) {
                         <h6>Tambah Aktivitas Baru</h6>
                     </div>
                     <div class="card-body">
+
+                        <?php if (isset($_SESSION['form_error'])): ?>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <?php foreach ($_SESSION['form_error'] as $e): ?>
+                                    <li><?= $e ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php unset($_SESSION['form_error']); endif; ?>
 
                         <form method="post" enctype="multipart/form-data">
                             
@@ -371,7 +392,7 @@ if (isset($_POST['tambah'])) {
 
                             <div class="form-group">
                                 <label>Foto Aktivitas</label>
-                                <input type="file" name="foto_aktivitas" required>
+                                <input type="file" name="foto_galeri" required>
                             </div>
 
                             <button type="submit" name="tambah" class="btn btn-primary">Simpan</button>
@@ -419,9 +440,9 @@ if (isset($_POST['tambah'])) {
                                 <tr>
                                     <td><?= $no++ ?></td>
                                     <td>
-                                        <?php if (!empty($d['semua_foto'])): ?>
+                                        <?php if (!empty($d['foto_galeri'])): ?>
                                             <?php 
-                                                $listFoto = explode(',', $d['semua_foto']); 
+                                                $listFoto = explode(',', $d['foto_galeri']); 
                                                 foreach ($listFoto as $f): 
                                             ?>
                                                 <img src="../uploads/<?= $f ?>" width="70" style="margin-right:5px;">
@@ -432,8 +453,8 @@ if (isset($_POST['tambah'])) {
                                     </td>
                                     <td><?= $d['judul_aktivitas'] ?></td>
                                     <td><?= $d['tag_aktivitas'] ?></td>
-                                    <td><?= $d['tanggal_mulai'] ?></td>
-                                    <td><?= $d['tanggal_selesai'] ?></td>
+                                    <td><?= $d['tanggal_mulai_aktivitas'] ?></td>
+                                    <td><?= $d['tanggal_selesai_aktivitas'] ?></td>
                                     <td><?= $d['created_at_aktivitas'] ?></td>
                                     <td>
                                         <a href="aktivitas.php?aksi=edit&id=<?= $d['id_aktivitas'] ?>" class="btn btn-warning btn-sm">Edit</a>
@@ -449,6 +470,35 @@ if (isset($_POST['tambah'])) {
 
                 <?php endif; ?>
 
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; LAB IVSS 2023</span>
+                </div>
+            </div>
+        </footer>
+        
+    </div>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Yakin ingin keluar?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Klik "Logout" di bawah jika Anda ingin mengakhiri sesi ini.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                <a class="btn btn-primary" href="logout.php">Logout</a>
             </div>
         </div>
     </div>
