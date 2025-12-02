@@ -424,7 +424,6 @@ $pendingCount = $waitingApproval = 0;
                 </div>
             </div>
         </footer>
-
     </div>
 </div>
 
