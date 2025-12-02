@@ -421,7 +421,7 @@ $pendingCount = $waitingApproval = 0;
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; LAB IVSS 2023</span>
+                    <span>Copyright &copy; LAB IVSS</span>
                 </div>
             </div>
         </footer>
