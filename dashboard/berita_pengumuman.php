@@ -413,7 +413,6 @@ $pendingCount = $waitingApproval = 0;
                     </div>
                 </div>
                 <?php } ?>
-
             </div>
         </div>
 
