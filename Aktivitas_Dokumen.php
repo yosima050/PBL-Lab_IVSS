@@ -1,3 +1,32 @@
+<?php
+// 1. HUBUNGKAN KE DATABASE
+include 'dashboard/db.php'; 
+
+// 2. LOGIKA PENCARIAN
+$keyword = isset($_GET['q']) ? $_GET['q'] : '';
+$search_param = "%" . $keyword . "%";
+
+try {
+    // Query Utama: Mengambil data aktivitas
+    // + Subquery untuk menghitung jumlah foto/video di tabel 'galeri' yang terkait
+    $sql = "SELECT 
+                a.*,
+                (SELECT COUNT(*) FROM public.galeri g WHERE g.id_aktivitas = a.id_aktivitas) as total_galeri
+            FROM public.aktivitas a
+            WHERE a.judul_aktivitas ILIKE :keyword 
+            OR a.isi_aktivitas ILIKE :keyword 
+            ORDER BY a.tanggal_mulai_aktivitas DESC";
+            
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['keyword' => $search_param]);
+    $aktivitas_list = $stmt->fetchAll();
+
+} catch (PDOException $e) {
+    echo "Error fetching data: " . $e->getMessage();
+    $aktivitas_list = [];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -13,7 +42,9 @@
 </head>
 
 <body>
+    
 <?php include 'navbar.php'; ?>
+
 <div class="banner1"> </div>
 
 <div class="container">
@@ -29,93 +60,69 @@
             <h2>Aktivitas Laboratorium</h2>
         </div>
 
-        <div class="search-filter-row">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Cari Aktivitas..." id="searchInput">
+        <form action="" method="GET">
+            <div class="search-filter-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" placeholder="Cari Aktivitas..." 
+                           value="<?= htmlspecialchars($keyword); ?>">
+                </div>
+                <button class="filter-btn" type="submit">
+                    <i class="fas fa-filter"></i>
+                    Cari
+                </button>
             </div>
-            <button class="filter-btn">
-                <i class="fas fa-filter"></i>
-                Filter
-            </button>
-        </div>
+        </form>
 
         <div id="activitiesContainer">
-            <div class="activity-card">
-                <div class="activity-date">15 Nov 2025</div>
-                <div class="activity-image">
-                    <i class="fas fa-image"></i>
-                </div>
-                <div class="activity-title">Penelitian IoT untuk Smart Agriculture</div>
-                <div class="activity-description">
-                    Pengembangan sistem monitoring tanaman berbasis IoT dengan sensor kelembaban tanah dan sirkulasi udara.
-                </div>
-                <div class="activity-meta">
-                    <div class="activity-stats">5 foto, 3 video</div>
-                    <a href="https://e-journals.unmul.ac.id/index.php/INF/article/view/21593/0" target="_blank" class="detail-link">
-                        Lihat Detail
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+            
+            <?php if (count($aktivitas_list) > 0): ?>
+                <?php foreach ($aktivitas_list as $row): ?>
+                    
+                    <div class="activity-card">
+                        <div class="activity-date">
+                            <?= date('d M Y', strtotime($row['tanggal_mulai_aktivitas'])); ?>
+                        </div>
+                        
+                        <div class="activity-image">
+                            <?php if (!empty($row['foto_galeri']) && file_exists($row['foto_galeri'])): ?>
+                                <img src="<?= htmlspecialchars($row['foto_galeri']); ?>" alt="Thumbnail" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
+                            <?php else: ?>
+                                <i class="fas fa-image"></i> <?php endif; ?>
+                        </div>
 
-            <div class="activity-card">
-                <div class="activity-date">10 Nov 2025</div>
-                <div class="activity-image">
-                    <i class="fas fa-image"></i>
-                </div>
-                <div class="activity-title">Workshop Machine Learning Dasar</div>
-                <div class="activity-description">
-                    Pelatihan pengenalan machine learning menggunakan Python dan library scikit-learn untuk mahasiswa semester 4.
-                </div>
-                <div class="activity-meta">
-                    <div class="activity-stats">17 foto, 5 video</div>
-                    <a href="#" class="detail-link">
-                        Lihat Detail
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+                        <div class="activity-title">
+                            <?= htmlspecialchars($row['judul_aktivitas']); ?>
+                        </div>
 
-            <div class="activity-card">
-                <div class="activity-date">8 Nov 2025</div>
-                <div class="activity-image">
-                    <i class="fas fa-image"></i>
+                        <div class="activity-description">
+                            <?= htmlspecialchars(substr($row['isi_aktivitas'], 0, 150)) . '...'; ?>
+                        </div>
+
+                        <div class="activity-meta">
+                            <div class="activity-stats">
+                                <?= $row['total_galeri']; ?> item dokumentasi
+                            </div>
+                            
+                            <a href="detail_aktivitas.php?id=<?= $row['id_aktivitas']; ?>" class="detail-link">
+                                Lihat Detail
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-5">
+                    <p>Tidak ada aktivitas yang ditemukan.</p>
                 </div>
-                <div class="activity-title">Maintenance Server dan Jaringan</div>
-                <div class="activity-description">
-                    Pemeliharaan rutin server laboratorium dan upgrade kapasitas jaringan untuk meningkatkan performa.
-                </div>
-                <div class="activity-meta">
-                    <div class="activity-stats">7 foto, 4 video</div>
-                    <a href="#" class="detail-link">
-                        Lihat Detail
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+            <?php endif; ?>
+
         </div>
     </div>
 </div>
-</div>
-<script>
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const cards = document.querySelectorAll('.activity-card');
-        
-        cards.forEach(card => {
-            const title = card.querySelector('.activity-title').textContent.toLowerCase();
-            const description = card.querySelector('.activity-description').textContent.toLowerCase();
-            
-            if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
-</script>
-    <?php include 'footer.php'; ?>
+
+<?php include 'footer.php'; ?>
 
 </body>
+</html>

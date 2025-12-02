@@ -216,7 +216,7 @@ try {
             <?php if (count($team_members) > 0): ?>
                 <?php foreach ($team_members as $member): ?>
                     <div class="col-auto">
-                        <a href="detail_dosen.php?id=<?= $member['id_dosen']; ?>" class="member-link" title="<?= htmlspecialchars($member['nama_dosen']); ?>">
+                        <a href="Profil_dosen.php?id=<?= $member['id_dosen']; ?>" class="member-link" title="<?= htmlspecialchars($member['nama_dosen']); ?>">
                             <div class="rounded-avatar-wrapper">
                                 <img src="<?= htmlspecialchars($member['foto_dosen']); ?>" 
                                      class="team-member-circle" 
