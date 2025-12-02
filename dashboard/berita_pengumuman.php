@@ -107,9 +107,15 @@ if (isset($_POST['tambah'])) {
     $author  = $_SESSION['nama'] ?? 'Admin';
     $id_users = $_SESSION['id_users'] ?? 1;
 
-    $stmt = $pdo->prepare("INSERT INTO berita 
-        (judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita)
-        VALUES (:judul, :isi, :kategori, :foto, :author, :id_users, NOW())");
+    $stmt = $pdo->prepare("SELECT fn_insert_berita(
+        :judul,
+        :isi,
+        :kategori,
+        :foto,
+        :author,
+        :id_users,
+        NULL
+    )");
 
     $stmt->execute([
         'judul'    => $judul,
@@ -141,9 +147,15 @@ if (isset($_POST['tambah_tautan'])) {
     $author  = $_SESSION['nama'] ?? 'Admin';
     $id_users = $_SESSION['id_users'] ?? 1;
 
-    $stmt = $pdo->prepare("INSERT INTO berita 
-        (judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita, link_berita)
-        VALUES (:judul, '', 'Tautan', :foto, :author, :id_users, NOW(), :link)");
+    $stmt = $pdo->prepare("SELECT fn_insert_berita(
+        :judul,
+        '',
+        'Tautan',
+        :foto,
+        :author,
+        :id_users,
+        :link
+    )");
 
     $stmt->execute([
         'judul'    => $judul,
