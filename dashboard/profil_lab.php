@@ -18,6 +18,29 @@ if ($_SESSION['role'] !== 'admin_berita') {
 require_once __DIR__ . '/db.php';
 
 $username = $_SESSION['nama_users'] ?? 'Admin';
+
+// --- mulai: variabel untuk sidebar.php (role + badge counters) ---
+$role = $_SESSION['role'] ?? null;
+$pendingCount = 0;
+$waitingApproval = 0;
+
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+
+try {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+// --- selesai: variabel untuk sidebar ---
+
 // ------------------------
 // AMBIL DATA PROFIL LAB DARI MATERIALIZED VIEW
 // ------------------------
