@@ -99,15 +99,20 @@ if (isset($_POST['tambah'])) {
     // Ambil ID User yang login (untuk audit trail, jika kolom id_users ada di tabel fasilitas)
     $id_users = $_SESSION['user_id'];
 
-    // Sesuaikan query INSERT. Jika tabel fasilitas punya kolom 'id_users', tambahkan.
-    // Di sini saya asumsikan struktur tabel sesuai kode lama Anda.
-    $stmt = $pdo->prepare("INSERT INTO fasilitas (nama_fasilitas, deskripsi_fasilitas, foto_fasilitas, id_users) VALUES (:nama, :deskripsi, :foto, :uid)");
+    $stmt = $pdo->prepare("
+        SELECT fn_insert_fasilitas(
+            :uid,
+            :nama,
+            :deskripsi,
+            :foto
+        );
+    ");
 
     $stmt->execute([
+        'uid'       => $id_users,
         'nama'      => $nama,
         'deskripsi' => $deskripsi,
-        'foto'      => $foto,
-        'uid'       => $id_users
+        'foto'      => $foto
     ]);
 
     $_SESSION['message'] = "Fasilitas berhasil ditambahkan!";
