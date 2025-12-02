@@ -362,7 +362,7 @@ $pendingCount = $waitingApproval = 0;
 
                 <?php
                 } else {
-                    $stmt = $pdo->query("SELECT * FROM berita ORDER BY created_at_berita DESC");
+                    $stmt = $pdo->query("SELECT * FROM v_berita");
                     $data = $stmt->fetchAll();
                 ?>
                 <!-- Tabel Data Berita -->
