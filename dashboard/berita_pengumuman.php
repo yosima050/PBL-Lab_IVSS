@@ -39,7 +39,7 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
         unlink("../uploads/" . $fotoLama); // Hapus file fisik
     }
 
-    $stmt = $pdo->prepare("DELETE FROM berita WHERE id_berita = :id");
+    $stmt = $pdo->prepare("CALL sp_delete_berita(:id)");
     $stmt->execute(['id' => $id]);
 
     $_SESSION['message'] = "Berita berhasil dihapus!";
