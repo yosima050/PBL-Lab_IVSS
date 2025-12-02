@@ -14,31 +14,20 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-<<<<<<< HEAD
-            background-color: white;
-=======
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             padding: 30px;
             border-radius: 8px;
         }
 
         .fokus-riset {
             display: inline-block;
-<<<<<<< HEAD
-            background-color: #FFC107;
-=======
             background-color: #F9d723;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             color: #000;
             padding: 8px 20px;
             border-radius: 20px;
             font-weight: bold;
             font-size: 16px;
             margin-bottom: 15px;
-<<<<<<< HEAD
-=======
             font-family: "Roboto";
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
         }
 
         .tags {
@@ -47,60 +36,37 @@
 
         .tag {
             display: inline-block;
-<<<<<<< HEAD
-            border: 2px solid #1976D2;
-            color: #1976D2;
-=======
             border: 2px solid #0047ab;
             color: #0047ab;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             padding: 5px 15px;
             border-radius: 20px;
             font-size: 14px;
             margin-right: 10px;
             background-color: white;
-<<<<<<< HEAD
-=======
             font-family: "Roboto";
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
         }
 
         .sorotan-publikasi {
             display: inline-block;
-<<<<<<< HEAD
-            background-color: #FFC107;
-=======
             background-color: #F9d723;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             color: #000;
             padding: 8px 20px;
             border-radius: 20px;
             font-weight: bold;
             font-size: 16px;
             margin-bottom: 20px;
-<<<<<<< HEAD
-=======
             font-family: "Roboto";
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
         }
 
         .filter-buttons {
             text-align: center;
             margin-bottom: 30px;
-<<<<<<< HEAD
-        }
-
-        .filter-btn {
-            border: 2px solid #1976D2;
-            color: #1976D2;
-=======
             font-family: "Roboto";
         }
 
         .filter-btn {
             border: 2px solid #0047ab;
             color: #0047ab;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             background-color: white;
             padding: 6px 20px;
             border-radius: 20px;
@@ -108,10 +74,7 @@
             margin: 0 5px;
             cursor: pointer;
             font-weight: 500;
-<<<<<<< HEAD
-=======
             
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
         }
 
         .filter-btn:hover {
@@ -121,10 +84,7 @@
         .years-dropdown {
             position: relative;
             display: inline-block;
-<<<<<<< HEAD
-=======
             font-family: "Roboto"
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
         }
 
         .dropdown-content {
@@ -135,11 +95,7 @@
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             border-radius: 8px;
             z-index: 1;
-<<<<<<< HEAD
-            margin-top: 5px;
-=======
             margin-top: 1px;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             border: 2px solid #1976D2;
         }
 
@@ -172,18 +128,11 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 30px;
-<<<<<<< HEAD
-        }
-
-        .publication-card {
-            border: 2px solid #1976D2;
-=======
             font-family: "Roboto";
         }
 
         .publication-card {
             border: 2px solid #0047ab;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             border-radius: 10px;
             padding: 20px;
             background-color: white;
@@ -207,11 +156,7 @@
         }
 
         .baca-btn {
-<<<<<<< HEAD
-            background-color: #1976D2;
-=======
             background-color: #0047ab;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             color: white;
             border: none;
             padding: 8px 30px;
@@ -223,24 +168,12 @@
         }
 
         .baca-btn:hover {
-<<<<<<< HEAD
-            background-color: #1565C0;
-=======
             background-color: #0047ab;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
         }
 
         .pagination {
             text-align: center;
             margin-top: 30px;
-<<<<<<< HEAD
-        }
-
-        .pagination button {
-            border: 2px solid #1976D2;
-            background-color: white;
-            color: #1976D2;
-=======
             font-family: "Roboto";
         }
 
@@ -248,7 +181,6 @@
             border: 2px solid #0047ab;
             background-color: white;
             color: #0047ab;
->>>>>>> 3c4435f321b2829d18965eb7b133a65c458032df
             padding: 8px 20px;
             border-radius: 5px;
             cursor: pointer;
