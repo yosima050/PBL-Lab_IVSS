@@ -42,10 +42,11 @@ if (!function_exists('is_active')) {
                     <li class="nav-item"><a href="index.php" class="nav-link<?= is_active('index.php', '...') ?>">Beranda</a></li>
                     
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['profilLab.php']) ?>">Profil Lab</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['profilLab.php', 'fasilitas.php']) ?>">Profil Lab</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="profilLab.php">Tentang Kami</a></li>
                             <li><a class="dropdown-item" href="profilLab.php#visi-misi">Visi & Misi</a></li>
+                            <li><a class="dropdown-item" href="fasilitas.php">Fasilitas Lab</a></li>
                         </ul>
                     </li>
 

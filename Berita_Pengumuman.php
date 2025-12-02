@@ -1,36 +1,33 @@
 <?php
 // 1. HUBUNGKAN KE DATABASE
+// Pastikan file koneksi Anda menggunakan PDO ($pdo)
 include 'dashboard/db.php'; 
 
 try {
-    // 2. QUERY MENGAMBIL SEMUA BERITA (Diurutkan dari yang terbaru)
-    // Asumsi: Kita memfilter berdasarkan kata kunci judul untuk memisahkan Berita vs Pengumuman vs Agenda
-    // Jika Anda punya kolom 'kategori' di tabel berita, silakan sesuaikan WHERE-nya.
-    
+    // 2. QUERY UTAMA: Ambil Semua Berita (Urut Terbaru)
     $sql = "SELECT * FROM public.berita ORDER BY created_at_berita DESC";
     $stmt = $pdo->query($sql);
     $all_data = $stmt->fetchAll();
 
-    // 3. PISAHKAN DATA BERDASARKAN KATEGORI (LOGIKA PHP)
+    // 3. FILTER DATA BERDASARKAN KATEGORI (Dari kolom 'kategori_berita')
     $berita_list = [];
     $pengumuman_list = [];
     $agenda_list = [];
 
     foreach ($all_data as $row) {
-        $judul_lower = strtolower($row['judul_berita']);
+        $kategori = strtolower($row['kategori_berita']); // Ubah ke huruf kecil biar aman
 
-        // Cek Kata Kunci di Judul
-        if (strpos($judul_lower, 'pengumuman') !== false) {
+        if ($kategori === 'pengumuman') {
             $pengumuman_list[] = $row;
-        } elseif (strpos($judul_lower, 'agenda') !== false || strpos($judul_lower, 'kegiatan') !== false) {
+        } elseif ($kategori === 'agenda' || strpos($kategori, 'kegiatan') !== false) {
             $agenda_list[] = $row;
         } else {
-            // Jika tidak ada kata pengumuman/agenda, anggap sebagai Berita Umum
+            // Default: Masuk ke Berita (Termasuk jika kategori 'Berita' atau 'Tautan')
             $berita_list[] = $row;
         }
     }
 
-    // Ambil 1 Berita Utama (Featured)
+    // Ambil 1 Berita Utama (Featured) dari list berita
     $featured_news = !empty($berita_list) ? array_shift($berita_list) : null;
 
 } catch (PDOException $e) {
@@ -50,21 +47,21 @@ try {
 
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="footer.css">
-    
     <link rel="stylesheet" href="css/styleBP.css">
+
     <style>
+        /* Perbaikan CSS agar gambar konsisten */
         .berita-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        /* Style tambahan agar link judul berita bisa diklik */
         .berita-link {
             text-decoration: none;
             color: inherit;
         }
         .berita-link:hover {
-            color: #0047AB; /* Biru Polinema */
+            color: #0047AB;
         }
     </style>
 </head>
@@ -77,9 +74,7 @@ try {
 <div class="container"> 
     <div class="content-wrapper">
     
-    <div class="header-berita">
-        Berita
-    </div>
+    <div class="header-berita">Berita</div>
 
     <div class="main-grid">
         
@@ -88,7 +83,7 @@ try {
             <?php if ($featured_news): ?>
             <div class="berita-card featured">
                 <div class="berita-image featured">
-                    <img src="<?= htmlspecialchars($featured_news['foto_berita']); ?>" 
+                    <img src="uploads/<?= htmlspecialchars($featured_news['foto_berita']); ?>" 
                          alt="Featured News" 
                          onerror="this.src='Asset/default_news.png';">
                 </div>
@@ -112,7 +107,7 @@ try {
                 <?php foreach ($berita_list as $news): ?>
                 <div class="berita-card regular">
                     <div class="berita-image regular">
-                        <img src="<?= htmlspecialchars($news['foto_berita']); ?>" 
+                        <img src="uploads/<?= htmlspecialchars($news['foto_berita']); ?>" 
                              alt="Thumbnail" 
                              onerror="this.src='Asset/default_news.png';">
                     </div>
@@ -150,7 +145,7 @@ try {
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <div class="sidebar-item"><p>Tidak ada pengumuman terbaru.</p></div>
+                    <div class="sidebar-item"><p class="text-muted small">Tidak ada pengumuman terbaru.</p></div>
                 <?php endif; ?>
             </div>
 
@@ -170,7 +165,7 @@ try {
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <div class="sidebar-item"><p>Tidak ada agenda terbaru.</p></div>
+                    <div class="sidebar-item"><p class="text-muted small">Tidak ada agenda terbaru.</p></div>
                 <?php endif; ?>
             </div>
             

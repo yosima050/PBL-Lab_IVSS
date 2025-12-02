@@ -6,29 +6,20 @@ include 'dashboard/db.php';
 $id_berita = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 try {
-    // ---------------------------------------------------------
-    // FITUR: UPDATE VIEW COUNTER (Setiap kali dibuka, views +1)
-    // ---------------------------------------------------------
-    if ($id_berita > 0) {
-        $stmt_views = $pdo->prepare("UPDATE public.berita SET views = views + 1 WHERE id_berita = :id");
-        $stmt_views->execute(['id' => $id_berita]);
-    }
+    // A. UPDATE VIEWS (Opsional jika kolom views ada)
+    // $stmt_views = $pdo->prepare("UPDATE berita SET views = views + 1 WHERE id_berita = :id");
+    // $stmt_views->execute(['id' => $id_berita]);
 
-    // ---------------------------------------------------------
-    // QUERY UTAMA: AMBIL DATA BERITA SESUAI ID
-    // ---------------------------------------------------------
+    // B. AMBIL DATA BERITA UTAMA
     $stmt = $pdo->prepare("SELECT * FROM public.berita WHERE id_berita = :id");
     $stmt->execute(['id' => $id_berita]);
     $berita = $stmt->fetch();
 
-    // Jika berita tidak ditemukan, redirect atau tampilkan pesan
     if (!$berita) {
         die("<div class='container py-5 text-center'><h3>Berita tidak ditemukan.</h3><a href='Berita_Pengumuman.php' class='btn btn-primary'>Kembali</a></div>");
     }
 
-    // ---------------------------------------------------------
-    // QUERY SIDEBAR: BERITA TERBARU LAINNYA (Kecuali berita ini)
-    // ---------------------------------------------------------
+    // C. SIDEBAR BERITA TERBARU LAINNYA
     $stmt_sidebar = $pdo->prepare("SELECT id_berita, judul_berita, foto_berita, created_at_berita FROM public.berita WHERE id_berita != :id ORDER BY created_at_berita DESC LIMIT 5");
     $stmt_sidebar->execute(['id' => $id_berita]);
     $sidebar_news = $stmt_sidebar->fetchAll();
@@ -58,8 +49,6 @@ try {
             background-size: cover;
             min-height: 200px;
         }
-        
-        /* Konten Utama */
         .detail-content {
             background: #fff;
             padding: 30px;
@@ -79,22 +68,12 @@ try {
             border-bottom: 1px solid #eee;
             padding-bottom: 15px;
         }
-        .news-meta i { margin-right: 5px; color: #0047AB; }
-        .news-meta span { margin-right: 15px; }
-
         .news-image {
             width: 100%;
             height: auto;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             object-fit: cover;
-        }
-        .image-caption {
-            font-size: 0.85rem;
-            color: #666;
-            text-align: center;
-            margin-bottom: 25px;
-            font-style: italic;
         }
         .news-body {
             font-size: 1.1rem;
@@ -102,21 +81,11 @@ try {
             color: #333;
             text-align: justify;
         }
-
-        /* Sidebar Styling */
         .sidebar-box {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .sidebar-header {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #0047AB;
-            margin-bottom: 15px;
-            border-left: 4px solid #F9D723;
-            padding-left: 10px;
         }
         .mini-news-item {
             display: flex;
@@ -125,7 +94,6 @@ try {
             border-bottom: 1px solid #f1f1f1;
             padding-bottom: 15px;
         }
-        .mini-news-item:last-child { border-bottom: none; }
         .mini-thumb {
             width: 70px;
             height: 70px;
@@ -133,24 +101,12 @@ try {
             border-radius: 5px;
             flex-shrink: 0;
         }
-        .mini-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            line-height: 1.3;
-            margin-bottom: 5px;
-        }
-        .mini-title a { text-decoration: none; color: #333; }
-        .mini-title a:hover { color: #0047AB; }
-        .mini-date { font-size: 0.75rem; color: #999; }
-        
-        /* Kategori Badge */
         .badge-kategori {
             background-color: #0047AB;
             color: white;
             padding: 5px 10px;
             border-radius: 4px;
             font-size: 0.8rem;
-            text-decoration: none;
             margin-bottom: 10px;
             display: inline-block;
         }
@@ -177,60 +133,57 @@ try {
             <article class="detail-content">
                 
                 <span class="badge-kategori">
-                    <?= !empty($berita['kategori']) ? htmlspecialchars($berita['kategori']) : 'Berita'; ?>
+                    <?= htmlspecialchars($berita['kategori_berita']); ?>
                 </span>
 
                 <h1 class="news-title"><?= htmlspecialchars($berita['judul_berita']); ?></h1>
 
                 <div class="news-meta">
-                    <span><i class="far fa-calendar-alt"></i> <?= date('d F Y', strtotime($berita['created_at_berita'])); ?></span>
-                    <span><i class="far fa-user"></i> <?= htmlspecialchars($berita['author']); ?></span>
-                    <span><i class="far fa-eye"></i> <?= $berita['views']; ?>x dilihat</span>
+                    <span class="me-3"><i class="far fa-calendar-alt"></i> <?= date('d F Y', strtotime($berita['created_at_berita'])); ?></span>
+                    <span class="me-3"><i class="far fa-user"></i> <?= htmlspecialchars($berita['author']); ?></span>
                 </div>
 
-                <img src="<?= htmlspecialchars($berita['foto_berita']); ?>" 
+                <img src="uploads/<?= htmlspecialchars($berita['foto_berita']); ?>" 
                      class="news-image" 
                      alt="Gambar Berita" 
                      onerror="this.src='Asset/default_news.png';">
                 
-                <?php if(!empty($berita['caption_foto'])): ?>
-                    <div class="image-caption"><?= htmlspecialchars($berita['caption_foto']); ?></div>
-                <?php endif; ?>
-
                 <div class="news-body">
                     <?= nl2br(htmlspecialchars($berita['isi_berita'])); ?>
                 </div>
 
-                <div class="mt-5 pt-3 border-top">
-                    <p class="fw-bold">Bagikan:</p>
-                    <a href="#" class="btn btn-sm btn-outline-primary me-2"><i class="fab fa-facebook-f"></i> Facebook</a>
-                    <a href="#" class="btn btn-sm btn-outline-info me-2"><i class="fab fa-twitter"></i> Twitter</a>
-                    <a href="#" class="btn btn-sm btn-success me-2"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <?php if (!empty($berita['link_berita'])): ?>
+                <div class="mt-4 p-3 bg-light border rounded">
+                    <strong>Tautan Terkait:</strong><br>
+                    <a href="<?= htmlspecialchars($berita['link_berita']); ?>" target="_blank" class="text-break">
+                        <?= htmlspecialchars($berita['link_berita']); ?> <i class="fas fa-external-link-alt small"></i>
+                    </a>
                 </div>
+                <?php endif; ?>
 
             </article>
         </div>
 
         <div class="col-lg-4">
             <div class="sidebar-box">
-                <div class="sidebar-header">Berita Lainnya</div>
+                <h5 class="mb-3 font-weight-bold" style="color: #0047AB;">Berita Terbaru</h5>
                 
                 <?php if (count($sidebar_news) > 0): ?>
                     <?php foreach ($sidebar_news as $item): ?>
                     <div class="mini-news-item">
-                        <img src="<?= htmlspecialchars($item['foto_berita']); ?>" 
+                        <img src="uploads/<?= htmlspecialchars($item['foto_berita']); ?>" 
                              class="mini-thumb" 
                              alt="thumb"
                              onerror="this.src='Asset/default_news.png';">
                         <div>
-                            <div class="mini-title">
-                                <a href="detail_Berita_Pengumuman.php?id=<?= $item['id_berita']; ?>">
+                            <h6 class="mb-1" style="font-size: 0.95rem;">
+                                <a href="detail_berita.php?id=<?= $item['id_berita']; ?>" class="text-dark text-decoration-none">
                                     <?= htmlspecialchars($item['judul_berita']); ?>
                                 </a>
-                            </div>
-                            <div class="mini-date">
+                            </h6>
+                            <small class="text-muted">
                                 <i class="far fa-clock"></i> <?= date('d M Y', strtotime($item['created_at_berita'])); ?>
-                            </div>
+                            </small>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -239,14 +192,6 @@ try {
                 <?php endif; ?>
 
             </div>
-
-            <div class="sidebar-box mt-4">
-                <div class="sidebar-header">Arsip</div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><a href="Berita_Pengumuman.php" class="text-decoration-none">Semua Berita</a></li>
-                    </ul>
-            </div>
-
         </div>
     </div>
 </div>

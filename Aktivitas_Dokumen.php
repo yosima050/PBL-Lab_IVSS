@@ -1,6 +1,6 @@
 <?php
-// 1. HUBUNGKAN KE DATABASE
 include 'dashboard/db.php'; 
+
 
 // 2. LOGIKA PENCARIAN
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
@@ -8,7 +8,7 @@ $search_param = "%" . $keyword . "%";
 
 try {
     // Query Utama: Mengambil data aktivitas
-    // + Subquery untuk menghitung jumlah foto/video di tabel 'galeri' yang terkait
+    // Subquery total_galeri: Menghitung jumlah foto tambahan di tabel 'galeri'
     $sql = "SELECT 
                 a.*,
                 (SELECT COUNT(*) FROM public.galeri g WHERE g.id_aktivitas = a.id_aktivitas) as total_galeri
@@ -39,6 +39,15 @@ try {
     <link rel="stylesheet" href="css/styleAD.css">
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="footer.css">
+    
+    <style>
+        .activity-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -68,8 +77,7 @@ try {
                            value="<?= htmlspecialchars($keyword); ?>">
                 </div>
                 <button class="filter-btn" type="submit">
-                    <i class="fas fa-filter"></i>
-                    Cari
+                    <i class="fas fa-filter"></i> Cari
                 </button>
             </div>
         </form>
@@ -85,10 +93,16 @@ try {
                         </div>
                         
                         <div class="activity-image">
-                            <?php if (!empty($row['foto_galeri']) && file_exists($row['foto_galeri'])): ?>
-                                <img src="<?= htmlspecialchars($row['foto_galeri']); ?>" alt="Thumbnail" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
+                            <?php 
+                                $fotoPath = 'uploads/' . $row['foto_galeri'];
+                                if (!empty($row['foto_galeri']) && file_exists($fotoPath)): 
+                            ?>
+                                <img src="<?= htmlspecialchars($fotoPath); ?>" alt="Thumbnail">
                             <?php else: ?>
-                                <i class="fas fa-image"></i> <?php endif; ?>
+                                <div style="height:100%; display:flex; align-items:center; justify-content:center; background:#eee; border-radius:10px;">
+                                    <i class="fas fa-image fa-3x text-secondary"></i>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="activity-title">
@@ -101,12 +115,14 @@ try {
 
                         <div class="activity-meta">
                             <div class="activity-stats">
-                                <?= $row['total_galeri']; ?> item dokumentasi
+                                <i class="fas fa-tags"></i> <?= htmlspecialchars($row['tag_aktivitas']); ?> 
+                                <?php if($row['total_galeri'] > 0): ?>
+                                    | <i class="fas fa-images"></i> +<?= $row['total_galeri']; ?> foto lainnya
+                                <?php endif; ?>
                             </div>
                             
                             <a href="detail_aktivitas.php?id=<?= $row['id_aktivitas']; ?>" class="detail-link">
-                                Lihat Detail
-                                <i class="fas fa-arrow-right"></i>
+                                Lihat Detail <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -114,7 +130,7 @@ try {
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="col-12 text-center py-5">
-                    <p>Tidak ada aktivitas yang ditemukan.</p>
+                    <p class="text-muted">Tidak ada aktivitas yang ditemukan.</p>
                 </div>
             <?php endif; ?>
 
