@@ -17,9 +17,6 @@ if ($_SESSION['role'] !== 'admin_berita') {
           </script>";
     exit;
 }
-// -------------------------------------
-
-// Sesuaikan path db.php dengan struktur folder Anda
 // Jika file ini satu folder dengan db.php, gunakan __DIR__ . '/db.php'
 require_once __DIR__ . '/db.php'; 
 
