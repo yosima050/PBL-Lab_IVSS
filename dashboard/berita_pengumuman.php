@@ -170,11 +170,12 @@ $pendingCount = $waitingApproval = 0;
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Berita & Pengumuman</title>
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/jquery.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manajemen Berita - LAB IVSS</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -213,7 +214,6 @@ $pendingCount = $waitingApproval = 0;
             <div class="container-fluid">
 
                 <h1 class="h3 mb-4 text-gray-800">Berita / Pengumuman</h1>
-                <p class="mb-4">Kelola berita dan pengumuman.</p>
                 <!-- ALERT -->
                 <?php if (isset($_SESSION['message'])): ?>
                     <div class="alert alert-<?= $_SESSION['msg_type'] ?> alert-dismissible fade show" role="alert">
@@ -239,61 +239,54 @@ $pendingCount = $waitingApproval = 0;
                         echo '<div class="alert alert-danger">Data tidak ditemukan!</div>';
                     } else {
                 ?>
-               <div class="modal fade" id="modalEdit" tabindex="-1">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header bg-warning text-white">
-                                <h5 class="modal-title">Edit Berita</h5>
-                                <button class="close" data-dismiss="modal">&times;</button>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Edit Berita</h6>
+                        <a href="berita_pengumuman.php" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="id_berita" value="<?= $d['id_berita'] ?>">
+                            <input type="hidden" name="foto_lama" value="<?= $d['foto_berita'] ?>">
+
+                            <div class="form-group">
+                                <label>Judul Berita</label>
+                                <input type="text" name="judul_berita" class="form-control" value="<?= htmlspecialchars($d['judul_berita']) ?>" required>
                             </div>
 
-                            <form method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="id_berita" value="<?= $edit['id_berita'] ?>">
-                            <input type="hidden" name="foto_lama" value="<?= $edit['foto_berita'] ?>">
-
-                            <div class="modal-body">
-
-                                <div class="form-group">
-                                    <label>Judul Berita</label>
-                                    <input type="text" name="judul_berita" class="form-control"
-                                        value="<?= htmlspecialchars($edit['judul_berita']) ?>" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Isi Berita</label>
-                                    <textarea name="isi_berita" class="form-control" rows="5"><?= htmlspecialchars($edit['isi_berita']) ?></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Kategori</label>
-                                    <select name="kategori_berita" class="form-control">
-                                        <option value="Berita" <?= $edit['kategori_berita']=='Berita'?'selected':'' ?>>Berita</option>
-                                        <option value="Pengumuman" <?= $edit['kategori_berita']=='Pengumuman'?'selected':'' ?>>Pengumuman</option>
-                                        <option value="Tautan" <?= $edit['kategori_berita']=='Tautan'?'selected':'' ?>>Tautan</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>URL Link (Opsional)</label>
-                                    <input type="url" name="link_berita" class="form-control"
-                                        value="<?= htmlspecialchars($edit['link_berita']) ?>">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Foto Saat Ini</label><br>
-                                    <img src="../uploads/<?= $edit['foto_berita'] ?>" width="120" class="img-thumbnail mb-2">
-                                    <input type="file" name="foto_berita" class="form-control-file">
-                                </div>
-
+                            <div class="form-group">
+                                <label>Isi Berita</label>
+                                <textarea name="isi_berita" class="form-control" rows="5"><?= htmlspecialchars($d['isi_berita']) ?></textarea>
                             </div>
 
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                <button class="btn btn-warning" name="update">Update Data</button>
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <select name="kategori_berita" class="form-control">
+                                    <option value="Berita" <?= $d['kategori_berita'] == 'Berita' ? 'selected' : '' ?>>Berita</option>
+                                    <option value="Pengumuman" <?= $d['kategori_berita'] == 'Pengumuman' ? 'selected' : '' ?>>Pengumuman</option>
+                                    <option value="Tautan" <?= $d['kategori_berita'] == 'Tautan' ? 'selected' : '' ?>>Tautan</option>
+                                </select>
                             </div>
 
-                            </form>
-                        </div>
+                            <div class="form-group">
+                                <label>URL Link (Opsional)</label>
+                                <input type="url" name="link_berita" class="form-control" value="<?= htmlspecialchars($d['link_berita']) ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Foto Saat Ini</label><br>
+                                <?php if(!empty($d['foto_berita'])): ?>
+                                    <img src="../uploads/<?= $d['foto_berita'] ?>" width="150" class="img-thumbnail mb-2">
+                                <?php endif; ?>
+                                <input type="file" name="foto_berita" class="form-control-file">
+                                <small class="text-muted">Biarkan kosong jika tidak ingin mengganti foto.</small>
+                            </div>
+
+                            <button type="submit" name="update" class="btn btn-warning">Update Data</button>
+                            <a href="berita_pengumuman.php" class="btn btn-secondary">Batal</a>
+                        </form>
                     </div>
                 </div>
 
@@ -302,90 +295,70 @@ $pendingCount = $waitingApproval = 0;
                 // --- FORM TAMBAH ---
                 } elseif (isset($_GET['aksi']) && $_GET['aksi'] == 'tambah') {
                 ?>
-                <div class="modal fade" id="modalTambah" tabindex="-1">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header bg-primary text-white">
-                                <h5 class="modal-title">Tambah Berita Baru</h5>
-                                <button class="close" data-dismiss="modal">&times;</button>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Tambah Berita Baru</h6>
+                        <a href="berita_pengumuman.php" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Judul Berita</label>
+                                <input type="text" name="judul_berita" class="form-control" required>
                             </div>
-                            <form method="post" enctype="multipart/form-data">
-                                <div class="modal-body">
-
-                                <div class="form-group">
-                                    <label>Judul Berita</label>
-                                    <input type="text" name="judul_berita" class="form-control" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Isi Berita</label>
-                                    <textarea name="isi_berita" class="form-control" rows="5" required></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Kategori</label>
-                                    <select name="kategori_berita" class="form-control">
+                            <div class="form-group">
+                                <label>Isi Berita</label>
+                                <textarea name="isi_berita" class="form-control" rows="5" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategori</label>
+                                <select name="kategori_berita" class="form-control">
                                     <option value="Berita">Berita</option>
                                     <option value="Pengumuman">Pengumuman</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Foto Berita</label>
-                                    <input type="file" name="foto_berita" class="form-control-file" required>
-                                </div>
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                    <button class="btn btn-primary" name="tambah">Simpan</button>
-                                </div>
-                            </form>
-                        </div>
-                </div>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Berita</label>
+                                <input type="file" name="foto_berita" class="form-control-file" required>
+                            </div>
+                            <button type="submit" name="tambah" class="btn btn-primary">Simpan</button>
+                            <a href="berita_pengumuman.php" class="btn btn-secondary">Batal</a>
+                        </form>
+                    </div>
                 </div>
 
                 <?php 
                 // --- FORM TAMBAH TAUTAN ---
                 } elseif (isset($_GET['aksi']) && $_GET['aksi'] == 'tambah_tautan') {
                 ?>
-                <div class="modal fade" id="modalTautan" tabindex="-1">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header bg-info text-white">
-                                <h5 class="modal-title">Tambah Tautan Berita</h5>
-                                <button class="close" data-dismiss="modal">&times;</button>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-info">Tambah Tautan Berita</h6>
+                        <a href="berita_pengumuman.php" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Judul Berita/Link</label>
+                                <input type="text" name="judul_berita" class="form-control" required>
                             </div>
-                            <form method="post" enctype="multipart/form-data">
-                                <div class="modal-body">
-
-                                    <div class="form-group">
-                                        <label>Judul Berita/Link</label>
-                                        <input type="text" name="judul_berita" class="form-control" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>URL Link</label>
-                                        <input type="url" name="link_berita" class="form-control" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Foto Thumbnail</label>
-                                        <input type="file" name="foto_berita" class="form-control-file" required>
-                                    </div>
-
-                                </div>
-
-                                <div class="modal-footer">
-                                <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                <button class="btn btn-info" name="tambah_tautan">Simpan Tautan</button>
-                                </div>
-
-                            </form>
-                        </div>
+                            <div class="form-group">
+                                <label>URL Link</label>
+                                <input type="url" name="link_berita" class="form-control" placeholder="https://example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Thumbnail</label>
+                                <input type="file" name="foto_berita" class="form-control-file" required>
+                            </div>
+                            <button type="submit" name="tambah_tautan" class="btn btn-info">Simpan Tautan</button>
+                            <a href="berita_pengumuman.php" class="btn btn-secondary">Batal</a>
+                        </form>
                     </div>
                 </div>
-
 
                 <?php
                 } else {
