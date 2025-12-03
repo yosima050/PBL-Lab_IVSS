@@ -35,8 +35,50 @@ body a{
 .row{
 	margin:0;
 }	
-a#toTop{
-  margin-top: 0;
+/* Styling untuk tombol UItoTop yang digenerate oleh plugin */
+#toTop {
+    display: none; /* Plugin akan mengubah ini jadi block saat scroll */
+    text-decoration: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    overflow: hidden;
+    width: 45px;
+    height: 45px;
+    border: none;
+    text-indent: -999px; /* Sembunyikan teks default plugin */
+    background: #0047AB; /* Warna Biru */
+    border-radius: 50%;
+    z-index: 999;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+#toTop:hover {
+    background: #F9D723; /* Warna Kuning saat hover */
+    transform: translateY(-3px);
+}
+
+/* Memunculkan Ikon Material Symbol di tengah tombol */
+#toTop::after {
+    content: '\e5d8'; /* Kode Unicode untuk 'expand_less' / chevron up */
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 28px;
+    line-height: 45px; /* Sama dengan tinggi tombol agar vertikal center */
+    color: #fff;
+    text-indent: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    display: block;
+}
+
+#toTopHover {
+    display: none !important; /* Hilangkan efek hover bawaan plugin yang kadang bikin glitch */
 }
 .breadcrumb{
 	margin:2em 0;
@@ -1279,4 +1321,24 @@ h3.prjt{
 
 .btn-kontak i {
     font-size: 1.1em;
+}
+
+/* Override : pastikan pseudo-element lama tidak muncul dan hanya span icon yang terlihat */
+#toTop::after,
+#toTop::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Pastikan tombol hanya menampilkan ikon (span.material-symbols-outlined) */
+#toTop {
+  text-indent: 0 !important;
+  font-size: 0 !important; /* sembunyikan teks jika plugin masih menambahkan */
+}
+#toTop .material-symbols-outlined {
+  font-size: 18px !important;
+  color: #fff !important;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block !important;
+  text-indent: 0 !important;
 }

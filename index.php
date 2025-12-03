@@ -35,6 +35,64 @@ try {
 <link href="navbar.css" rel='stylesheet' type='text/css' />
 <link href="footer.css" rel='stylesheet' type='text/css' />
 
+<!-- Material Symbols (ikon) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+/* Override kuat agar tombol ToTop hanya tampil sebagai ikon */
+a#toTop, #toTop {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 0 !important;         /* sembunyikan teks jika ada */
+  line-height: 0 !important;
+  text-indent: -9999px !important; /* ekstra aman */
+  white-space: nowrap !important;
+  overflow: visible !important;
+  position: fixed !important;
+  right: 20px !important;
+  bottom: 24px !important;
+  background: #0047AB !important;
+  color: transparent !important;
+  border-radius: 50% !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
+  z-index: 9999 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+}
+
+/* Hilangkan pseudo-element yang mungkin menambahkan teks vertikal */
+a#toTop::before, a#toTop::after, #toTop::before, #toTop::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Pastikan SVG tampil */
+a#toTop svg, #toTop svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: #fff !important;
+  display: block !important;
+}
+
+/* Material Symbols icon visible (override the font-size:0 on the container) */
+a#toTop .material-symbols-outlined,
+#toTop .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: #fff !important;
+  display: inline-block !important;
+  text-indent: 0 !important;
+}
+
+/* Penyesuaian mobile */
+@media (max-width: 576px) {
+  a#toTop, #toTop { right: 12px !important; bottom: 18px !important; width: 40px !important; height: 40px !important; }
+}
+</style>
+
 <script src="js/bootstrap.js"></script>
 
 <meta name="keywords" content="Lab IVSS, Politeknik Negeri Malang, Intelligent Vision, Smart Systems" />
@@ -54,6 +112,33 @@ try {
             $('html,body').animate({scrollTop:$(this.hash).offset().top},900);
         });
     });
+</script>
+
+<script type="text/javascript">
+    // HAPUS / COMMENT OUT pemanggilan UItoTop jika ada:
+    // $(document).ready(function() { $().UItoTop({ easingType: 'easeOutQuart' }); });
+
+    // Ganti dengan script kustom: tampilkan tombol saat scroll dan scroll-to-top saat diklik
+    (function($){
+        $(function(){
+            var $toTop = $('#toTop');
+            // awalnya sembunyikan agar plugin tidak mengganggu (jika ada styling lain)
+            $toTop.hide();
+
+            $(window).on('scroll.toTop', function(){
+                if ($(this).scrollTop() > 200) {
+                    $toTop.fadeIn(220);
+                } else {
+                    $toTop.fadeOut(200);
+                }
+            });
+
+            $toTop.on('click', function(e){
+                e.preventDefault();
+                $('html, body').animate({ scrollTop: 0 }, 600);
+            });
+        });
+    })(jQuery);
 </script>
 
 <style>
@@ -251,12 +336,10 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
 
 <?php include 'footer.php'; ?>
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        $().UItoTop({ easingType: 'easeOutQuart' });
-    });
-</script>
-<a href="#to-top" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+<!-- Ganti markup tombol to-top agar menampilkan ikon Material Symbol -->
+<a href="#top" id="toTop" title="Kembali ke atas" aria-label="Kembali ke atas">
+    <span class="material-symbols-outlined" aria-hidden="true">chevron_line_up</span>
+</a>
 
 </body>
 </html>
