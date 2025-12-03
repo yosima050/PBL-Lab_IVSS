@@ -2,14 +2,15 @@
 include 'dashboard/db.php'; 
 
 
-// 2. AMBIL DATA DARI MATERIALIZED VIEW
-// Dashboard Anda mengupdate tabel 'profil_lab' lalu me-refresh 'mv_profil_lab'.
-// Jadi front-end cukup ambil dari 'mv_profil_lab'.
 try {
     $stmt = $pdo->query("SELECT * FROM mv_profil_lab LIMIT 1");
     $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Jika data kosong, gunakan default agar tidak error
+    if (!$profil) {
+        $stmt_fallback = $pdo->query("SELECT * FROM profil_lab ORDER BY id_profil_lab DESC LIMIT 1");
+        $profil = $stmt_fallback->fetch(PDO::FETCH_ASSOC);
+    }
+
     if (!$profil) {
         $profil = [
             'visi' => 'Belum ada data visi.',
@@ -22,8 +23,7 @@ try {
     die("Gagal mengambil data profil: " . $e->getMessage());
 }
 
-// 3. PARSING DATA MISI (Memecah teks per baris menjadi list item)
-$misi_list = array_filter(explode("\n", $profil['misi'])); // Pecah berdasarkan Enter
+$misi_list = array_filter(explode("\n", $profil['misi'])); 
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +78,7 @@ $misi_list = array_filter(explode("\n", $profil['misi'])); // Pecah berdasarkan 
             text-align: justify;
             font-size: 14px;
             color: #333;
-            white-space: pre-line; /* Agar spasi/enter di DB terbaca */
+            white-space: pre-line; 
         }
         .custom-vision-mission-title {
             background-color: #f9d723;
@@ -175,7 +175,9 @@ $misi_list = array_filter(explode("\n", $profil['misi'])); // Pecah berdasarkan 
                     <?php if (!empty($misi_list)): ?>
                         <?php foreach($misi_list as $misi_item): ?>
                             <?php if(trim($misi_item) != ''): ?>
-                                <li><?= htmlspecialchars(trim($misi_item)); ?></li>
+                                <li>
+                                    <?= htmlspecialchars(trim(preg_replace('/^\d+\.\s*/', '', $misi_item))); ?>
+                                </li>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     <?php else: ?>
