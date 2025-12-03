@@ -74,10 +74,10 @@ if ($cssHref) {
 
     <div class="footer-bottom">
       <ul class="footer-bottom-nav">
-        <li><a href="/profilLab.php">Profil Lab</a></li>
-        <li><a href="/berita.php">Berita & Aktivitas</a></li>
-        <li><a href="/fasilitas.php">Fasilitas Lab</a></li>
-        <li><a href="/publikasi.php">Riset & Publikasi</a></li>
+        <li><a href="profilLab.php">Profil Lab</a></li>
+        <li><a href="Berita_Pengumuman.php">Berita & Aktivitas</a></li>
+        <li><a href="fasilitas.php">Fasilitas Lab</a></li>
+        <li><a href="produk.php">Riset & Publikasi</a></li>
       </ul>
       <div style="margin-top:12px;color:#bcd3ff">&copy; <?= date('Y') ?> LAB IVSS - Politeknik Negeri Malang</div>
     </div>

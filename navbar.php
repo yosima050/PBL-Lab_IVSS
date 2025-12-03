@@ -62,7 +62,7 @@ if (!function_exists('is_active')) {
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="berita.php" class="nav-link dropdown-toggle<?= is_active(['Berita_Pengumuman.php','Aktivitas_Dokumen.php']) ?>">Berita & Aktivitas</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['Berita_Pengumuman.php','Aktivitas_Dokumen.php']) ?>">Berita & Aktivitas</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="Berita_Pengumuman.php">Berita dan Pengumuman</a></li>
                             <li><a class="dropdown-item" href="Aktivitas_Dokumen.php">Aktivitas dan Dokumentasi</a></li>
