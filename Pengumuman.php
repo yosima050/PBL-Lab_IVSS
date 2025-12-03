@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="footer.css">
-    <link rel="stylesheet" href="css/styleBP1.css">
+    <link rel="stylesheet" href="css/Pengumuman.css">
 </head>
 
 <body>
@@ -26,90 +26,27 @@
                     <div class="announcement-header">
                         <div class="announcement-meta">
                             <span><i class="far fa-comment"></i> 00 Comment</span>
-                            <span><i class="far fa-clock"></i> 5 months ago</span>
+                            <span><i class="far fa-clock"></i> 3 weeks ago</span>
                         </div>
                     </div>
                     
                     <div class="announcement-content">
-                        <p><strong>Diseminasi Hasil Magang Semester 6 Tahun Ajaran 2024/2025 akan dilaksanakan pada:</strong></p>
-                        <table class="info-table">
-                            <tr>
-                                <td>Hari/Tanggal</td>
-                                <td>: Selasa, 8 Juni 2025</td>
-                            </tr>
-                            <tr>
-                                <td>Waktu</td>
-                                <td>: 08.00 – 12.00 WIB</td>
-                            </tr>
-                            <tr>
-                                <td>Tempat</td>
-                                <td>: https://jti.polinema.ac.id/ruang_daring</td>
-                            </tr>
-                        </table>
+                        <h2 class="announcement-title">PROGRAM BANTUAN UKT / SPP TAHUN 2025</h2>
                         
-                        <h5 class="mt-4">Pembagian Ruang:</h5>
+                        <p class="announcement-intro">Bagi kalian, mahasiswa aktif semester ganjil tahun 2025 / 2026 yang sedang membutuhkan keringanan pembayaran UKT, Politeknik Negeri Malang memberikan program bantuan UKT / SPP Tahun 2025.</p>
                         
-                        <div class="table-responsive">
-                            <table class="schedule-table">
-                                <thead>
-                                    <tr>
-                                        <th>SESI</th>
-                                        <th>JAM</th>
-                                        <th>NIM</th>
-                                        <th>NAMA</th>
-                                        <th>PRODI</th>
-                                        <th>PERUSAHAAN</th>
-                                        <th>ROOM</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>08.00-08.20</td>
-                                        <td>2241720088</td>
-                                        <td>Abdul Aziz</td>
-                                        <td>D4 TI</td>
-                                        <td>Venturo</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>08.20-08.40</td>
-                                        <td>2241720095</td>
-                                        <td>Ana Bellatus Mustaqfiro</td>
-                                        <td>D4 TI</td>
-                                        <td>Venturo</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>08.40-09.00</td>
-                                        <td>2241720091</td>
-                                        <td>Gaco Razan Kamil</td>
-                                        <td>D4 TI</td>
-                                        <td>Sekawan Media</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>09.00-09.20</td>
-                                        <td>2241720160</td>
-                                        <td>Maulidin Zakaria</td>
-                                        <td>D4 TI</td>
-                                        <td>Sekawan Media</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>08.00-08.20</td>
-                                        <td>2241760074</td>
-                                        <td>ARYO WAHYU NUGROHO</td>
-                                        <td>D4 SIB</td>
-                                        <td>MaxChat</td>
-                                        <td>2</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="document-images">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <img src="Asset/g1.png" alt="Surat Pengumuman UKT/SPP" class="img-fluid document-img">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <img src="Asset/g2.png" alt="Program Bantuan UKT/SPP" class="img-fluid document-img">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <img src="Asset/g3.png" alt="Program Bantuan UKT/SPP" class="img-fluid document-img">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
