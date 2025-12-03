@@ -60,7 +60,7 @@ try {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     $sql = "INSERT INTO pendaftaran 
-            (nim, nama_mahasiswa, prodi, email_mahasiswa, status_mahasiswa, nama_dosen, password_sementara) 
+            (nim, nama_mahasiswa, prodi, email_mahasiswa, status_mahasiswa, nama_dosen, password) 
             VALUES 
             (:nim, :nama, :prodi, :email, 'Pending', :dosen, :pass)";
     
