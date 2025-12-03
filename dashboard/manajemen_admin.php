@@ -39,7 +39,7 @@ try {
    READ DATA USERS
 ========================== */
 try {
-    $stmt = $pdo->query("SELECT * FROM users ORDER BY id_users ASC");
+    $stmt = $pdo->query("SELECT * FROM view_users_roles");
     $users = $stmt->fetchAll();
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
@@ -115,7 +115,7 @@ try {
                                             <tr>
                                                 <td><?= $u['id_users'] ?></td>
                                                 <td><?= htmlspecialchars($u['id_role']) ?></td>
-                                                <td><?= htmlspecialchars($u['nama_users']) ?></td>
+                                                <td><?= htmlspecialchars($u['nama_role']) ?></td>
                                                 <td><?= htmlspecialchars($u['email_users']) ?></td>
 
                                                 <td class="text-center">
@@ -231,7 +231,7 @@ try {
                         <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" name="create" class="btn btn-primary">Simpan</button>
                     </div>
-
+                    
                 </div>
             </form>
         </div>
