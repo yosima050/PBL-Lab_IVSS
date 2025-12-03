@@ -14,14 +14,13 @@ body {
     margin-right: auto;
 }
 .tag1 {
-    background-color: #ffe066;
-    padding: 0.5rem 1rem;
+    background-color: #f9d723;
+    padding: 8px 15px;
     color: #0047AB;
     font-weight: bold;
-    font-size: 30px;
-    border-radius: 0.375rem;
-    margin-bottom: 2rem;
-    display: flex;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: inline-block;
     align-items: center;
     width: fit-content;
 }

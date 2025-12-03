@@ -59,7 +59,6 @@ try {
 <div class="container">
     <div class="tag1">
         <span>Aktivitas dan Dokumentasi</span>
-        <img src="Asset/logo.png" class="emoji">
     </div>
 </div>
 
