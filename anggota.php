@@ -48,155 +48,189 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <style>
-        :root {
-            --color-dark-blue: #0047AB;
-            --color-light-blue: #F5F9FF;
-            --color-table-header-border: var(--color-dark-blue);
-            --color-table-striped: var(--color-light-blue);
-        }
+<style>
+    :root {
+        --color-dark-blue: #0047AB;
+        --color-light-blue: #F5F9FF;
+        --color-table-header-border: var(--color-dark-blue);
+        --color-table-striped: var(--color-light-blue);
+    }
 
-        .banner1{
-            background:url(Asset/Coba.jpg) no-repeat 0px 0px;
-            background-size:cover;
-            min-height:250px;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
+    .banner1{
+        background:url(Asset/Coba.jpg) no-repeat 0px 0px;
+        background-size:cover;
+        min-height:250px;
+    }
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
 
+    .container {
+        max-width: 100%;
+        padding-left: 50px;
+        padding-right: 50px;
+        padding-top: 20px;
+        /* Tambahkan padding bawah di container agar konten tidak mepet footer */
+        padding-bottom: 50px; 
+    }
+    
+    @media (min-width: 768px) {
         .container {
-            max-width: 100%;
-            padding-left: 50px;
-            padding-right: 50px;
-            padding-top: 20px;
+            /* Dibuat lebih lebar agar 6 foto muat di baris atas pada layar besar */
+            max-width: 1500px; 
         }
+    }
+    
+    /* Styling untuk Lingkaran Foto - UKURAN FINAL LEBIH BESAR */
+    .team-member-circle {
+        /* Ukuran baru: 160px x 160px */
+        width: 160px; 
+        height: 160px; 
         
-        @media (min-width: 768px) {
-            .container {
-                max-width: 1300px;
-            }
-        }
+        object-fit: cover; 
         
-        /* Styling untuk Lingkaran Foto */
-        .team-member-circle {
-            width: 100px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #f8f9fa;
-            transition: transform 0.2s; /* Efek hover */
-        }
-        
-        /* Efek saat foto disorot mouse */
-        .rounded-avatar-wrapper:hover .team-member-circle {
-            transform: scale(1.1);
-            border-color: #0047AB;
-        }
+        border-radius: 50%;
+        border: 4px solid #f8f9fa;
+        transition: transform 0.2s; 
+    }
+    
+    /* Efek saat foto disorot mouse */
+    .rounded-avatar-wrapper:hover .team-member-circle {
+        transform: scale(1.05); 
+        border-color: #0047AB;
+    }
 
-        .team-member-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .category-header {
-            background-color: #F9D723;
-            color: #0047AB;
-            padding: 5px 15px;
-            border-radius: 5px;
-            display: inline-block;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .search-filter-row {
-            margin-bottom: 15px;
-        }
-        
-        .table-custom-layout {
-            width: 100%;
-            margin-bottom: 0;
-            border-collapse: collapse;
-        }
+    .rounded-avatar-wrapper {
+        display: inline-block;
+        border-radius: 50%;
+        /* Padding dibuat sedikit lebih besar untuk mengimbangi ukuran foto */
+        padding: 7px; 
+        border: 1px solid #adb5bd;
+        cursor: pointer; 
+        margin: 8px; /* Margin diperbesar sedikit */
+    }
+
+    .team-member-container {
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: center;
+        gap: 30px; /* Gap antar lingkaran dibuat lebih besar */
+        margin-bottom: 40px; 
+        padding: 10px 0; 
+    }
+
+    /* Pengaturan Flexbox untuk memastikan wrapping yang benar */
+    .team-member-container .row {
+        flex-grow: 1; 
+        display: contents; 
+    }
+
+    .team-member-container .col-auto {
+        flex: 0 0 auto; 
+        width: auto;
+    }
+
+    /* Margin yang lebih besar untuk memisahkan baris bawah */
+    .team-member-container .row:nth-child(2) {
+        margin-top: 20px;
+    }
+    /* Akhir Perubahan Layout Foto */
+
+
+    .category-header {
+        background-color: #F9D723;
+        color: #0047AB;
+        padding: 5px 15px;
+        border-radius: 5px;
+        display: inline-block;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .search-filter-row {
+        margin-bottom: 15px;
+    }
+    
+    /* Margin bawah pada tabel agar tidak mepet footer */
+    .table-responsive {
+        margin-bottom: 50px; 
+    }
+
+    .table-custom-layout {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+    }
  
-        .table-custom-layout thead th {
-            background-color: var(--color-table-header-border);
-            color: #fff;
-            font-weight: bold;
-            border: 1px solid var(--color-table-header-border);
-            height: 38px; 
-            padding: 0.5rem;
-            text-align: center;
-        }
+    .table-custom-layout thead th {
+        background-color: var(--color-table-header-border);
+        color: #fff;
+        font-weight: bold;
+        border: 1px solid var(--color-table-header-border);
+        height: 38px; 
+        padding: 0.5rem;
+        text-align: center;
+    }
 
-        .table-custom-layout th,
-        .table-custom-layout td {
-            border: 1px solid var(--color-table-header-border);
-            height: 38px;
-            padding: 0.5rem;
-            text-align: center;
-            font-weight: normal;
-        }
-        .table-custom-layout tbody tr:nth-child(odd) td {
-            background-color: #F5F9FF;
-        }
-        .table-custom-layout tbody tr:nth-child(even) td {
-            background-color: #fff;
-        }
+    .table-custom-layout th,
+    .table-custom-layout td {
+        border: 1px solid var(--color-table-header-border);
+        height: 38px;
+        padding: 0.5rem;
+        text-align: center;
+        font-weight: normal;
+    }
+    .table-custom-layout tbody tr:nth-child(odd) td {
+        background-color: #F5F9FF;
+    }
+    .table-custom-layout tbody tr:nth-child(even) td {
+        background-color: #fff;
+    }
 
-        /* Mengatur lebar kolom agar seimbang */
-        .table-custom-layout th:nth-child(1), .table-custom-layout td:nth-child(1),
-        .table-custom-layout th:nth-child(2), .table-custom-layout td:nth-child(2),
-        .table-custom-layout th:nth-child(3), .table-custom-layout td:nth-child(3),
-        .table-custom-layout th:nth-child(4), .table-custom-layout td:nth-child(4),
-        .table-custom-layout th:nth-child(5), .table-custom-layout td:nth-child(5) {
-            width: 20%; 
-        }
-        
-        .input-search-custom {
-            border-right: 1px solid #ced4da !important; 
-            border-color: #ced4da;
-            border-radius: .25rem !important; 
-            padding-left: 3rem !important; 
-            height: 38px; 
-        }
+    /* Mengatur lebar kolom agar seimbang */
+    .table-custom-layout th:nth-child(1), .table-custom-layout td:nth-child(1),
+    .table-custom-layout th:nth-child(2), .table-custom-layout td:nth-child(2),
+    .table-custom-layout th:nth-child(3), .table-custom-layout td:nth-child(3),
+    .table-custom-layout th:nth-child(4), .table-custom-layout td:nth-child(4),
+    .table-custom-layout th:nth-child(5), .table-custom-layout td:nth-child(5) {
+        width: 20%; 
+    }
+    
+    .input-search-custom {
+        border-right: 1px solid #ced4da !important; 
+        border-color: #ced4da;
+        border-radius: .25rem !important; 
+        padding-left: 3rem !important; 
+        height: 38px; 
+    }
 
-        .input-group-custom {
-            position: relative;
-        }
-        .input-group-custom .fa-search {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            color: #6c757d;
-        }
+    .input-group-custom {
+        position: relative;
+    }
+    .input-group-custom .fa-search {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        color: #6c757d;
+    }
 
-        .btn-filter-custom {
-            background-color: #fff;
-            color: #000;
-            border: 1px solid #ced4da;
-            padding: .375rem 1rem;
-            height: 38px;
-            border-radius: .25rem;
-        }
+    .btn-filter-custom {
+        background-color: #fff;
+        color: #000;
+        border: 1px solid #ced4da;
+        padding: .375rem 1rem;
+        height: 38px;
+        border-radius: .25rem;
+    }
 
-        .rounded-avatar-wrapper {
-            display: inline-block;
-            border-radius: 50%;
-            padding: 2px;
-            border: 1px solid #adb5bd;
-            cursor: pointer; /* Indikator bisa diklik */
-        }
-        
-        /* Link styling agar tidak merusak layout */
-        a.member-link {
-            text-decoration: none;
-            display: inline-block;
-        }
-    </style>
+    /* Link styling agar tidak merusak layout */
+    a.member-link {
+        text-decoration: none;
+        display: inline-block;
+    }
+</style>
+
 </head>
 <body>
 

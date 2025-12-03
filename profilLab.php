@@ -65,7 +65,7 @@ $misi_list = array_filter(explode("\n", $profil['misi'])); // Pecah berdasarkan 
         }
         .custom-main-content {
             background-color: #F5F9FF;
-            margin: 20px 30px;
+            margin: 40px 50px;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -85,7 +85,7 @@ $misi_list = array_filter(explode("\n", $profil['misi'])); // Pecah berdasarkan 
             padding: 8px 20px;
             text-align: left;
             margin-top: 20px;
-            margin-left: 30px;
+            margin-left: 50px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: inline-block;
             border-radius: 25px;
@@ -95,16 +95,13 @@ $misi_list = array_filter(explode("\n", $profil['misi'])); // Pecah berdasarkan 
             margin-bottom: 10px;
         }
         .custom-section-container {
-            background-color: white;
-            margin: 10px 30px 30px 30px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 0 50px 30px 50px;
         }
         .custom-section-content {
             padding: 25px;
+            margin : 1px;
             background-color: #F5F9FF;
-            border-radius: 0 0 10px 10px;
+            border-radius: 15px 15px 15px 15px;
         }
         .custom-section-content ul { list-style-position: outside; margin-left: 20px; }
         
