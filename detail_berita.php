@@ -133,7 +133,7 @@ try {
             <article class="detail-content">
                 
                 <span class="badge-kategori">
-                    <?= htmlspecialchars($berita['kategori_berita']); ?>
+                    <?= htmlspecialchars($berita['kategori_berita'] ?? ''); ?>
                 </span>
 
                 <h1 class="news-title"><?= htmlspecialchars($berita['judul_berita']); ?></h1>

@@ -15,7 +15,7 @@ try {
     $agenda_list = [];
 
     foreach ($all_data as $row) {
-        $kategori = strtolower($row['kategori_berita']); // Ubah ke huruf kecil biar aman
+        $kategori = strtolower($row['kategori_berita'] ?? ''); // Ubah ke huruf kecil biar aman
 
         if ($kategori === 'pengumuman') {
             $pengumuman_list[] = $row;
