@@ -97,13 +97,25 @@ function collapse_show($names) {
         <li class="nav-item">
             <a class="nav-link collapsed <?= (in_array($current, ['mahasiswa.php','dosen.php','manajemen_admin.php'])) ? 'active' : '' ?>" href="#" data-toggle="collapse" data-target="#collapseData" aria-expanded="true" aria-controls="collapseData">
                 <i class="fas fa-fw fa-database"></i>
-                <span>Data Master</span>
+                <span>Data Anggota</span>
             </a>
             <div id="collapseData" class="collapse <?= collapse_show(['mahasiswa.php','dosen.php','manajemen_admin.php']) ?>" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= is_active('mahasiswa.php') ?>" href="mahasiswa.php">Data Mahasiswa</a>
-                    <a class="collapse-item <?= is_active('dosen.php') ?>" href="dosen.php">Data Dosen &amp; Riset</a>
+                    <a class="collapse-item <?= is_active('dosen.php') ?>" href="dosen.php">Data Dosen</a>
                     <a class="collapse-item <?= is_active('manajemen_admin.php') ?>" href="manajemen_admin.php">Manajemen Admin</a>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed <?= (in_array($current, ['publikasi.php','proyek.php'])) ? 'active' : '' ?>" href="#" data-toggle="collapse" data-target="#collapseData" aria-expanded="true" aria-controls="collapseData">
+                <i class="fas fa-fw fa-database"></i>
+                <span>Data Produk</span>
+            </a>
+            <div id="collapseData" class="collapse <?= collapse_show(['publikasi.php','proyek.php']) ?>" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item <?= is_active('publikasi.php') ?>" href="publikasi.php">Data Publikasi</a>
+                    <a class="collapse-item <?= is_active('proyek.php') ?>" href="proyek.php">Data Proyek</a>
                 </div>
             </div>
         </li>
