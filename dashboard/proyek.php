@@ -11,15 +11,14 @@ $username = $_SESSION['nama_users'] ?? 'User';
 $stmt = $pdo->query("SELECT id_dosen, nama_dosen FROM dosen ORDER BY nama_dosen ASC");
 $listDosen = $stmt->fetchAll();
 
-// 2. AMBIL LIST MAHASISWA (Untuk Dropdown - FIX BUTTON ERROR)
-// Kita join ke users untuk dapat namanya
+// 2. AMBIL LIST MAHASISWA (Untuk Dropdown)
 $stmt = $pdo->query("SELECT m.id_mahasiswa, u.nama_users, m.status_mahasiswa 
                      FROM mahasiswa m 
                      JOIN users u ON m.id_users = u.id_users 
                      ORDER BY u.nama_users ASC");
 $listMahasiswa = $stmt->fetchAll();
 
-// 3. QUERY PROYEK DOSEN (UPDATE: Ada lokasi_proyek_dosen)
+// 3. QUERY PROYEK DOSEN (LENGKAP)
 try {
     $stmt = $pdo->query("
         SELECT 
@@ -35,7 +34,7 @@ try {
     $proyekDosen = $stmt->fetchAll();
 } catch (PDOException $e) { die("Error Dosen: " . $e->getMessage()); }
 
-// 4. QUERY PROYEK MAHASISWA
+// 4. QUERY PROYEK MAHASISWA (LENGKAP)
 try {
     $stmt = $pdo->query("
         SELECT 
@@ -59,11 +58,27 @@ try {
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <style>
+        /* CSS untuk merapikan tabel */
+        td.truncate {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        td.date-col {
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+        .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
 </head>
 <body id="page-top">
     <div id="wrapper">
         <?php 
-        // Sidebar logic dummy agar tidak error
         $role = $_SESSION['role']; $pendingCount = 0; $waitingApproval = 0;
         include __DIR__ . '/sidebar.php'; 
         ?>
@@ -87,17 +102,38 @@ try {
                         <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-success">Proyek Dosen</h6></div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="tableDosen">
-                                    <thead><tr><th>ID</th><th>Dosen</th><th>Judul</th><th>Kategori</th><th>Lokasi</th><th>Aksi</th></tr></thead>
+                                <table class="table table-bordered table-striped" id="tableDosen">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">ID</th>
+                                            <th width="20%">Dosen</th>
+                                            <th width="25%">Judul</th>
+                                            <th width="10%">Kategori</th>
+                                            <th width="15%">Lokasi</th>
+                                            <th width="15%">Periode</th> <th width="10%">Aksi</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         <?php foreach ($proyekDosen as $d): ?>
                                         <tr>
-                                            <td><?= $d['id_proyek'] ?></td>
-                                            <td><?= htmlspecialchars($d['nama_dosen']) ?></td>
-                                            <td><?= htmlspecialchars($d['judul_proyek']) ?></td>
+                                            <td class="text-center"><?= $d['id_proyek'] ?></td>
+                                            <td class="truncate" title="<?= htmlspecialchars($d['nama_dosen']) ?>">
+                                                <?= htmlspecialchars($d['nama_dosen']) ?>
+                                            </td>
+                                            <td class="truncate" title="<?= htmlspecialchars($d['judul_proyek']) ?>">
+                                                <?= htmlspecialchars($d['judul_proyek']) ?>
+                                            </td>
                                             <td><?= htmlspecialchars($d['kategori_proyek_dosen']) ?></td>
-                                            <td><?= htmlspecialchars($d['lokasi_proyek_dosen']) ?></td> <td class="text-center">
-                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>"><i class="fas fa-edit"></i></button>
+                                            <td class="truncate"><?= htmlspecialchars($d['lokasi_proyek_dosen']) ?></td>
+                                            <td class="text-center date-col">
+                                                <?php 
+                                                    $s = $d['tanggal_mulai_proyek_dosen'];
+                                                    $e = $d['tanggal_selesai_proyek_dosen'];
+                                                    echo ($s ? date('d M Y', strtotime($s)) : '-') . '<br>s/d<br>' . ($e ? date('d M Y', strtotime($e)) : '-');
+                                                ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-warning btn-sm mb-1" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>"><i class="fas fa-edit"></i></button>
                                                 <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>" onclick="return confirm('Hapus?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                             </td>
                                         </tr>
@@ -112,27 +148,48 @@ try {
                         <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Proyek Mahasiswa</h6></div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="tableMahasiswa">
-                                    <thead><tr><th>ID</th><th>Mahasiswa</th><th>Judul</th><th>Kategori</th><th>Lokasi</th><th>Aksi</th></tr></thead>
-                                    <tbody>
-                                        <?php foreach ($proyekMahasiswa as $p): ?>
+                                <table class="table table-bordered table-striped" id="tableMahasiswa">
+                                    <thead>
                                         <tr>
-                                            <td><?= $p['id_proyek'] ?></td>
-                                            <td><?= htmlspecialchars($p['nama_mahasiswa']) ?></td>
-                                            <td><?= htmlspecialchars($p['judul_proyek']) ?></td>
-                                            <td><?= htmlspecialchars($p['kategori_proyek_mahasiswa']) ?></td>
-                                            <td><?= htmlspecialchars($p['lokasi_proyek_mahasiswa']) ?></td>
+                                            <th width="5%">ID</th>
+                                            <th width="20%">Mahasiswa</th>
+                                            <th width="25%">Judul</th>
+                                            <th width="10%">Kategori</th>
+                                            <th width="15%">Lokasi</th>
+                                            <th width="15%">Periode</th> <th width="10%">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody> 
+                                        <?php foreach ($proyekMahasiswa as $p): ?> 
+                                        <tr> 
+                                            <td class="text-center"><?= $p['id_proyek'] ?></td> 
+                                            <td class="truncate" title="<?= htmlspecialchars($p['nama_mahasiswa']) ?>">
+                                                <?= htmlspecialchars($p['nama_mahasiswa']) ?>
+                                            </td> 
+                                            <td class="truncate" title="<?= htmlspecialchars($p['judul_proyek']) ?>">
+                                                <?= htmlspecialchars($p['judul_proyek']) ?>
+                                            </td> 
+                                            <td><?= htmlspecialchars($p['kategori_proyek_mahasiswa']) ?></td> 
+                                            <td class="truncate"><?= htmlspecialchars($p['lokasi_proyek_mahasiswa']) ?></td> 
+                                            <td class="text-center date-col">
+                                                <?php 
+                                                    $s = $p['tanggal_mulai_proyek_mahasiswa'];
+                                                    $e = $p['tanggal_selesai_proyek_mahasiswa'];
+                                                    echo ($s ? date('d M Y', strtotime($s)) : '-') . '<br>s/d<br>' . ($e ? date('d M Y', strtotime($e)) : '-');
+                                                ?>
+                                            </td>
                                             <td class="text-center">
-                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-warning btn-sm mb-1" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>"><i class="fas fa-edit"></i></button>
                                                 <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>" onclick="return confirm('Hapus?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                             </td>
-                                        </tr>
-                                        <?php endforeach ?>
+                                        </tr> 
+                                        <?php endforeach ?> 
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <footer class="sticky-footer bg-white"><div class="container my-auto text-center"><span>Copyright © LAB IVSS</span></div></footer>
@@ -143,7 +200,7 @@ try {
         <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST">
                 <div class="modal-content">
-                    <div class="modal-header bg-success text-white"><h5 class="modal-title">Tambah Proyek Dosen</h5><button class="close text-white" data-dismiss="modal">×</button></div>
+                    <div class="modal-header bg-success text-white "><h5 class="modal-title">Tambah Proyek Dosen</h5><button class="close text-white" data-dismiss="modal">×</button></div>
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 form-group">
@@ -309,6 +366,11 @@ try {
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-    <script>$(document).ready(function() { $('#tableDosen').DataTable(); $('#tableMahasiswa').DataTable(); });</script>
+    <script>
+        $(document).ready(function() { 
+            $('#tableDosen').DataTable({ "order": [[ 0, "desc" ]] }); // Urutkan ID desc
+            $('#tableMahasiswa').DataTable({ "order": [[ 0, "desc" ]] }); 
+        });
+    </script>
 </body>
 </html>

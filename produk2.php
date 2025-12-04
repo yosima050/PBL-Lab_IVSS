@@ -10,7 +10,7 @@ try {
     $sql = "SELECT 
                 p.*,
                 dd.tanggal_mulai_proyek_dosen, dd.tanggal_selesai_proyek_dosen, 
-                dd.nama_penulis_proyek_dosen, dd.kategori_proyek_dosen,
+                dd.nama_penulis_proyek_dosen, dd.kategori_proyek_dosen, dd.lokasi_proyek_dosen,
                 dm.tanggal_mulai_proyek_mahasiswa, dm.tanggal_selesai_proyek_mahasiswa, 
                 dm.nama_penulis_proyek_mahasiswa, dm.kategori_proyek_mahasiswa, dm.lokasi_proyek_mahasiswa
             FROM public.proyek p
@@ -34,7 +34,7 @@ try {
         $tgl_selesai = $data['tanggal_selesai_proyek_dosen'];
         $penulis     = $data['nama_penulis_proyek_dosen'];
         $kategori    = $data['kategori_proyek_dosen'];
-        $lokasi      = '-'; // Dosen tidak punya kolom lokasi di DB Anda
+        $lokasi      = $data['lokasi_proyek_dosen'];
     } else {
         // Data dari Mahasiswa (Default)
         $tgl_mulai   = $data['tanggal_mulai_proyek_mahasiswa'];

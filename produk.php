@@ -2,41 +2,52 @@
 include 'dashboard/db.php'; 
 
 
-// 2. LOGIKA PENCARIAN
+// 2. LOGIKA PENCARIAN & PAGINASI
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
+// Setup Halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 4; // Jumlah item per halaman
+$offset = ($page - 1) * $limit;
+
 try {
-    // MODIFIKASI: Query untuk mendapatkan jumlah total data (untuk keperluan Paginasi)
+    // A. HITUNG TOTAL DATA (Untuk Paginasi)
     $sql_count = "SELECT COUNT(*) FROM public.proyek 
                   WHERE judul_proyek ILIKE :keyword 
                   OR deskripsi_proyek ILIKE :keyword";
     $stmt_count = $pdo->prepare($sql_count);
     $stmt_count->execute(['keyword' => $search_param]);
-    $total_data = $stmt_count->fetchColumn(); // Mendapatkan total data
+    $total_data = $stmt_count->fetchColumn();
 
-    // Query untuk mengambil data (TANPA LIMIT/OFFSET, karena paginasi belum diimplementasikan)
+    // Hitung Total Halaman
+    $total_pages = ceil($total_data / $limit);
+
+    // B. AMBIL DATA (DENGAN LIMIT & OFFSET)
     $sql = "SELECT * FROM public.proyek 
             WHERE judul_proyek ILIKE :keyword 
             OR deskripsi_proyek ILIKE :keyword 
-            ORDER BY tahun_proyek DESC"; 
+            ORDER BY tahun_proyek DESC
+            LIMIT :limit OFFSET :offset"; 
             
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['keyword' => $search_param]);
+    
+    // Binding Parameter
+    $stmt->bindValue(':keyword', $search_param, PDO::PARAM_STR);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    
+    $stmt->execute();
     $proyek_list = $stmt->fetchAll();
 
-    // VARIABEL PAGINASI (Tampilan)
-    $items_per_page = 4;
-    $current_page = 1;
-    $start_item = (($current_page - 1) * $items_per_page) + 1;
-    $end_item = min($current_page * $items_per_page, $total_data);
+    // Hitung item yang sedang ditampilkan (misal: 1-4 of 10)
+    $start_item = ($total_data > 0) ? $offset + 1 : 0;
+    $end_item = min($offset + $limit, $total_data);
 
 } catch (PDOException $e) {
     echo "Error fetching data: " . $e->getMessage();
     $proyek_list = [];
-    $total_data = 0; // Inisialisasi jika ada error
-    $start_item = 0;
-    $end_item = 0;
+    $total_data = 0;
 }
 ?>
 
@@ -114,7 +125,7 @@ try {
             border-radius: 0.375rem;
             padding: 20px;
         }
-        /* Style tambahan untuk tombol paginasi */
+        /* Style Paginasi */
         .pagination-controls {
             display: flex;
             justify-content: center;
@@ -137,6 +148,12 @@ try {
         .pagination-controls .btn-nav:hover {
             background-color: #F9D723;
             color: #0047AB;
+        }
+        .pagination-controls .btn-nav.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            border-color: #ccc;
+            color: #ccc;
         }
         .pagination-controls span {
             margin: 0 20px;
@@ -213,7 +230,8 @@ try {
                 <?php endforeach; ?>
 
                 <div class="pagination-controls">
-                    <a href="#" class="btn-nav">
+                    <a href="?page=<?= max(1, $page - 1) ?>&q=<?= htmlspecialchars($keyword) ?>" 
+                       class="btn-nav <?= ($page <= 1) ? 'disabled' : '' ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill me-2" viewBox="0 0 16 16">
                             <path d="m3.86 8.753 5.48-4.796A1 1 0 0 1 10 4.907v6.186a1 1 0 0 1-1.66 1.154l-5.48-4.796a1 1 0 0 1 0-1.509"/>
                         </svg>
@@ -224,7 +242,8 @@ try {
                         <?= $start_item; ?>-<?= $end_item; ?> of <?= $total_data; ?>
                     </span>
 
-                    <a href="#" class="btn-nav">
+                    <a href="?page=<?= min($total_pages, $page + 1) ?>&q=<?= htmlspecialchars($keyword) ?>" 
+                       class="btn-nav <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
                         Next
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill ms-2" viewBox="0 0 16 16">
                             <path d="m12.14 8.753-5.48-4.796A1 1 0 0 0 6 4.907v6.186a1 1 0 0 0 1.66 1.154l5.48-4.796a1 1 0 0 0 0-1.509"/>
