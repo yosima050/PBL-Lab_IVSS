@@ -39,6 +39,14 @@ try {
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
+
+// Ambil daftar users (hanya role 4 & 5 — user biasa)
+try {
+    $stmt = $pdo->query("SELECT id_users, nama_users, email_users FROM users WHERE id_role IN (4,5) ORDER BY nama_users ASC");
+    $allUsers = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $allUsers = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,33 +151,35 @@ try {
                                             <div class="modal-dialog">
                                                 <form action="process_publikasi.php" method="POST">
                                                     <div class="modal-content">
-
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Edit Publikasi</h5>
                                                             <button class="close" data-dismiss="modal"><span>×</span></button>
                                                         </div>
-
                                                         <div class="modal-body">
                                                             <input type="hidden" name="id_publikasi" value="<?= $p['id_publikasi'] ?>">
 
                                                             <label>Judul:</label>
-                                                            <input type="text" name="judul_publikasi" class="form-control mb-3"
-                                                                value="<?= $p['judul_publikasi'] ?>" required>
+                                                            <input type="text" name="judul_publikasi" class="form-control mb-3" value="<?= htmlspecialchars($p['judul_publikasi']) ?>" required>
 
                                                             <label>Tahun:</label>
-                                                            <input type="number" name="tahun_publikasi" class="form-control mb-3"
-                                                                value="<?= $p['tahun_publikasi'] ?>" required>
+                                                            <select name="tahun_publikasi" class="form-control mb-3" required>
+                                                                <?php 
+                                                                $currentYear = date('Y');
+                                                                for ($y = $currentYear; $y >= 1990; $y--) {
+                                                                    // Cek jika tahun sama dengan data database, tambahkan 'selected'
+                                                                    $selected = ($y == $p['tahun_publikasi']) ? 'selected' : '';
+                                                                    echo "<option value='$y' $selected>$y</option>";
+                                                                }
+                                                                ?>
+                                                            </select>
 
                                                             <label>Link Publikasi:</label>
-                                                            <input type="text" name="link_publikasi" class="form-control"
-                                                                value="<?= $p['link_publikasi'] ?>" required>
+                                                            <input type="text" name="link_publikasi" class="form-control" value="<?= htmlspecialchars($p['link_publikasi']) ?>" required>
                                                         </div>
-
                                                         <div class="modal-footer">
                                                             <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
                                                             <button type="submit" name="update" class="btn btn-primary">Simpan</button>
                                                         </div>
-
                                                     </div>
                                                 </form>
                                             </div>
@@ -203,33 +213,43 @@ try {
         <div class="modal-dialog">
             <form action="process_publikasi.php" method="POST">
                 <div class="modal-content">
-
                     <div class="modal-header">
                         <h5 class="modal-title">Tambah Publikasi</h5>
                         <button class="close" data-dismiss="modal"><span>×</span></button>
                     </div>
-
                     <div class="modal-body">
-
-                        <label>ID User (Penulis):</label>
-                        <input type="number" name="id_users" class="form-control mb-3" required>
+                        
+                        <label>Penulis (User):</label>
+                        <select name="id_users" class="form-control mb-3" required>
+                            <option value="">-- Pilih Penulis --</option>
+                            <?php foreach ($allUsers as $u): ?>
+                                <option value="<?= $u['id_users'] ?>">
+                                    <?= htmlspecialchars($u['nama_users'] . ' (' . $u['email_users'] . ')') ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
 
                         <label>Judul Publikasi:</label>
                         <input type="text" name="judul_publikasi" class="form-control mb-3" required>
 
                         <label>Tahun Publikasi:</label>
-                        <input type="number" name="tahun_publikasi" class="form-control mb-3" required>
+                        <select name="tahun_publikasi" class="form-control mb-3" required>
+                            <?php 
+                            $currentYear = date('Y');
+                            for ($y = $currentYear; $y >= 1990; $y--) {
+                                echo "<option value='$y'>$y</option>";
+                            }
+                            ?>
+                        </select>
 
                         <label>Link Publikasi:</label>
-                        <input type="text" name="link_publikasi" class="form-control" required>
+                        <input type="url" name="link_publikasi" class="form-control" pattern="https?://.+" title="Masukkan URL lengkap, mis. https://example.com" required>
 
                     </div>
-
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" name="create" class="btn btn-primary">Simpan</button>
                     </div>
-
                 </div>
             </form>
         </div>
