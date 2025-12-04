@@ -382,7 +382,6 @@ try {
                         <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" name="create_mahasiswa" class="btn btn-primary">Simpan</button>
                     </div>
-
                 </div>
             </form>
         </div>
