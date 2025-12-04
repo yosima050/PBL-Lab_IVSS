@@ -184,54 +184,32 @@ body {
                 object-fit: cover;
                 border-radius: 10px;
             }
-            
-            /* Pagination Styles */
-            .pagination-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 20px;
-                margin: 40px 0;
-                padding: 20px 0;
+            .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
             }
-            
-            .pagination-btn {
-                padding: 12px 30px;
-                border: 2px solid #0047ab;
-                background: white;
-                color: #0047ab;
-                border-radius: 8px;
-                font-size: 15px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
+            .pagination-controls .btn-nav {
+                background-color: white;
+                color: #0047AB;
+                border: 2px solid #0047AB;
+                border-radius: 0.3rem;
+                padding: 8px 15px;
+                font-weight: bold;
                 display: flex;
                 align-items: center;
-                gap: 8px;
                 text-decoration: none;
+                transition: background-color 0.2s, color 0.2s;
             }
-            
-            .pagination-btn:hover:not(.disabled) {
-                background: #0047ab;
-                color: white;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 71, 171, 0.3);
+            .pagination-controls .btn-nav:hover {
+                background-color: #F9D723;
+                color: #0047AB;
             }
-            
-            .pagination-btn.disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-                border-color: #ccc;
-                color: #999;
-            }
-            
-            .pagination-info {
-                font-size: 16px;
-                color: #333;
+            .pagination-controls span {
+                margin: 0 20px;
+                font-size: 1.1rem;
+                color: #212529;
                 font-weight: 500;
-                padding: 0 15px;
-            }
-            
-            .pagination-btn i {
-                font-size: 14px;
             }

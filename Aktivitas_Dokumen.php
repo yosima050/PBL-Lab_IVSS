@@ -7,11 +7,16 @@ $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
 try {
+    $sql_count = "SELECT COUNT(*) FROM public.proyek 
+                  WHERE judul_proyek ILIKE :keyword 
+                  OR deskripsi_proyek ILIKE :keyword";
+    $stmt_count = $pdo->prepare($sql_count);
+    $stmt_count->execute(['keyword' => $search_param]);
+    $total_data = $stmt_count->fetchColumn();
     // Query Utama: Mengambil data aktivitas
     // Subquery total_galeri: Menghitung jumlah foto tambahan di tabel 'galeri'
-    $sql = "SELECT 
-                a.*,
-                (SELECT COUNT(*) FROM public.galeri g WHERE g.id_aktivitas = a.id_aktivitas) as total_galeri
+    $sql = "SELECT a.*,
+            (SELECT COUNT(*) FROM public.galeri g WHERE g.id_aktivitas = a.id_aktivitas) as total_galeri
             FROM public.aktivitas a
             WHERE a.judul_aktivitas ILIKE :keyword 
             OR a.isi_aktivitas ILIKE :keyword 
@@ -20,10 +25,17 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['keyword' => $search_param]);
     $aktivitas_list = $stmt->fetchAll();
+    $items_per_page = 4;
+    $current_page = 1;
+    $start_item = (($current_page - 1) * $items_per_page) + 1;
+    $end_item = min($current_page * $items_per_page, $total_data);
 
 } catch (PDOException $e) {
     echo "Error fetching data: " . $e->getMessage();
     $aktivitas_list = [];
+    $total_data = 0; // Inisialisasi jika ada error
+    $start_item = 0;
+    $end_item = 0;
 }
 ?>
 
@@ -132,8 +144,24 @@ try {
                     <p class="text-muted">Tidak ada aktivitas yang ditemukan.</p>
                 </div>
             <?php endif; ?>
-
         </div>
+    </div>
+<div class="pagination-controls">
+    <a href="#" class="btn-nav">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill me-2" viewBox="0 0 16 16">
+    <path d="m3.86 8.753 5.48-4.796A1 1 0 0 1 10 4.907v6.186a1 1 0 0 1-1.66 1.154l-5.48-4.796a1 1 0 0 1 0-1.509"/>
+        </svg>
+            Previous
+            </a>
+        <span>
+            <?= $start_item; ?>-<?= $end_item; ?> of <?= $total_data; ?>
+        </span>
+    <a href="#" class="btn-nav">
+        Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill ms-2" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.48-4.796A1 1 0 0 0 6 4.907v6.186a1 1 0 0 0 1.66 1.154l5.48-4.796a1 1 0 0 0 0-1.509"/>
+            </svg>
+        </a>
     </div>
 </div>
 
