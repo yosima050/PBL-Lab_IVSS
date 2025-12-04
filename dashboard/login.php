@@ -18,12 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password']);
 
     if (empty($email) || empty($password)) {
-        $error = "Username/Email and Password are required!";
+        $error = "Email and Password are required!";
     } else {
         try {
-            // Query to find user by email
-            // Note: If you want to allow login by Username OR Email, change the WHERE clause
-            $sql = "SELECT u.id_users, u.nama_users, u.email_users, u.password, r.nama_role 
+            $sql = "SELECT u.id_users, u.email_users, u.password, r.nama_role 
                     FROM users u 
                     JOIN role r ON u.id_role = r.id_role 
                     WHERE u.email_users = :email";
@@ -104,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="p-5">
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">Selamat Datang Kembali!</h1>
-                                <p class="text-muted">Masukkan Username dan Password</p>
+                                <p class="text-muted">Masukkan Email dan Password</p>
                             </div>
 
                             <?php if(!empty($error)): ?>
@@ -119,20 +117,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <form class="user" method="POST" action="">
                                 <div class="form-group">
                                     <input type="text" name="email" class="form-control form-control-user"
-                                        id="exampleInputUsername" aria-describedby="usernameHelp"
-                                        placeholder="Username / Email" required>
+                                        id="exampleInputEmail" aria-describedby="emailHelp"
+                                        placeholder="Email" required>
                                 </div>
                                 <div class="form-group">
                                     <input type="password" name="password" class="form-control form-control-user"
                                         id="exampleInputPassword" placeholder="Password" required>
                                 </div>
-                                <div class="form-group">
+                                <!-- <div class="form-group">
                                     <div class="custom-control custom-checkbox small">
                                         <input type="checkbox" class="custom-control-input" id="customCheck">
                                         <label class="custom-control-label" for="customCheck">Remember
                                             Me</label>
                                     </div>
-                                </div>
+                                </div> -->
                                 <button type="submit" class="btn btn-primary btn-user btn-block">
                                     Log In
                                 </button>

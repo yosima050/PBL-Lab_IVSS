@@ -1,23 +1,73 @@
+<?php
+include 'dashboard/db.php'; 
+
+
+// 2. AMBIL ID DARI URL
+$id_proyek = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+try {
+    // Query menggabungkan tabel proyek dengan detail_dosen dan detail_mahasiswa
+    $sql = "SELECT 
+                p.*,
+                dd.tanggal_mulai_proyek_dosen, dd.tanggal_selesai_proyek_dosen, 
+                dd.nama_penulis_proyek_dosen, dd.kategori_proyek_dosen,
+                dm.tanggal_mulai_proyek_mahasiswa, dm.tanggal_selesai_proyek_mahasiswa, 
+                dm.nama_penulis_proyek_mahasiswa, dm.kategori_proyek_mahasiswa, dm.lokasi_proyek_mahasiswa
+            FROM public.proyek p
+            LEFT JOIN public.detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
+            LEFT JOIN public.detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
+            WHERE p.id_proyek = :id";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['id' => $id_proyek]);
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$data) {
+        die("<div class='container py-5 text-center'><h3>Proyek tidak ditemukan.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+    }
+
+    // 3. MAPPING DATA (Logika untuk menentukan data mana yang dipakai)
+    // Cek apakah data ada di tabel detail_dosen atau detail_mahasiswa
+    if (!empty($data['nama_penulis_proyek_dosen'])) {
+        // Data dari Dosen
+        $tgl_mulai   = $data['tanggal_mulai_proyek_dosen'];
+        $tgl_selesai = $data['tanggal_selesai_proyek_dosen'];
+        $penulis     = $data['nama_penulis_proyek_dosen'];
+        $kategori    = $data['kategori_proyek_dosen'];
+        $lokasi      = '-'; // Dosen tidak punya kolom lokasi di DB Anda
+    } else {
+        // Data dari Mahasiswa (Default)
+        $tgl_mulai   = $data['tanggal_mulai_proyek_mahasiswa'];
+        $tgl_selesai = $data['tanggal_selesai_proyek_mahasiswa'];
+        $penulis     = $data['nama_penulis_proyek_mahasiswa'];
+        $kategori    = $data['kategori_proyek_mahasiswa'];
+        $lokasi      = $data['lokasi_proyek_mahasiswa'];
+    }
+
+    // Format Tanggal agar cantik
+    $tgl_mulai_fmt = $tgl_mulai ? date('d M Y', strtotime($tgl_mulai)) : '-';
+    $tgl_selesai_fmt = $tgl_selesai ? date('d M Y', strtotime($tgl_selesai)) : '-';
+
+} catch (PDOException $e) {
+    die("Error: " . $e->getMessage());
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Produk Riset</title>
-<<<<<<< HEAD
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-=======
->>>>>>> bb0f071b66e8ab420ab80becb96b274eb5bebbee
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="footer.css">
     <style>
-        /* Terapkan font-family Roboto ke seluruh body */
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-        
+        body { font-family: 'Roboto', sans-serif; }
         .banner1{
-            background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
+            background:url(Asset/Coba.jpg) no-repeat 0px 0px;
             background-size:cover;
             min-height:250px;
         }
@@ -29,50 +79,31 @@
             font-size: 1.10rem;
             border-radius: 0.375rem;
             margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            width: fit-content;
-            /* font-family: "Roboto"; Dihapus karena sudah diterapkan di body */
-        }
-        
-        .header-riset span {
-            margin-left: 0.5rem;
-            font-size: 1.35rem;
+            display: inline-block;
         }
         .content-card {
             background-color: #F5F9FF !important;
         }
-        
-        .card-shadow {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-
         .detail-box {
             border: 2px solid #0047AB;
             padding: 1rem;
             border-radius: 0.375rem;
             background-color: transparent;
         }
-
         .deskripsi-box {
             border: 2px solid #0047AB;
             padding: 1rem;
             border-radius: 0.375rem;
             margin-bottom: 1.5rem;
+            background-color: white;
         }
-
         .dokumen-container {
             background-color: #FFFCED;
             padding: 1rem;
             border-radius: 0.375rem;
         }
-
-        .dokumen-container .list-group-flush {
-        background-color: transparent;
-        }
-
         .image-placeholder {
-            background-color: #FFFCED;
+            background-color: #e9ecef;
             height: 200px;
             width: 100%;
             display: flex;
@@ -81,30 +112,16 @@
             margin-bottom: 1.5rem;
             border-radius: 0.375rem;
             font-size: 3rem;
-            color: #ccc;
+            color: #6c757d;
         }
-
-        .bg-custom-blue {
-            background-color: #0047AB !important;
-        }
+        .bg-custom-blue { background-color: #0047AB !important; }
     </style>
 </head>
 <body>
+
+<?php include 'navbar.php'; ?>
+
 <div class="banner1"> </div>
-    <?php
-        // --- Data PHP Simulasi ---
-        $judul_riset = "[Judul Produk Riset]";
-        $judul_lengkap = "Judul Lengkap Item";
-        $status = "AKTIF/PUBLISHED/PROGRESS"; 
-        $deskripsi = "Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
-        $tgl_mulai = "DD/MM/YYYY";
-        $tgl_selesai = "DD/MM/YYYY";
-        $penulis_tim = "Nama Dosen";
-        $kategori = "[Kategori]";
-        $lokasi_jurnal = "[Info]";
-        $dokumen_1 = "Dokumen_1.pdf";
-        $dokumen_2 = "Dokumen_2.pdf";
-    ?>
 
     <div class="container my-5">
         
@@ -112,32 +129,36 @@
             Halaman Produk dan Riset
         </div>
 
-        <div class="card card-shadow border-0 p-4 content-card">
+        <div class="card border-0 p-4 content-card shadow-sm">
             
             <div class="d-flex align-items-center mb-4">
-                <a href="#" class="text-decoration-none me-3 text-dark">
+                <a href="produk.php" class="text-decoration-none me-3 text-dark">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
-                <h2 class="h5 m-0 text-muted ms-auto"><?php echo $judul_riset; ?></h2>
+                <h2 class="h5 m-0 text-muted ms-auto">
+                    <?= htmlspecialchars($data['tipe_proyek']); ?>
+                </h2>
             </div>
             
             <div class="image-placeholder mb-4">
-                <i class="fas fa-image"></i>
+                <i class="fas fa-file-alt"></i>
             </div>
             
-            <h3 class="h4"><?php echo $judul_lengkap; ?></h3>
+            <h3 class="h4 fw-bold mb-3"><?= htmlspecialchars($data['judul_proyek']); ?></h3>
             
             <p class="mb-4">
-                    <span class="badge bg-custom-blue text-uppercase">
-                    <?php echo $status; ?>
+                <span class="badge bg-custom-blue text-uppercase">
+                    <?= htmlspecialchars($data['tipe_proyek']); ?>
+                </span>
+                <span class="badge bg-secondary ms-2">
+                    Tahun: <?= htmlspecialchars($data['tahun_proyek']); ?>
                 </span>
             </p>
             
             <h4 class="h5">Deskripsi</h4>
-            
             <div class="deskripsi-box">
-                <p class="text-secondary m-0">
-                    <?php echo $deskripsi; ?>
+                <p class="text-secondary m-0" style="text-align: justify; line-height: 1.6;">
+                    <?= nl2br(htmlspecialchars($data['deskripsi_proyek'])); ?>
                 </p>
             </div>
 
@@ -145,37 +166,49 @@
             
             <h4 class="h5">Informasi Detail</h4>
             <div class="detail-box mb-4">
-                <p class="mb-1">Tanggal Mulai: **<?php echo $tgl_mulai; ?>**</p>
-                <p class="mb-1">Tanggal Selesai: **<?php echo $tgl_selesai; ?>**</p>
-                <p class="mb-1">Penulis/Tim: **<?php echo $penulis_tim; ?>**</p>
-                <p class="mb-1">Kategori: **<?php echo $kategori; ?>**</p>
-                <p class="m-0">Lokasi/Jurnal: **<?php echo $lokasi_jurnal; ?>**</p>
+                <table class="table table-borderless m-0 bg-transparent">
+                    <tr>
+                        <td width="150"><strong>Penulis/Tim</strong></td>
+                        <td>: <?= htmlspecialchars($penulis ?? '-'); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kategori</strong></td>
+                        <td>: <?= htmlspecialchars($kategori ?? '-'); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tanggal Mulai</strong></td>
+                        <td>: <?= $tgl_mulai_fmt; ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tanggal Selesai</strong></td>
+                        <td>: <?= $tgl_selesai_fmt; ?></td>
+                    </tr>
+                    <?php if (!empty($lokasi) && $lokasi != '-'): ?>
+                    <tr>
+                        <td><strong>Lokasi/Jurnal</strong></td>
+                        <td>: <?= htmlspecialchars($lokasi); ?></td>
+                    </tr>
+                    <?php endif; ?>
+                </table>
             </div>
             
             <h4 class="h5">Dokumen Terkait</h4>
             <div class="dokumen-container mb-4">
                 <div class="list-group list-group-flush bg-transparent">
-                    
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span><?php echo $dokumen_1; ?></span>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                            [Download]
-                        </a>
+                        <span><i class="fas fa-file-pdf me-2 text-danger"></i>Laporan_Proyek.pdf</span>
+                        <button class="btn btn-sm btn-outline-secondary" disabled>
+                            [File Tidak Tersedia]
+                        </button>
                     </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span><?php echo $dokumen_2; ?></span>
-                        <a href="#" class="btn btn-sm btn-outline-secondary">
-                            [Download]
-                        </a>
-                    </div>
-                    
                 </div>
+                <small class="text-muted fst-italic">*Dokumen belum diupload ke database.</small>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <?php include 'footer.php'; ?>
 </body>
 </html>

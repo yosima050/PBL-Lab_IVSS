@@ -263,20 +263,22 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
         <script>
             $(function () {
               $("#slider2").responsiveSlides({
-                auto: true,
-                pager: false,
-                nav: false,
-                speed: 500,
+                auto: true,     // Automatically slide
+                pager: false,   // Disable pagination dots
+                nav: false,     // Disable prev/next arrows
+                speed: 500,     // Transition speed
                 namespace: "callbacks",
               });
             });
         </script>
+
         <div id="top" class="callbacks_container">
             <ul class="rslides" id="slider2">
+                
                 <li>
                     <div class="testimonial-grids">
                         <div class="testimonial-left">
-                            <img src="Asset/Rosa-Andrie-Asmara_2.jpg" alt="" />
+                            <img src="Asset/Rosa-Andrie-Asmara_2.jpg" alt="Pak Rosa" />
                         </div>
                         <div class="testimonial-right">
                             <h5>Pak Rosa</h5>
@@ -285,7 +287,34 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
                         <div class="clearfix"> </div>
                     </div>
                 </li>
-                </ul>
+
+                <li>
+                    <div class="testimonial-grids">
+                        <div class="testimonial-left">
+                            <img src="Asset/Bu_Vivi.jpg" alt="Bu Vivi" onerror="this.src='Asset/default_profile.jpg'" />
+                        </div>
+                        <div class="testimonial-right">
+                            <h5>Vivi Nur Wijayaningrum</h5>
+                            <p><span>"</span>Laboratorium ini adalah tempat terbaik untuk mengasah kemampuan Artificial Intelligence. Fasilitas yang memadai sangat mendukung riset kami.<span>"</span></p>
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                </li>
+
+                <li>
+                    <div class="testimonial-grids">
+                        <div class="testimonial-left">
+                            <img src="Asset/Bu_Mamluatul.jpg" alt="Bu Mamluatul" onerror="this.src='Asset/default_profile.jpg'" />
+                        </div>
+                        <div class="testimonial-right">
+                            <h5>Mamluatul Hani'ah</h5>
+                            <p><span>"</span>Kolaborasi antara dosen dan mahasiswa di sini sangat kuat. Kami fokus menciptakan inovasi teknologi yang tidak hanya canggih, tapi juga bermanfaat.<span>"</span></p>
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                </li>
+
+            </ul>
         </div>
     </div>
 </div>

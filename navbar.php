@@ -51,7 +51,7 @@ if (!function_exists('is_active')) {
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['anggota.php','dosen.php','Sorotan_Publikasi.php','produk.php', 'Profil_dosen.php']) ?>">Anggota & Riset</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['anggota.php','dosen.php','Sorotan_Publikasi.php','produk.php', 'produk2.php', 'Profil_dosen.php']) ?>">Anggota & Riset</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="anggota.php">Anggota Lab</a></li>
                             <li><a class="dropdown-item" href="anggota.php">Dosen Peneliti</a></li>
@@ -62,7 +62,7 @@ if (!function_exists('is_active')) {
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['Berita_Pengumuman.php','Aktivitas_Dokumen.php']) ?>">Berita & Aktivitas</a>
+                        <a href="#" class="nav-link dropdown-toggle<?= is_active(['Berita_Pengumuman.php','Aktivitas_Dokumen.php', 'Agenda.php', 'detail_berita.php', 'pengumuman.php']) ?>">Berita & Aktivitas</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="Berita_Pengumuman.php">Berita dan Pengumuman</a></li>
                             <li><a class="dropdown-item" href="Aktivitas_Dokumen.php">Aktivitas dan Dokumentasi</a></li>
