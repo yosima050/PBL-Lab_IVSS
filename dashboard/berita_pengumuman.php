@@ -279,6 +279,7 @@ $pendingCount = $waitingApproval = 0;
                                     <option value="Berita" <?= $d['kategori_berita'] == 'Berita' ? 'selected' : '' ?>>Berita</option>
                                     <option value="Pengumuman" <?= $d['kategori_berita'] == 'Pengumuman' ? 'selected' : '' ?>>Pengumuman</option>
                                     <option value="Tautan" <?= $d['kategori_berita'] == 'Tautan' ? 'selected' : '' ?>>Tautan</option>
+                                    <option value="Agenda" <?= $d['kategori_berita'] == 'Agenda' ? 'selected' : '' ?>>Agenda</option>
                                 </select>
                             </div>
 
@@ -329,6 +330,7 @@ $pendingCount = $waitingApproval = 0;
                                 <select name="kategori_berita" class="form-control">
                                     <option value="Berita">Berita</option>
                                     <option value="Pengumuman">Pengumuman</option>
+                                    <option value="Agenda">Agenda</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -474,3 +476,4 @@ $(document).ready(function() {
 
 </body>
 </html>
+    
