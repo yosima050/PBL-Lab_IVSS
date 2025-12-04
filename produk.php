@@ -7,6 +7,15 @@ $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
 try {
+    // MODIFIKASI: Query untuk mendapatkan jumlah total data (untuk keperluan Paginasi)
+    $sql_count = "SELECT COUNT(*) FROM public.proyek 
+                  WHERE judul_proyek ILIKE :keyword 
+                  OR deskripsi_proyek ILIKE :keyword";
+    $stmt_count = $pdo->prepare($sql_count);
+    $stmt_count->execute(['keyword' => $search_param]);
+    $total_data = $stmt_count->fetchColumn(); // Mendapatkan total data
+
+    // Query untuk mengambil data (TANPA LIMIT/OFFSET, karena paginasi belum diimplementasikan)
     $sql = "SELECT * FROM public.proyek 
             WHERE judul_proyek ILIKE :keyword 
             OR deskripsi_proyek ILIKE :keyword 
@@ -16,9 +25,18 @@ try {
     $stmt->execute(['keyword' => $search_param]);
     $proyek_list = $stmt->fetchAll();
 
+    // VARIABEL PAGINASI (Tampilan)
+    $items_per_page = 4;
+    $current_page = 1;
+    $start_item = (($current_page - 1) * $items_per_page) + 1;
+    $end_item = min($current_page * $items_per_page, $total_data);
+
 } catch (PDOException $e) {
     echo "Error fetching data: " . $e->getMessage();
     $proyek_list = [];
+    $total_data = 0; // Inisialisasi jika ada error
+    $start_item = 0;
+    $end_item = 0;
 }
 ?>
 
@@ -96,6 +114,36 @@ try {
             border-radius: 0.375rem;
             padding: 20px;
         }
+        /* Style tambahan untuk tombol paginasi */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .pagination-controls .btn-nav {
+            background-color: white;
+            color: #0047AB;
+            border: 2px solid #0047AB;
+            border-radius: 0.3rem;
+            padding: 8px 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .pagination-controls .btn-nav:hover {
+            background-color: #F9D723;
+            color: #0047AB;
+        }
+        .pagination-controls span {
+            margin: 0 20px;
+            font-size: 1.1rem;
+            color: #212529;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -113,7 +161,7 @@ try {
         <div class="bg-light-gray shadow-sm">
             
             <h4 class="mb-3 d-flex align-items-center" style="color: #0047AB; font-weight:700;">
-                Daftar Riset & Proyek
+                Daftar Proyek & Riset
             </h4>
 
             <form action="" method="GET">
@@ -163,6 +211,27 @@ try {
                     </div>
 
                 <?php endforeach; ?>
+
+                <div class="pagination-controls">
+                    <a href="#" class="btn-nav">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill me-2" viewBox="0 0 16 16">
+                            <path d="m3.86 8.753 5.48-4.796A1 1 0 0 1 10 4.907v6.186a1 1 0 0 1-1.66 1.154l-5.48-4.796a1 1 0 0 1 0-1.509"/>
+                        </svg>
+                        Previous
+                    </a>
+                    
+                    <span>
+                        <?= $start_item; ?>-<?= $end_item; ?> of <?= $total_data; ?>
+                    </span>
+
+                    <a href="#" class="btn-nav">
+                        Next
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill ms-2" viewBox="0 0 16 16">
+                            <path d="m12.14 8.753-5.48-4.796A1 1 0 0 0 6 4.907v6.186a1 1 0 0 0 1.66 1.154l5.48-4.796a1 1 0 0 0 0-1.509"/>
+                        </svg>
+                    </a>
+                </div>
+
             <?php else: ?>
                 <div class="alert alert-warning text-center">
                     Tidak ada data produk atau riset yang ditemukan.
