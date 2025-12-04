@@ -38,10 +38,11 @@ $misi_list = array_filter(explode("\n", $profil['misi']));
     <link rel="stylesheet" href="footer.css">
     
     <style>
-        .banner1{
-            background:url(Asset/Coba.jpg) no-repeat 0px 0px;
-            background-size:cover;
-            min-height:250px;
+        /* CSS yang sudah ada telah diverifikasi dan dirapikan */
+        .banner1 {
+            background: url(Asset/Coba.jpg) no-repeat center center; /* Memastikan gambar banner terpusat */
+            background-size: cover;
+            min-height: 250px;
         }
         body {
             font-family: "Roboto", sans-serif;
@@ -74,6 +75,7 @@ $misi_list = array_filter(explode("\n", $profil['misi']));
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        /* Penyesuaian untuk narasi/deskripsi */
         .description-section p {
             text-align: justify;
             font-size: 14px;
@@ -85,36 +87,57 @@ $misi_list = array_filter(explode("\n", $profil['misi']));
             padding: 8px 20px;
             text-align: left;
             margin-top: 20px;
-            margin-left: 50px;
+            margin-left: 73px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: inline-block;
             border-radius: 25px;
             font-weight: bold;
             color: #0047AB;
             font-size: 18px;
-            margin-bottom: 10px;
+            margin-bottom: 20px; /* Koreksi: AV dihapus, disesuaikan margin */
         }
         .custom-section-container {
             margin: 0 50px 30px 50px;
         }
         .custom-section-content {
             padding: 25px;
-            margin : 1px;
+            margin: 20px;
             background-color: #F5F9FF;
-            border-radius: 15px 15px 15px 15px;
+            border-radius: 15px; /* Disederhanakan dari 15px 15px 15px 15px */
         }
-        .custom-section-content ul { list-style-position: outside; margin-left: 20px; }
+        /* Penyesuaian untuk daftar misi */
+        .custom-section-content ul { 
+            list-style-type: disc; /* Mengubah kembali ke disc untuk daftar yang jelas */
+            list-style-position: outside; 
+            padding-left: 20px; 
+            margin: 0;
+        }
+        .custom-section-content ul li {
+            margin-bottom: 10px; /* Tambahkan sedikit jarak antar misi */
+            padding-left: 5px; /* Ruang untuk bullet point */
+        }
         
         #visi-misi { scroll-margin-top: 100px; }
 
         @media (max-width: 768px) {
             .custom-main-content { margin: 15px; }
-            .custom-header, .custom-vision-mission-title {
-                margin-left: auto !important;
-                margin-right: auto !important;
+            /* Membuat header terpusat di mobile */
+            .custom-header {
+                margin-left: auto;
+                margin-right: auto;
             }
-            .custom-vision-mission-title { margin-left: 15px; font-size: 16px; margin-bottom: 8px; }
+            .custom-vision-mission-title { 
+                margin-left: 15px !important; 
+                margin-right: auto;
+                font-size: 16px; 
+                margin-bottom: 8px; 
+            }
             .custom-section-container { margin: 8px 15px 30px 15px; }
+            /* Mengatur ulang list style untuk mobile */
+            .custom-section-content ul {
+                 list-style-type: disc !important; /* Memastikan list style tetap disc */
+                 padding-left: 30px; 
+            }
         }
     </style>
 </head>
@@ -124,7 +147,7 @@ $misi_list = array_filter(explode("\n", $profil['misi']));
     
     <div class="banner1"> </div>
     
-    <div class="container-fluid p-0">
+    <div class="container py-4">
         
         <div class="text-center">
             <div class="custom-header d-inline-block">
@@ -171,7 +194,7 @@ $misi_list = array_filter(explode("\n", $profil['misi']));
         <div class="custom-vision-mission-title">Misi</div>
         <div class="custom-section-container" style="margin-bottom:20px;">
             <div class="custom-section-content">
-                <ul style="list-style-type: none; padding-left: 0;">
+                <ul>
                     <?php if (!empty($misi_list)): ?>
                         <?php foreach($misi_list as $misi_item): ?>
                             <?php if(trim($misi_item) != ''): ?>
