@@ -156,8 +156,8 @@ try {
                                                                     value="<?= $u['id_role'] ?>" required>
 
                                                                 <label>Nama:</label>
-                                                                <input type="text" name="nama_users" class="form-control mb-3"
-                                                                    value="<?= $u['nama_users'] ?>" required>
+                                                                <input type="text" name="nama_role" class="form-control mb-3"
+                                                                    value="<?= $u['nama_role'] ?>" required>
 
                                                                 <label>Email:</label>
                                                                 <input type="email" name="email_users" class="form-control mb-3"
