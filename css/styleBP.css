@@ -21,7 +21,7 @@
         }
 
         .header-berita {
-            background-color: #ffd700;
+            background-color: #f9d723;
             padding: 12px 20px;
             border-radius: 8px;
             margin-bottom: 30px;
@@ -104,7 +104,7 @@
         }
 
         .sidebar-header {
-            background-color: #ffd700;
+            background-color: #f9d723;
             padding: 10px 20px;
             border-radius: 20px;
             font-weight: bold;
@@ -148,6 +148,12 @@
             font-size: 11px;
             color: #888;
             margin: 0;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 30px;
+            font-family: "Roboto";
         }
 
         @media (max-width: 768px) {
