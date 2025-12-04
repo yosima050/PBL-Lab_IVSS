@@ -35,8 +35,8 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
     $stmt = $pdo->prepare("SELECT foto_fasilitas FROM fasilitas WHERE id_fasilitas = :id");
     $stmt->execute(['id' => $id]);
     $fotoLama = $stmt->fetchColumn();
-    if ($fotoLama && file_exists("../uploads/" . $fotoLama)) {
-        unlink("../uploads/" . $fotoLama);
+    if ($fotoLama && file_exists("uploads/" . $fotoLama)) {
+        unlink("uploads/" . $fotoLama);
     }
 
     $stmt = $pdo->prepare("DELETE FROM fasilitas WHERE id_fasilitas = :id");
@@ -60,7 +60,7 @@ if (isset($_POST['update'])) {
     if (!empty($_FILES['foto_fasilitas']['name'])) {
         $foto = time() . '_' . $_FILES['foto_fasilitas']['name']; // Tambah time() agar unik
         $tmp  = $_FILES['foto_fasilitas']['tmp_name'];
-        move_uploaded_file($tmp, "../uploads/".$foto);
+        move_uploaded_file($tmp, "uploads/".$foto);
     } else {
         $foto = $_POST['foto_lama'];
     }
@@ -94,7 +94,7 @@ if (isset($_POST['tambah'])) {
 
     $foto = time() . '_' . $_FILES['foto_fasilitas']['name']; // Tambah time() agar unik
     $tmp  = $_FILES['foto_fasilitas']['tmp_name'];
-    move_uploaded_file($tmp, "../uploads/" . $foto);
+    move_uploaded_file($tmp, "uploads/" . $foto);
     
     // Ambil ID User yang login (untuk audit trail, jika kolom id_users ada di tabel fasilitas)
     $id_users = $_SESSION['user_id'];
@@ -229,7 +229,7 @@ try {
                             <div class="form-group">
                                 <label>Foto Saat Ini</label><br>
                                 <?php if(!empty($f['foto_fasilitas'])): ?>
-                                    <img src="../uploads/<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="150" class="img-thumbnail mb-2">
+                                    <img src="<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="150" class="img-thumbnail mb-2">
                                 <?php endif; ?>
                                 <input type="file" name="foto_fasilitas" class="form-control-file">
                                 <small class="text-muted">Biarkan kosong jika tidak ingin mengganti foto.</small>
@@ -308,7 +308,7 @@ try {
                                         <td><?= $no++ ?></td>
                                         <td>
                                             <?php if(!empty($f['foto_fasilitas'])): ?>
-                                                <img src="../uploads/<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="80" class="img-thumbnail">
+                                                <img src="<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="80" class="img-thumbnail">
                                             <?php else: ?>
                                                 <span class="text-muted">No Image</span>
                                             <?php endif; ?>
