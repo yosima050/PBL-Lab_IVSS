@@ -14,38 +14,36 @@ $role = $_SESSION['role']; // Asumsi value: 'admin_sistem', 'admin_berita', 'ket
 $username = $_SESSION['nama_users'] ?? 'User';
 
 // 3. QUERY DATA (Disesuaikan dengan Role)
-// Kita hanya menjalankan query yang relevan dengan role yang login agar efisien
+$pendingCount = 0;
+$waitingApproval = 0;
 
 // --- DATA UNTUK ADMIN SISTEM ---
 if ($role == 'admin_sistem') {
-    //Pending Pendaftar
     $pendingCount = getPendingPendaftar($pdo);
-    // Total Mahasiswa Aktif
     $totalMembers = getTotalMahasiswaAktif($pdo);
-    // Total Dosen
     $totalDosen = getTotalDosen($pdo);
-    // Total Users
     $totalUsers = getTotalUsers($pdo);
 }
 
 // --- DATA UNTUK ADMIN BERITA ---
 if ($role == 'admin_berita') {
-    // Total Berita
     $totalNews = getTotalBerita($pdo);
-    // Total Aktivitas
     $totalActivities = getTotalAktivitas($pdo);
-    // Total Fasilitas
     $totalFacilities = getTotalFacilities($pdo);
 }
 
 // --- DATA UNTUK KETUA LAB ---
 if ($role == 'ketua_lab') {
     // Menunggu Persetujuan Ketua Lab (Status sudah diteruskan oleh Admin Sistem)
-    // Asumsi: Admin Sistem mengubah status jadi 'Menunggu Ketua Lab' atau kolom 'diteruskan_oleh' terisi
-    $stmt = $pdo->query("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu Ketua Lab'"); 
-    $waitingApproval = $stmt->fetchColumn();
+    // Asumsi: Admin Sistem mengubah status jadi 'Menunggu'
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+        $stmt->execute();
+        $waitingApproval = $stmt->fetchColumn();
+    } catch (PDOException $e) {
+        $waitingApproval = 0;
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +63,6 @@ if ($role == 'ketua_lab') {
     <div id="wrapper">
 
         <?php include __DIR__ . '/sidebar.php'; ?>
-        <!-- sidebar moved to dashboard/sidebar.php -->
         
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
@@ -85,8 +82,7 @@ if ($role == 'ketua_lab') {
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Logout
                                 </a>
                             </div>
                         </li>
@@ -99,64 +95,64 @@ if ($role == 'ketua_lab') {
                     </div>
 
                     <?php if ($role == 'admin_sistem') : ?>
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pendaftar Pending</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)$pendingCount ?></div>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pendaftar Pending</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)$pendingCount ?></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-user-clock fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-user-clock fa-2x text-gray-300"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Mahasiswa Aktif</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)($totalMembers ?? 0) ?></div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Mahasiswa Aktif</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)($totalMembers ?? 0) ?></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Dosen Peneliti</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)($totalDosen ?? 0) ?></div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Dosen Peneliti</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)($totalDosen ?? 0) ?></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Users</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)($totalUsers ?? 0) ?></div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Users</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)($totalUsers ?? 0) ?></div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php endif; ?>
+                    <?php endif; ?>
 
 
                     <?php if ($role == 'admin_berita') : ?>
@@ -207,6 +203,27 @@ if ($role == 'ketua_lab') {
                                 <span class="icon text-white-50"><i class="fas fa-plus"></i></span>
                                 <span class="text">Tulis Berita Baru</span>
                             </a>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+
+                    <?php if ($role == 'ketua_lab') : ?>
+                    <div class="row">
+                        <div class="col-xl-4 col-md-6 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Menunggu Persetujuan</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= (int)$waitingApproval ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <?php endif; ?>
