@@ -29,7 +29,7 @@ $username = $_SESSION['nama_users'] ?? 'User';
 $statusFilter = 'Menunggu Ketua Lab'; 
 // CATATAN: Jika Admin Sistem belum mengubah status, dan Ketua Lab ingin lihat semua 'Pending', ubah jadi 'Pending'.
 // Untuk saat ini kita gunakan 'Pending' agar Anda bisa melihat data registrasi yang baru masuk untuk dites.
-$statusFilter = 'Pending'; // <-- UBAH INI jika sudah ada alur Admin Sistem
+$statusFilter = 'Menunggu'; // <--- UBAH INI (sebelumnya 'Pending')
 
 try {
     $sql = "SELECT * FROM pendaftaran WHERE status_mahasiswa = :status ORDER BY id_pendaftaran DESC";
