@@ -1,18 +1,16 @@
 <?php
-// 1. HUBUNGKAN KE DATABASE
 include 'dashboard/db.php'; 
+
 
 // 2. LOGIKA PENCARIAN
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
 try {
-    // Query mengambil data dari tabel 'proyek'
-    // Kita filter berdasarkan Judul atau Deskripsi
     $sql = "SELECT * FROM public.proyek 
             WHERE judul_proyek ILIKE :keyword 
             OR deskripsi_proyek ILIKE :keyword 
-            ORDER BY tahun_proyek DESC"; // Urutkan dari yang terbaru
+            ORDER BY tahun_proyek DESC"; 
             
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['keyword' => $search_param]);
@@ -37,7 +35,7 @@ try {
     <style>
         body { font-family: 'Roboto', sans-serif; }
         .banner1{
-            background:url(../Asset/Coba.jpg) no-repeat 0px 0px;
+            background:url(Asset/Coba.jpg) no-repeat 0px 0px;
             background-size:cover;
             min-height:250px;
         }
@@ -60,7 +58,6 @@ try {
             display: inline-block;
             margin-bottom: 10px;
         }
-        /* Style Badge Dinamis */
         .badge-status {
             padding: 4px 8px;
             border-radius: 5px;
@@ -78,7 +75,7 @@ try {
             font-weight: bold;
             width: 100%;
             border: none;
-            display: block; /* Agar tombol memenuhi lebar */
+            display: block;
             text-align: center;
             padding: 8px 0;
             text-decoration: none;
@@ -110,7 +107,7 @@ try {
     <div class="container py-4">
 
         <div class="custom-yellow-header">
-            Halaman Produk dan Riset
+            Halaman Proyek dan Riset
         </div>
         
         <div class="bg-light-gray shadow-sm">
@@ -123,14 +120,10 @@ try {
                 <div class="input-group mb-4">
                     <input type="text" name="q" class="form-control" 
                            placeholder="Cari Produk, Proyek..." 
-                           value="<?= htmlspecialchars($keyword) ?>"
-                           aria-label="Cari Produk">
+                           value="<?= htmlspecialchars($keyword) ?>">
                     
                     <button class="btn btn-light border" type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                        </svg>
-                        Cari
+                        <i class="fas fa-search"></i> Cari
                     </button>
                 </div>
             </form>
@@ -154,9 +147,8 @@ try {
                         
                         <div class="mb-3">
                             <?php
-                                // Memberikan warna badge bedasarkan tipe proyek
-                                $badgeColor = 'bg-blue'; // Default
-                                if (stripos($row['tipe_proyek'], 'Proyek Aktif') !== false) {
+                                $badgeColor = 'bg-blue';
+                                if (stripos($row['tipe_proyek'], 'Aktif') !== false) {
                                     $badgeColor = 'bg-orange';
                                 } elseif (stripos($row['tipe_proyek'], 'Publikasi') !== false) {
                                     $badgeColor = 'bg-green';
@@ -167,7 +159,7 @@ try {
                             </span>
                         </div>
                         
-                        <a href="#" class="btn custom-detail-button">Lihat Detail</a>
+                        <a href="produk2.php?id=<?= $row['id_proyek']; ?>" class="btn custom-detail-button">Lihat Detail</a>
                     </div>
 
                 <?php endforeach; ?>
@@ -181,7 +173,6 @@ try {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
     <?php include 'footer.php'; ?>
 </body>
 </html>

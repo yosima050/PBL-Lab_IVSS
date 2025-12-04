@@ -195,12 +195,12 @@ try {
                         </td>
                         <td>
                             <?php if(!empty($row['foto_fasilitas'])): ?>
-                                <img src="uploads/<?= htmlspecialchars($row['foto_fasilitas']); ?>" 
+                                <img src="<?= htmlspecialchars($row['foto_fasilitas']); ?>" 
                                      class="fasilitas-img" 
                                      alt="Foto"
                                      onerror="this.src='Asset/noimage.png';">
                             <?php else: ?>
-                                <span>-</span>
+                                <span>Tidak ada Foto</span>
                             <?php endif; ?>
                         </td>
                     </tr>

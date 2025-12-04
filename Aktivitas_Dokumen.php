@@ -120,7 +120,7 @@ try {
                                 <?php endif; ?>
                             </div>
                             
-                            <a href="detail_aktivitas.php?id=<?= $row['id_aktivitas']; ?>" class="detail-link">
+                            <a href="Detail_Aktivitas.php?id=<?= $row['id_aktivitas']; ?>" class="detail-link">
                                 Lihat Detail <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>

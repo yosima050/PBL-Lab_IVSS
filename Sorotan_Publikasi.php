@@ -1,53 +1,60 @@
 <?php
-// 1. HUBUNGKAN KONEKSI
 include 'dashboard/db.php'; 
 
-// 2. INISIALISASI VARIABEL FILTER
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'latest'; // Default latest
+
+// 2. INISIALISASI VARIABEL (Agar tidak error Undefined Variable)
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'latest';
 $year_filter = isset($_GET['year']) ? $_GET['year'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 6; // Jumlah kartu per halaman
+$limit = 6;
 $offset = ($page - 1) * $limit;
+
+// Variabel default untuk mencegah warning jika query gagal
+$publikasi_list = [];
+$years = [];
+$total_items = 0;
+$total_pages = 0;
 
 try {
     // 3. QUERY UNTUK MENGAMBIL TAHUN (UNTUK DROPDOWN)
-    // Mengambil tahun unik dari tabel publikasi
-    $stmt_years = $pdo->query("SELECT DISTINCT EXTRACT(YEAR FROM tanggal_publikasi) as year FROM public.publikasi ORDER BY year DESC");
+    // PERBAIKAN: Gunakan 'tahun_publikasi' langsung
+    $stmt_years = $pdo->query("SELECT DISTINCT tahun_publikasi as year FROM public.publikasi ORDER BY year DESC");
     $years = $stmt_years->fetchAll(PDO::FETCH_COLUMN);
 
-    // 4. MEMBANGUN QUERY UTAMA (DENGAN FILTER)
+    // 4. MEMBANGUN QUERY UTAMA
     $sql = "SELECT * FROM public.publikasi";
     $whereClauses = [];
     $params = [];
 
-    // Jika ada filter tahun
+    // Filter Tahun
     if (!empty($year_filter)) {
-        $whereClauses[] = "EXTRACT(YEAR FROM tanggal_publikasi) = :year";
+        // PERBAIKAN: Langsung bandingkan dengan kolom tahun_publikasi
+        $whereClauses[] = "tahun_publikasi = :year";
         $params[':year'] = $year_filter;
     }
 
-    // Gabungkan WHERE clause jika ada
     if (!empty($whereClauses)) {
         $sql .= " WHERE " . implode(' AND ', $whereClauses);
     }
 
-    // Hitung Total Data (Untuk Pagination) sebelum dilimit
+    // Hitung Total Data (Untuk Pagination)
     $stmt_count = $pdo->prepare(str_replace("SELECT *", "SELECT COUNT(*)", $sql));
     $stmt_count->execute($params);
     $total_items = $stmt_count->fetchColumn();
-    $total_pages = ceil($total_items / $limit);
+    
+    // Hitung total halaman (hindari pembagian dengan nol jika data kosong)
+    $total_pages = ($total_items > 0) ? ceil($total_items / $limit) : 1;
 
-    // Tambahkan Sorting (Order By)
+    // Sorting
     if ($sort == 'oldest') {
-        $sql .= " ORDER BY tanggal_publikasi ASC";
+        $sql .= " ORDER BY tahun_publikasi ASC";
     } else {
-        $sql .= " ORDER BY tanggal_publikasi DESC"; // Default Latest
+        $sql .= " ORDER BY tahun_publikasi DESC";
     }
 
-    // Tambahkan Limit & Offset (Pagination)
+    // Limit & Offset
     $sql .= " LIMIT :limit OFFSET :offset";
     
-    // Eksekusi Query Data
     $stmt = $pdo->prepare($sql);
     foreach ($params as $key => $val) {
         $stmt->bindValue($key, $val);
@@ -59,8 +66,8 @@ try {
     $publikasi_list = $stmt->fetchAll();
 
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
-    $publikasi_list = [];
+    // Tampilkan error hanya untuk debugging, bisa dikomentari saat production
+    echo "<div class='alert alert-danger'>Error Database: " . $e->getMessage() . "</div>";
 }
 ?>
 
@@ -78,20 +85,30 @@ try {
     <link rel="stylesheet" href="footer.css">
     
     <style>
-        /* Tambahan Style untuk Tombol Aktif */
         .filter-btn.active {
             background-color: #0047AB;
             color: white;
             border-color: #0047AB;
         }
-        /* Style agar link memenuhi tombol baca */
-        .baca-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            width: 100%;
-            height: 100%;
+        /* Dropdown CSS fix */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
         }
+        .years-dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {background-color: #f1f1f1}
     </style>
 </head>
 
@@ -112,7 +129,6 @@ try {
 
         <div class="filter-buttons">
             <a href="?sort=latest&year=<?= $year_filter ?>" class="btn filter-btn <?= ($sort == 'latest') ? 'active' : '' ?>">Latest</a>
-            
             <a href="?sort=oldest&year=<?= $year_filter ?>" class="btn filter-btn <?= ($sort == 'oldest') ? 'active' : '' ?>">Oldest</a>
             
             <div class="years-dropdown" style="display:inline-block; position:relative;">
@@ -135,17 +151,17 @@ try {
                         <h3><?= htmlspecialchars($row['judul_publikasi']); ?></h3>
                         
                         <div class="publication-date">
-                            <?= date('d M Y', strtotime($row['tanggal_publikasi'])); ?>
+                            Tahun: <?= htmlspecialchars($row['tahun_publikasi']); ?>
                         </div>
                         
-                        <button class="baca-btn" onclick="window.open('<?= htmlspecialchars($row['link']); ?>', '_blank')">
+                        <button class="baca-btn" onclick="window.open('<?= htmlspecialchars($row['link_publikasi']); ?>', '_blank')">
                             Baca
                         </button>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <div class="col-12 text-center">
-                    <p>Belum ada data publikasi untuk kategori ini.</p>
+                <div class="col-12 text-center my-5">
+                    <p>Belum ada data publikasi.</p>
                 </div>
             <?php endif; ?>
         </div>
