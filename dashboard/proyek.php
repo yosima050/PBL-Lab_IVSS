@@ -81,7 +81,24 @@ try {
 
     <div id="wrapper">
 
-        <?php include __DIR__ . '/sidebar.php'; ?>
+        <?php
+        // supply role + badge counters for sidebar.php before including it
+        $role = $_SESSION['role'] ?? null;
+        $pendingCount = 0;
+        $waitingApproval = 0;
+        try {
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+            $stmt->execute();
+            $pendingCount = (int) $stmt->fetchColumn();
+        } catch (Exception $e) { $pendingCount = 0; }
+        try {
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+            $stmt->execute();
+            $waitingApproval = (int) $stmt->fetchColumn();
+        } catch (Exception $e) { $waitingApproval = 0; }
+
+        include __DIR__ . '/sidebar.php';
+        ?>
 
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
