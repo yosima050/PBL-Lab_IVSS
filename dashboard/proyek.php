@@ -2,183 +2,103 @@
 session_start();
 require_once __DIR__ . '/db.php';
 
-// Cek Login
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['admin_sistem', 'ketua_lab'])) {
+    header("Location: login.php"); exit;
 }
-
-// Role yang boleh akses
-if (!in_array($_SESSION['role'], ['admin_sistem', 'ketua_lab'])) {
-    echo "Akses Ditolak!";
-    exit;
-}
-
 $username = $_SESSION['nama_users'] ?? 'User';
 
-// Ambil data proyek dosen
+// 1. AMBIL LIST DOSEN (Untuk Dropdown)
+$stmt = $pdo->query("SELECT id_dosen, nama_dosen FROM dosen ORDER BY nama_dosen ASC");
+$listDosen = $stmt->fetchAll();
+
+// 2. AMBIL LIST MAHASISWA (Untuk Dropdown - FIX BUTTON ERROR)
+// Kita join ke users untuk dapat namanya
+$stmt = $pdo->query("SELECT m.id_mahasiswa, u.nama_users, m.status_mahasiswa 
+                     FROM mahasiswa m 
+                     JOIN users u ON m.id_users = u.id_users 
+                     ORDER BY u.nama_users ASC");
+$listMahasiswa = $stmt->fetchAll();
+
+// 3. QUERY PROYEK DOSEN (UPDATE: Ada lokasi_proyek_dosen)
 try {
     $stmt = $pdo->query("
         SELECT 
-            p.id_proyek,
-            p.judul_proyek,
-            p.deskripsi_proyek,
-            p.tahun_proyek,
-            p.tipe_proyek,
-            d.id_dosen,
-            d.nama_dosen
+            p.*, 
+            d.nama_dosen, 
+            dpd.tanggal_mulai_proyek_dosen, dpd.tanggal_selesai_proyek_dosen, 
+            dpd.nama_penulis_proyek_dosen, dpd.kategori_proyek_dosen, dpd.lokasi_proyek_dosen
         FROM proyek p
         JOIN detail_proyek_dosen dpd ON p.id_proyek = dpd.id_proyek
-        JOIN dosen d ON dpd.id_dosen = d.id_dosen
+        LEFT JOIN dosen d ON dpd.id_dosen = d.id_dosen
         ORDER BY p.id_proyek DESC
     ");
     $proyekDosen = $stmt->fetchAll();
-} catch (PDOException $e) {
-    die("Error Dosen: " . $e->getMessage());
-}
+} catch (PDOException $e) { die("Error Dosen: " . $e->getMessage()); }
 
-// Ambil data proyek mahasiswa
+// 4. QUERY PROYEK MAHASISWA
 try {
-    $stmt2 = $pdo->query("
+    $stmt = $pdo->query("
         SELECT 
-            dpm.id_proyek,
-            p.judul_proyek,
-            p.deskripsi_proyek,
-            p.tahun_proyek,
-            p.tipe_proyek,
-            m.id_mahasiswa,
-            u.nama_users AS nama_mahasiswa,
-            dpm.nama_penulis_proyek_mahasiswa,
-            dpm.tanggal_mulai_proyek_mahasiswa,
-            dpm.tanggal_selesai_proyek_mahasiswa,
-            dpm.kategori_proyek_mahasiswa,
-            dpm.lokasi_proyek_mahasiswa
+            p.*, dpm.*, u.nama_users AS nama_mahasiswa
         FROM detail_proyek_mahasiswa dpm
         JOIN proyek p ON dpm.id_proyek = p.id_proyek
-        JOIN mahasiswa m ON dpm.id_mahasiswa = m.id_mahasiswa
-        JOIN users u ON m.id_users = u.id_users
-        ORDER BY dpm.id_proyek DESC;
+        LEFT JOIN mahasiswa m ON dpm.id_mahasiswa = m.id_mahasiswa
+        LEFT JOIN users u ON m.id_users = u.id_users
+        ORDER BY p.id_proyek DESC
     ");
-    $proyekMahasiswa = $stmt2->fetchAll();
-} catch (PDOException $e) {
-    die("Error Mahasiswa: " . $e->getMessage());
-}
+    $proyekMahasiswa = $stmt->fetchAll();
+} catch (PDOException $e) { die("Error Mahasiswa: " . $e->getMessage()); }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Data Proyek</title>
-
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
-
 <body id="page-top">
-
     <div id="wrapper">
-
-        <?php
-        // supply role + badge counters for sidebar.php before including it
-        $role = $_SESSION['role'] ?? null;
-        $pendingCount = 0;
-        $waitingApproval = 0;
-        try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
-            $stmt->execute();
-            $pendingCount = (int) $stmt->fetchColumn();
-        } catch (Exception $e) { $pendingCount = 0; }
-        try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
-            $stmt->execute();
-            $waitingApproval = (int) $stmt->fetchColumn();
-        } catch (Exception $e) { $waitingApproval = 0; }
-
-        include __DIR__ . '/sidebar.php';
+        <?php 
+        // Sidebar logic dummy agar tidak error
+        $role = $_SESSION['role']; $pendingCount = 0; $waitingApproval = 0;
+        include __DIR__ . '/sidebar.php'; 
         ?>
 
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
-
-                <!-- TOPBAR -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 shadow">
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" data-toggle="dropdown">
-                                <span class="mr-2 text-gray-600 small">
-                                    Halo, <b><?= htmlspecialchars($username) ?></b>
-                                </span>
-                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow">
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Logout
-                                </a>
-                            </div>
-                        </li>
+                        <li class="nav-item"><span class="mr-2 text-gray-600 small">Halo, <b><?= htmlspecialchars($username) ?></b></span></li>
                     </ul>
                 </nav>
 
                 <div class="container-fluid">
-
                     <h1 class="h3 mb-2 text-gray-800">Data Proyek</h1>
                     <p class="mb-4">Kelola data proyek dosen dan mahasiswa.</p>
 
-                    <!-- Tombol Tambah -->
-                    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#createProyekDosen">
-                        <i class="fas fa-plus"></i> Tambah Proyek Dosen
-                    </button>
+                    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#createProyekDosen"><i class="fas fa-plus"></i> Tambah Proyek Dosen</button>
+                    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createProyekMahasiswa"><i class="fas fa-plus"></i> Tambah Proyek Mahasiswa</button>
 
-                    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createProyekMahasiswa">
-                        <i class="fas fa-plus"></i> Tambah Proyek Mahasiswa
-                    </button>
-
-                    <!-- ===================================================== -->
-                    <!-- =============== TABEL PROYEK DOSEN ================== -->
-                    <!-- ===================================================== -->
                     <div class="card shadow mb-4">
+                        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-success">Proyek Dosen</h6></div>
                         <div class="card-body">
-                            <h4 class="mb-3">Data Proyek Dosen</h4>
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="tableDosen">
-                                    <thead>
-                                        <tr>
-                                            <th>ID Proyek</th>
-                                            <th>Dosen</th>
-                                            <th>Judul</th>
-                                            <th>Tahun</th>
-                                            <th>Tipe</th>
-                                            <th>Deskripsi</th>
-                                            <th class="text-center">Aksi</th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr><th>ID</th><th>Dosen</th><th>Judul</th><th>Kategori</th><th>Lokasi</th><th>Aksi</th></tr></thead>
                                     <tbody>
                                         <?php foreach ($proyekDosen as $d): ?>
                                         <tr>
                                             <td><?= $d['id_proyek'] ?></td>
                                             <td><?= htmlspecialchars($d['nama_dosen']) ?></td>
                                             <td><?= htmlspecialchars($d['judul_proyek']) ?></td>
-                                            <td><?= $d['tahun_proyek'] ?></td>
-                                            <td><?= htmlspecialchars($d['tipe_proyek']) ?></td>
-                                            <td><?= htmlspecialchars($d['deskripsi_proyek']) ?></td>
-
-                                            <td class="text-center">
-                                                <!-- Tombol Edit -->
-                                                <button class="btn btn-warning btn-sm"
-                                                    data-toggle="modal"
-                                                    data-target="#editProyekDosen<?= $d['id_proyek'] ?>">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-
-                                                <!-- Tombol Delete -->
-                                                <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>"
-                                                onclick="return confirm('Hapus proyek dosen ini?')"
-                                                class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i>
-                                                </a>
+                                            <td><?= htmlspecialchars($d['kategori_proyek_dosen']) ?></td>
+                                            <td><?= htmlspecialchars($d['lokasi_proyek_dosen']) ?></td> <td class="text-center">
+                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>"><i class="fas fa-edit"></i></button>
+                                                <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>" onclick="return confirm('Hapus?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                             </td>
                                         </tr>
                                         <?php endforeach ?>
@@ -188,310 +108,207 @@ try {
                         </div>
                     </div>
 
-                    <!-- ===================================================== -->
-                    <!-- ============ TABEL PROYEK MAHASISWA ================= -->
-                    <!-- ===================================================== -->
                     <div class="card shadow mb-4">
+                        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Proyek Mahasiswa</h6></div>
                         <div class="card-body">
-                            <h4 class="mb-3">Data Proyek Mahasiswa</h4>
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="tableMahasiswa">
-                                    <thead>
+                                    <thead><tr><th>ID</th><th>Mahasiswa</th><th>Judul</th><th>Kategori</th><th>Lokasi</th><th>Aksi</th></tr></thead>
+                                    <tbody>
+                                        <?php foreach ($proyekMahasiswa as $p): ?>
                                         <tr>
-                                            <th>ID Proyek</th>
-                                            <th>Mahasiswa</th>
-                                            <th>Judul</th>
-                                            <th>Kategori</th>
-                                            <th>Lokasi</th>
-                                            <th>Mulai</th>
-                                            <th>Selesai</th>
-                                            <th>Penulis</th>
-                                            <th class="text-center">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody> 
-                                        <?php foreach ($proyekMahasiswa as $p): ?> 
-                                        <tr> 
-                                            <td><?= $p['id_proyek'] ?></td> 
-                                            <td><?= htmlspecialchars($p['nama_mahasiswa']) ?></td> 
-                                            <td><?= htmlspecialchars($p['judul_proyek']) ?></td> 
-                                            <td><?= htmlspecialchars($p['kategori_proyek_mahasiswa']) ?></td> 
-                                            <td><?= htmlspecialchars($p['lokasi_proyek_mahasiswa']) ?></td> 
-                                            <td><?= $p['tanggal_mulai_proyek_mahasiswa'] ?></td> 
-                                            <td><?= $p['tanggal_selesai_proyek_mahasiswa'] ?></td> 
-                                            <td><?= htmlspecialchars($p['nama_penulis_proyek_mahasiswa']) ?></td>
-
+                                            <td><?= $p['id_proyek'] ?></td>
+                                            <td><?= htmlspecialchars($p['nama_mahasiswa']) ?></td>
+                                            <td><?= htmlspecialchars($p['judul_proyek']) ?></td>
+                                            <td><?= htmlspecialchars($p['kategori_proyek_mahasiswa']) ?></td>
+                                            <td><?= htmlspecialchars($p['lokasi_proyek_mahasiswa']) ?></td>
                                             <td class="text-center">
-                                                <!-- Tombol Edit -->
-                                                <button class="btn btn-warning btn-sm"
-                                                    data-toggle="modal"
-                                                    data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-
-                                                <!-- Tombol Delete -->
-                                                <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>"
-                                                    onclick="return confirm('Hapus proyek mahasiswa ini?')"
-                                                    class="btn btn-danger btn-sm">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
+                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>"><i class="fas fa-edit"></i></button>
+                                                <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>" onclick="return confirm('Hapus?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
                                             </td>
-                                        </tr> 
-                                        <?php endforeach ?> 
+                                        </tr>
+                                        <?php endforeach ?>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-
                 </div>
-
-                <!-- FOOTER -->
-                <footer class="sticky-footer bg-white">
-                    <div class="container my-auto">
-                        <div class="text-center">
-                            <span>Copyright © LAB IVSS</span>
-                        </div>
-                    </div>
-                </footer>
-
             </div>
+            <footer class="sticky-footer bg-white"><div class="container my-auto text-center"><span>Copyright © LAB IVSS</span></div></footer>
         </div>
     </div>
 
-    <!-- ================================================= -->
-    <!-- ============ MODAL TAMBAH PROYEK DOSEN ========== -->
-    <!-- ================================================= -->
     <div class="modal fade" id="createProyekDosen" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST">
                 <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tambah Proyek Dosen</h5>
-                        <button class="close" data-dismiss="modal"><span>×</span></button>
-                    </div>
-
+                    <div class="modal-header bg-success text-white"><h5 class="modal-title">Tambah Proyek Dosen</h5><button class="close text-white" data-dismiss="modal">×</button></div>
                     <div class="modal-body">
-                        <label>ID Dosen:</label>
-                        <input type="number" name="id_dosen" class="form-control mb-3" required>
-
-                        <label>Judul Proyek:</label>
-                        <input type="text" name="judul" class="form-control mb-3" required>
-
-                        <label>Deskripsi:</label>
-                        <textarea name="deskripsi" class="form-control mb-3" required></textarea>
-
-                        <label>Tahun Proyek:</label>
-                        <input type="number" name="tahun" class="form-control mb-3" required>
-
-                        <label>Tipe Proyek:</label>
-                        <input type="text" name="tipe" class="form-control mb-3" required>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Pilih Dosen:</label>
+                                <select name="id_dosen" class="form-control" required>
+                                    <option value="">-- Pilih Dosen --</option>
+                                    <?php foreach($listDosen as $ld): ?>
+                                        <option value="<?= $ld['id_dosen'] ?>"><?= htmlspecialchars($ld['nama_dosen']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group"><label>Judul:</label><input type="text" name="judul" class="form-control" required></div>
+                        </div>
+                        <div class="form-group"><label>Deskripsi:</label><textarea name="deskripsi" class="form-control" rows="2" required></textarea></div>
+                        <div class="row">
+                            <div class="col-md-4 form-group"><label>Tahun:</label><input type="number" name="tahun" class="form-control" value="<?= date('Y') ?>" required></div>
+                            <div class="col-md-4 form-group"><label>Tipe:</label><input type="text" name="tipe" class="form-control" required></div>
+                            <div class="col-md-4 form-group"><label>Kategori:</label><input type="text" name="kategori" class="form-control" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Mulai:</label><input type="date" name="tgl_mulai" class="form-control" required></div>
+                            <div class="col-md-6 form-group"><label>Selesai:</label><input type="date" name="tgl_selesai" class="form-control" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Nama Penulis:</label><input type="text" name="nama_penulis" class="form-control" required></div>
+                            <div class="col-md-6 form-group"><label>Lokasi:</label><input type="text" name="lokasi" class="form-control" required></div>
+                        </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="create_dosen" class="btn btn-success">Simpan</button>
-                    </div>
-
+                    <div class="modal-footer"><button class="btn btn-secondary" data-dismiss="modal">Batal</button><button type="submit" name="create_dosen" class="btn btn-success">Simpan</button></div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ============ MODAL EDIT PROYEK DOSEN ================= -->
-    <?php foreach ($proyekDosen as $d): ?>
+    <?php foreach($proyekDosen as $d): ?>
     <div class="modal fade" id="editProyekDosen<?= $d['id_proyek'] ?>" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST">
                 <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Proyek Dosen</h5>
-                        <button class="close" data-dismiss="modal"><span>×</span></button>
-                    </div>
-
+                    <div class="modal-header bg-warning text-white"><h5 class="modal-title">Edit Proyek Dosen</h5><button class="close" data-dismiss="modal">×</button></div>
                     <div class="modal-body">
-
                         <input type="hidden" name="edit_id_proyek" value="<?= $d['id_proyek'] ?>">
-
-                        <label>Dosen (ID):</label>
-                        <input type="number" name="edit_id_dosen"
-                            value="<?= $d['id_dosen'] ?>"
-                            class="form-control mb-3" required>
-
-                        <label>Judul Proyek:</label>
-                        <input type="text" name="edit_judul"
-                            value="<?= htmlspecialchars($d['judul_proyek']) ?>"
-                            class="form-control mb-3" required>
-
-                        <label>Deskripsi:</label>
-                        <textarea name="edit_deskripsi" class="form-control mb-3" required><?= htmlspecialchars($d['deskripsi_proyek']) ?></textarea>
-
-                        <label>Tahun Proyek:</label>
-                        <input type="number" name="edit_tahun"
-                            value="<?= $d['tahun_proyek'] ?>"
-                            class="form-control mb-3" required>
-
-                        <label>Tipe Proyek:</label>
-                        <input type="text" name="edit_tipe"
-                            value="<?= $d['tipe_proyek'] ?>"
-                            class="form-control mb-3" required>
-
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Pilih Dosen:</label>
+                                <select name="edit_id_dosen" class="form-control" required>
+                                    <?php foreach($listDosen as $ld): ?>
+                                        <option value="<?= $ld['id_dosen'] ?>" <?= $d['id_dosen'] == $ld['id_dosen'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($ld['nama_dosen']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group"><label>Judul:</label><input type="text" name="edit_judul" value="<?= htmlspecialchars($d['judul_proyek']) ?>" class="form-control" required></div>
+                        </div>
+                        <div class="form-group"><label>Deskripsi:</label><textarea name="edit_deskripsi" class="form-control" rows="2"><?= htmlspecialchars($d['deskripsi_proyek']) ?></textarea></div>
+                        <div class="row">
+                            <div class="col-md-4 form-group"><label>Tahun:</label><input type="number" name="edit_tahun" value="<?= $d['tahun_proyek'] ?>" class="form-control" required></div>
+                            <div class="col-md-4 form-group"><label>Tipe:</label><input type="text" name="edit_tipe" value="<?= $d['tipe_proyek'] ?>" class="form-control" required></div>
+                            <div class="col-md-4 form-group"><label>Kategori:</label><input type="text" name="edit_kategori" value="<?= htmlspecialchars($d['kategori_proyek_dosen']) ?>" class="form-control" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Mulai:</label><input type="date" name="edit_tgl_mulai" value="<?= $d['tanggal_mulai_proyek_dosen'] ?>" class="form-control"></div>
+                            <div class="col-md-6 form-group"><label>Selesai:</label><input type="date" name="edit_tgl_selesai" value="<?= $d['tanggal_selesai_proyek_dosen'] ?>" class="form-control"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Penulis:</label><input type="text" name="edit_nama_penulis" value="<?= htmlspecialchars($d['nama_penulis_proyek_dosen']) ?>" class="form-control"></div>
+                            <div class="col-md-6 form-group"><label>Lokasi:</label><input type="text" name="edit_lokasi" value="<?= htmlspecialchars($d['lokasi_proyek_dosen']) ?>" class="form-control"></div>
+                        </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_dosen" class="btn btn-warning">Update</button>
-                    </div>
-
+                    <div class="modal-footer"><button class="btn btn-secondary" data-dismiss="modal">Batal</button><button type="submit" name="update_dosen" class="btn btn-warning">Update</button></div>
                 </div>
             </form>
         </div>
     </div>
-    <?php endforeach ?>
+    <?php endforeach; ?>
 
-
-    <!-- ============ MODAL TAMBAH PROYEK MAHASISWA ================= -->
     <div class="modal fade" id="createProyekMahasiswa" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST">
                 <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tambah Proyek Mahasiswa</h5>
-                        <button class="close" data-dismiss="modal"><span>×</span></button>
-                    </div>
-
+                    <div class="modal-header bg-primary text-white"><h5 class="modal-title">Tambah Proyek Mahasiswa</h5><button class="close text-white" data-dismiss="modal">×</button></div>
                     <div class="modal-body">
-                        <label>ID Mahasiswa:</label>
-                        <input type="number" name="id_mahasiswa" class="form-control mb-3" required>
-
-                        <label>Judul Proyek:</label>
-                        <input type="text" name="judul" class="form-control mb-3" required>
-
-                        <label>Deskripsi:</label>
-                        <textarea name="deskripsi" class="form-control mb-3" required></textarea>
-
-                        <label>Tahun Proyek:</label>
-                        <input type="number" name="tahun" class="form-control mb-3" required>
-
-                        <label>Tipe Proyek:</label>
-                        <input type="text" name="tipe" class="form-control mb-3" required>
-
-                        <label>Tanggal Mulai:</label>
-                        <input type="date" name="tgl_mulai" class="form-control mb-3" required>
-
-                        <label>Tanggal Selesai:</label>
-                        <input type="date" name="tgl_selesai" class="form-control mb-3" required>
-
-                        <label>Nama Penulis:</label>
-                        <input type="text" name="nama_penulis" class="form-control mb-3" required>
-
-                        <label>Kategori:</label>
-                        <input type="text" name="kategori" class="form-control mb-3" required>
-
-                        <label>Lokasi:</label>
-                        <input type="text" name="lokasi" class="form-control mb-3" required>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Pilih Mahasiswa:</label>
+                                <select name="id_mahasiswa" class="form-control" required>
+                                    <option value="">-- Pilih Mahasiswa --</option>
+                                    <?php foreach($listMahasiswa as $lm): ?>
+                                        <option value="<?= $lm['id_mahasiswa'] ?>">
+                                            <?= htmlspecialchars($lm['nama_users']) ?> (<?= $lm['status_mahasiswa'] ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group"><label>Judul:</label><input type="text" name="judul" class="form-control" required></div>
+                        </div>
+                        <div class="form-group"><label>Deskripsi:</label><textarea name="deskripsi" class="form-control" rows="2" required></textarea></div>
+                        <div class="row">
+                            <div class="col-md-4 form-group"><label>Tahun:</label><input type="number" name="tahun" class="form-control" value="<?= date('Y') ?>" required></div>
+                            <div class="col-md-4 form-group"><label>Tipe:</label><input type="text" name="tipe" class="form-control" required></div>
+                            <div class="col-md-4 form-group"><label>Kategori:</label><input type="text" name="kategori" class="form-control" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Mulai:</label><input type="date" name="tgl_mulai" class="form-control" required></div>
+                            <div class="col-md-6 form-group"><label>Selesai:</label><input type="date" name="tgl_selesai" class="form-control" required></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Penulis:</label><input type="text" name="nama_penulis" class="form-control" required></div>
+                            <div class="col-md-6 form-group"><label>Lokasi:</label><input type="text" name="lokasi" class="form-control" required></div>
+                        </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="create_mahasiswa" class="btn btn-primary">Simpan</button>
-                    </div>
+                    <div class="modal-footer"><button class="btn btn-secondary" data-dismiss="modal">Batal</button><button type="submit" name="create_mahasiswa" class="btn btn-primary">Simpan</button></div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ============ MODAL EDIT PROYEK MAHASISWA ================= -->
-    <?php foreach ($proyekMahasiswa as $p): ?>
-        <div class="modal fade" id="editProyekMahasiswa<?= $p['id_proyek'] ?>" tabindex="-1">
-            <div class="modal-dialog">
-                <form action="process_proyek.php" method="POST">
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Proyek Mahasiswa</h5>
-                            <button class="close" data-dismiss="modal"><span>×</span></button>
+    <?php foreach($proyekMahasiswa as $p): ?>
+    <div class="modal fade" id="editProyekMahasiswa<?= $p['id_proyek'] ?>" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <form action="process_proyek.php" method="POST">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-white"><h5 class="modal-title">Edit Proyek Mahasiswa</h5><button class="close" data-dismiss="modal">×</button></div>
+                    <div class="modal-body">
+                        <input type="hidden" name="edit_id_proyek_mhs" value="<?= $p['id_proyek'] ?>">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Pilih Mahasiswa:</label>
+                                <select name="edit_id_mahasiswa" class="form-control" required>
+                                    <?php foreach($listMahasiswa as $lm): ?>
+                                        <option value="<?= $lm['id_mahasiswa'] ?>" <?= $p['id_mahasiswa'] == $lm['id_mahasiswa'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($lm['nama_users']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group"><label>Judul:</label><input type="text" name="edit_judul_mhs" value="<?= htmlspecialchars($p['judul_proyek']) ?>" class="form-control" required></div>
                         </div>
-
-                        <div class="modal-body">
-
-                            <input type="hidden" name="edit_id_proyek_mhs" value="<?= $p['id_proyek'] ?>">
-
-                            <label>ID Mahasiswa:</label>
-                            <input type="number" name="edit_id_mahasiswa"
-                                value="<?= $p['id_mahasiswa'] ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Judul Proyek:</label>
-                            <input type="text" name="edit_judul_mhs"
-                                value="<?= htmlspecialchars($p['judul_proyek']) ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Deskripsi:</label>
-                            <textarea name="edit_deskripsi_mhs" class="form-control mb-3" required><?= htmlspecialchars($p['deskripsi_proyek']) ?></textarea>
-
-                            <label>Tahun Proyek:</label>
-                            <input type="number" name="edit_tahun_mhs"
-                                value="<?= $p['tahun_proyek'] ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Tipe Proyek:</label>
-                            <input type="text" name="edit_tipe_mhs"
-                                value="<?= $p['tipe_proyek'] ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Tanggal Mulai:</label>
-                            <input type="date" name="edit_tgl_mulai"
-                                value="<?= $p['tanggal_mulai_proyek_mahasiswa'] ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Tanggal Selesai:</label>
-                            <input type="date" name="edit_tgl_selesai"
-                                value="<?= $p['tanggal_selesai_proyek_mahasiswa'] ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Nama Penulis:</label>
-                            <input type="text" name="edit_nama_penulis_mhs"
-                                value="<?= htmlspecialchars($p['nama_penulis_proyek_mahasiswa']) ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Kategori:</label>
-                            <input type="text" name="edit_kategori_mhs"
-                                value="<?= htmlspecialchars($p['kategori_proyek_mahasiswa']) ?>"
-                                class="form-control mb-3" required>
-
-                            <label>Lokasi:</label>
-                            <input type="text" name="edit_lokasi_mhs"
-                                value="<?= htmlspecialchars($p['lokasi_proyek_mahasiswa']) ?>"
-                                class="form-control mb-3" required>
-
+                        <div class="form-group"><label>Deskripsi:</label><textarea name="edit_deskripsi_mhs" class="form-control" rows="2"><?= htmlspecialchars($p['deskripsi_proyek']) ?></textarea></div>
+                        <div class="row">
+                            <div class="col-md-4 form-group"><label>Tahun:</label><input type="number" name="edit_tahun_mhs" value="<?= $p['tahun_proyek'] ?>" class="form-control"></div>
+                            <div class="col-md-4 form-group"><label>Tipe:</label><input type="text" name="edit_tipe_mhs" value="<?= $p['tipe_proyek'] ?>" class="form-control"></div>
+                            <div class="col-md-4 form-group"><label>Kategori:</label><input type="text" name="edit_kategori_mhs" value="<?= htmlspecialchars($p['kategori_proyek_mahasiswa']) ?>" class="form-control"></div>
                         </div>
-
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                            <button type="submit" name="update_mahasiswa" class="btn btn-warning">Update</button>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Mulai:</label><input type="date" name="edit_tgl_mulai" value="<?= $p['tanggal_mulai_proyek_mahasiswa'] ?>" class="form-control"></div>
+                            <div class="col-md-6 form-group"><label>Selesai:</label><input type="date" name="edit_tgl_selesai" value="<?= $p['tanggal_selesai_proyek_mahasiswa'] ?>" class="form-control"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group"><label>Penulis:</label><input type="text" name="edit_nama_penulis_mhs" value="<?= htmlspecialchars($p['nama_penulis_proyek_mahasiswa']) ?>" class="form-control"></div>
+                            <div class="col-md-6 form-group"><label>Lokasi:</label><input type="text" name="edit_lokasi_mhs" value="<?= htmlspecialchars($p['lokasi_proyek_mahasiswa']) ?>" class="form-control"></div>
                         </div>
                     </div>
-                </form>
-            </div>
+                    <div class="modal-footer"><button class="btn btn-secondary" data-dismiss="modal">Batal</button><button type="submit" name="update_mahasiswa" class="btn btn-warning">Update</button></div>
+                </div>
+            </form>
         </div>
-    <?php endforeach ?>
-
+    </div>
+    <?php endforeach; ?>
 
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#tableDosen').DataTable();
-            $('#tableMahasiswa').DataTable();
-        });
-    </script>
-
+    <script>$(document).ready(function() { $('#tableDosen').DataTable(); $('#tableMahasiswa').DataTable(); });</script>
 </body>
 </html>
