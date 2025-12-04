@@ -50,7 +50,7 @@ if ($action === 'update' && isset($_GET['id'])) {
             $_SESSION['message'] = "Gagal memperbarui data: " . $e->getMessage();
             $_SESSION['msg_type'] = "danger";
         }
-        header("Location: pendaftaran_admin.php");
+        header("Location: pendaftaran.php");
         exit;
     }
 }
@@ -69,7 +69,7 @@ if ($action === 'delete' && isset($_GET['id'])) {
         $_SESSION['message'] = "Gagal menghapus: " . $e->getMessage();
         $_SESSION['msg_type'] = "danger";
     }
-    header("Location: pendaftaran_admin.php");
+    header("Location: pendaftaran.php");
     exit;
 }
 
@@ -172,7 +172,13 @@ include __DIR__ . '/sidebar.php';
                             <td class="text-center">
                                 <a href="pendaftaran_edit.php?id=<?= $p['id_pendaftaran'] ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
                                 <a href="?action=delete&id=<?= $p['id_pendaftaran'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
-                                <a href="pendaftaran_forward.php?id=<?= $p['id_pendaftaran'] ?>" class="btn btn-primary btn-sm"><i class="fas fa-share"></i> Teruskan</a>
+
+                                <button class="btn btn-primary btn-sm btn-forward"
+                                        data-id="<?= $p['id_pendaftaran'] ?>"
+                                        data-toggle="modal"
+                                        data-target="#forwardModal">
+                                    <i class="fas fa-share"></i> Teruskan
+                                </button>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -195,6 +201,27 @@ include __DIR__ . '/sidebar.php';
 </div>
 </div>
 
+<!-- Forward modal markup -->
+<div class="modal fade" id="forwardModal" tabindex="-1" role="dialog" aria-labelledby="forwardModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="forwardModalLabel">Konfirmasi Teruskan</h5>
+                <button class="close text-white" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin meneruskan data pendaftaran <b id="pendaftaran-id-display"></b> ke Ketua Lab untuk persetujuan?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+                <a id="btn-confirm-forward" href="#" class="btn btn-primary">Ya, Teruskan</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="vendor/datatables/jquery.dataTables.min.js"></script>
@@ -202,6 +229,24 @@ include __DIR__ . '/sidebar.php';
 <script>
     $(document).ready(function() {
         $('#dataTable').DataTable();
+    });
+</script>
+
+<!-- Forward modal wiring script (after jQuery is loaded) -->
+<script>
+    $(document).ready(function() {
+        // Saat tombol class 'btn-forward' diklik
+        $('.btn-forward').on('click', function() {
+            // Ambil ID dari atribut data-id
+            var id = $(this).data('id');
+            
+            // Tampilkan ID di dalam teks modal (opsional, biar keren)
+            $('#pendaftaran-id-display').text('#' + id);
+            
+            // Update link href pada tombol "Ya, Teruskan"
+            var url = 'pendaftaran_forward.php?id=' + id + '&confirm=yes';
+            $('#btn-confirm-forward').attr('href', url);
+        });
     });
 </script>
 </body>
