@@ -8,7 +8,6 @@ try {
                   WHERE judul_proyek ILIKE :keyword 
                   OR deskripsi_proyek ILIKE :keyword";
     $stmt_count = $pdo->prepare($sql_count);
-    $stmt_count->execute(['keyword' => $search_param]);
     $total_data = $stmt_count->fetchColumn();
     // 2. QUERY UTAMA: Ambil Semua Berita (Urut Terbaru)
     $sql = "SELECT * FROM public.berita ORDER BY created_at_berita DESC";

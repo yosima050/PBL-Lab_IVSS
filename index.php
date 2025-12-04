@@ -291,7 +291,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
                 <li>
                     <div class="testimonial-grids">
                         <div class="testimonial-left">
-                            <img src="Asset/Bu_Vivi.jpg" alt="Bu Vivi" onerror="this.src='Asset/default_profile.jpg'" />
+                            <img src="Asset/buvivifix.png" alt="Bu Vivi" onerror="this.src='Asset/default_profile.jpg'" />
                         </div>
                         <div class="testimonial-right">
                             <h5>Vivi Nur Wijayaningrum, S.Kom, M.Kom</h5>
@@ -304,7 +304,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
                 <li>
                     <div class="testimonial-grids">
                         <div class="testimonial-left">
-                            <img src="Asset/Bu_Mamluatul.jpg" alt="Bu Mamluatul" onerror="this.src='Asset/default_profile.jpg'" />
+                            <img src="Asset/buA1.png" alt="Bu Mamluatul" onerror="this.src='Asset/default_profile.jpg'" />
                         </div>
                         <div class="testimonial-right">
                             <h5>Mamluatul Hani'ah, S.Kom., M.Kom</h5>
