@@ -107,7 +107,7 @@ try {
     <div class="container py-4">
 
         <div class="custom-yellow-header">
-            Halaman Produk dan Riset
+            Halaman Proyek dan Riset
         </div>
         
         <div class="bg-light-gray shadow-sm">

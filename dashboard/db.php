@@ -2,9 +2,9 @@
 // Sesuaikan credential DB di bawah
 $DB_HOST = 'localhost';
 $DB_PORT = 5432;
-$DB_NAME = 'pblfix';
+$DB_NAME = 'pbl_smt3';
 $DB_USER = 'postgres';
-$DB_PASS = '12345';
+$DB_PASS = 'Politeknik01_';
 
 // Gunakan DSN untuk PostgreSQL (pgSQL)
 $dsn = "pgsql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME";
