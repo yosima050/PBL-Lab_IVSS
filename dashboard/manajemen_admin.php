@@ -36,11 +36,17 @@ try {
 }
 
 /* =======================
-   READ DATA USERS
+   READ DATA USERS (dipisah)
 ========================== */
 try {
-    $stmt = $pdo->query("SELECT * FROM view_users_roles");
+    // Admins: role id 1,2,3
+    $stmt = $pdo->query("SELECT * FROM view_users_roles WHERE id_role IN (1,2,3) ORDER BY id_users ASC");
+    $admins = $stmt->fetchAll();
+
+    // Regular users: role id 4,5
+    $stmt = $pdo->query("SELECT * FROM view_users_roles WHERE id_role IN (4,5) ORDER BY id_users ASC");
     $users = $stmt->fetchAll();
+
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
@@ -89,98 +95,185 @@ try {
 
                 <div class="container-fluid">
 
-                    <h1 class="h3 mb-2 text-gray-800">Manajemen Admin & Users</h1>
+                    <h1 class="h3 mb-2 text-gray-800">Manajemen Admin</h1>
                     <p class="mb-4">Kelola akun pengguna sistem.</p>
 
                     <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createModal">
-                        <i class="fas fa-plus"></i> Tambah User
+                        <i class="fas fa-plus"></i> Tambah Admin
                     </button>
 
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Role</th>
-                                            <th>Nama</th>
-                                            <th>Email</th>
-                                            <th class="text-center">Aksi</th>
-                                        </tr>
-                                    </thead>
+                            <!-- Admins Card -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Admins</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTableAdmins">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Role</th>
+                                                    <th>Nama</th>
+                                                    <th>Email</th>
+                                                    <th class="text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($admins as $u): ?>
+                                                    <tr>
+                                                        <td><?= $u['id_users'] ?></td>
+                                                        <td><?= htmlspecialchars($u['id_role']) ?></td>
+                                                        <td><?= htmlspecialchars($u['nama_role']) ?></td>
+                                                        <td><?= htmlspecialchars($u['email_users']) ?></td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <a href="process_manajemen_admin.php?delete=<?= $u['id_users'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus user ini?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
 
-                                    <tbody>
-                                        <?php foreach ($users as $u): ?>
-                                            <tr>
-                                                <td><?= $u['id_users'] ?></td>
-                                                <td><?= htmlspecialchars($u['id_role']) ?></td>
-                                                <td><?= htmlspecialchars($u['nama_role']) ?></td>
-                                                <td><?= htmlspecialchars($u['email_users']) ?></td>
+                                                    <!-- MODAL EDIT -->
+                                                    <div class="modal fade" id="editModal<?= $u['id_users'] ?>" tabindex="-1">
+                                                        <div class="modal-dialog">
+                                                            <form action="process_manajemen_admin.php" method="POST">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">
+                                                                            <?= ((int)$u['id_role'] >= 1 && (int)$u['id_role'] <= 3) ? 'Edit Admin' : 'Edit User' ?>
+                                                                        </h5>
+                                                                        <button class="close" data-dismiss="modal"><span>×</span></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <input type="hidden" name="id_users" value="<?= $u['id_users'] ?>">
 
-                                                <td class="text-center">
+                                                                        <label>Role (1–5):</label>
+                                                                        <select name="id_role" class="form-control mb-2" required>
+                                                                            <option value="">-- Pilih Role --</option>
+                                                                            <option value="1" <?= $u['id_role'] == 1 ? 'selected' : '' ?>>1 — Admin Sistem</option>
+                                                                            <option value="2" <?= $u['id_role'] == 2 ? 'selected' : '' ?>>2 — Admin Berita</option>
+                                                                            <option value="3" <?= $u['id_role'] == 3 ? 'selected' : '' ?>>3 — Ketua Lab</option>
+                                                                            <option value="4" <?= $u['id_role'] == 4 ? 'selected' : '' ?>>4 — Dosen</option>
+                                                                            <option value="5" <?= $u['id_role'] == 5 ? 'selected' : '' ?>>5 — Mahasiswa</option>
+                                                                        </select>
+                                                                        <small class="form-text text-muted mb-3">
+                                                                        </small>
 
-                                                    <!-- Tombol Edit -->
-                                                    <button 
-                                                        class="btn btn-warning btn-sm"
-                                                        data-toggle="modal"
-                                                        data-target="#editModal<?= $u['id_users'] ?>">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
+                                                                        <label>Nama:</label>
+                                                                        <input type="text" name="nama_users" class="form-control mb-3" value="<?= htmlspecialchars($u['nama_users'] ?? $u['nama_role']) ?>" required>
 
-                                                    <!-- Tombol Delete (SUDAH DIBENERKAN PATH-NYA) -->
-                                                    <a href="process_manajemen_admin.php?delete=<?= $u['id_users'] ?>"
-                                                       class="btn btn-danger btn-sm"
-                                                       onclick="return confirm('Yakin ingin menghapus user ini?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </a>
+                                                                        <label>Email:</label>
+                                                                        <input type="email" name="email_users" class="form-control mb-3" value="<?= htmlspecialchars($u['email_users']) ?>" required>
 
-                                                </td>
-                                            </tr>
-
-                                            <!-- MODAL EDIT -->
-                                            <div class="modal fade" id="editModal<?= $u['id_users'] ?>" tabindex="-1">
-                                                <div class="modal-dialog">
-                                                    <form action="process_manajemen_admin.php" method="POST">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">Edit User</h5>
-                                                                <button class="close" data-dismiss="modal"><span>×</span></button>
-                                                            </div>
-
-                                                            <div class="modal-body">
-                                                                <input type="hidden" name="id_users" value="<?= $u['id_users'] ?>">
-
-                                                                <label>Role:</label>
-                                                                <input type="text" name="id_role" class="form-control mb-3"
-                                                                    value="<?= $u['id_role'] ?>" required>
-
-                                                                <label>Nama:</label>
-                                                                <input type="text" name="nama_role" class="form-control mb-3"
-                                                                    value="<?= $u['nama_role'] ?>" required>
-
-                                                                <label>Email:</label>
-                                                                <input type="email" name="email_users" class="form-control mb-3"
-                                                                    value="<?= $u['email_users'] ?>" required>
-
-                                                                <label>Password (opsional):</label>
-                                                                <input type="password" name="password" class="form-control">
-                                                                <small>Kosongkan jika tidak ingin mengganti password.</small>
-                                                            </div>
-
-                                                            <div class="modal-footer">
-                                                                <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                <button type="submit" name="update" class="btn btn-primary">Simpan</button>
-                                                            </div>
+                                                                        <label>Password (opsional):</label>
+                                                                        <input type="password" name="password" class="form-control">
+                                                                        <small>Kosongkan jika tidak ingin mengganti password.</small>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                                        <button type="submit" name="update" class="btn btn-primary">Simpan</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
                                                         </div>
-                                                    </form>
-                                                </div>
-                                            </div>
+                                                    </div>
 
-                                        <?php endforeach; ?>
-                                    </tbody>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
-                                </table>
+                            <!-- Users Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Users</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTableUsers">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Role</th>
+                                                    <th>Nama</th>
+                                                    <th>Email</th>
+                                                    <th class="text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($users as $u): ?>
+                                                    <tr>
+                                                        <td><?= $u['id_users'] ?></td>
+                                                        <td><?= htmlspecialchars($u['id_role']) ?></td>
+                                                        <td><?= htmlspecialchars($u['nama_role']) ?></td>
+                                                        <td><?= htmlspecialchars($u['email_users']) ?></td>
+                                                        <td class="text-center">
+                                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <a href="process_manajemen_admin.php?delete=<?= $u['id_users'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus user ini?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+
+                                                    <!-- MODAL EDIT -->
+                                                    <div class="modal fade" id="editModal<?= $u['id_users'] ?>" tabindex="-1">
+                                                        <div class="modal-dialog">
+                                                            <form action="process_manajemen_admin.php" method="POST">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title">
+                                                                            <?= ((int)$u['id_role'] >= 1 && (int)$u['id_role'] <= 3) ? 'Edit Admin' : 'Edit User' ?>
+                                                                        </h5>
+                                                                        <button class="close" data-dismiss="modal"><span>×</span></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <input type="hidden" name="id_users" value="<?= $u['id_users'] ?>">
+
+                                                                        <label>Role:</label>
+                                                                        <select name="id_role" class="form-control mb-2" required>
+                                                                            <option value="">-- Pilih Role --</option>
+                                                                            <option value="1" <?= $u['id_role'] == 1 ? 'selected' : '' ?>>1 — Admin Sistem</option>
+                                                                            <option value="2" <?= $u['id_role'] == 2 ? 'selected' : '' ?>>2 — Admin Berita</option>
+                                                                            <option value="3" <?= $u['id_role'] == 3 ? 'selected' : '' ?>>3 — Ketua Lab</option>
+                                                                            <option value="4" <?= $u['id_role'] == 4 ? 'selected' : '' ?>>4 — Dosen</option>
+                                                                            <option value="5" <?= $u['id_role'] == 5 ? 'selected' : '' ?>>5 — Mahasiswa</option>
+                                                                        </select>
+                                                                        <small class="form-text text-muted mb-3">
+                                                                        </small>
+
+                                                                        <label>Nama:</label>
+                                                                        <input type="text" name="nama_users" class="form-control mb-3" value="<?= htmlspecialchars($u['nama_users'] ?? $u['nama_role']) ?>" required>
+
+                                                                        <label>Email:</label>
+                                                                        <input type="email" name="email_users" class="form-control mb-3" value="<?= htmlspecialchars($u['email_users']) ?>" required>
+
+                                                                        <label>Password (opsional):</label>
+                                                                        <input type="password" name="password" class="form-control">
+                                                                        <small>Kosongkan jika tidak ingin mengganti password.</small>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                                        <button type="submit" name="update" class="btn btn-primary">Simpan</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -207,14 +300,21 @@ try {
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h5 class="modal-title">Tambah User Baru</h5>
+                        <h5 class="modal-title">Tambah Admin Baru</h5>
                         <button class="close" data-dismiss="modal"><span>×</span></button>
                     </div>
 
                     <div class="modal-body">
 
                         <label>Role:</label>
-                        <input type="text" name="id_role" class="form-control mb-3" required>
+                        <select name="id_role" class="form-control mb-2" required>
+                            <option value="">-- Pilih Role --</option>
+                            <option value="1">1 — Admin Sistem</option>
+                            <option value="2">2 — Admin Berita</option>
+                            <option value="3">3 — Ketua Lab</option>
+                        </select>
+                        <small class="form-text text-muted mb-3">
+                        </small>
 
                         <label>Nama:</label>
                         <input type="text" name="nama_users" class="form-control mb-3" required>
@@ -223,7 +323,7 @@ try {
                         <input type="email" name="email_users" class="form-control mb-3" required>
 
                         <label>Password:</label>
-                        <input type="password" name="password_users" class="form-control" required>
+                        <input type="password" name="password" class="form-control" required>
 
                     </div>
 
@@ -259,7 +359,8 @@ try {
 
     <script>
         $(document).ready(function() {
-            $('#dataTable').DataTable();
+            $('#dataTableAdmins').DataTable();
+            $('#dataTableUsers').DataTable();
         });
     </script>
 
