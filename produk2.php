@@ -1,52 +1,106 @@
 <?php
 include 'dashboard/db.php'; 
 
-
-// 2. AMBIL ID DARI URL
+// 1. AMBIL ID DARI URL
 $id_proyek = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 try {
-    // Query menggabungkan tabel proyek dengan detail_dosen dan detail_mahasiswa
-    $sql = "SELECT 
-                p.*,
-                dd.tanggal_mulai_proyek_dosen, dd.tanggal_selesai_proyek_dosen, 
-                dd.nama_penulis_proyek_dosen, dd.kategori_proyek_dosen, dd.lokasi_proyek_dosen,
-                dm.tanggal_mulai_proyek_mahasiswa, dm.tanggal_selesai_proyek_mahasiswa, 
-                dm.nama_penulis_proyek_mahasiswa, dm.kategori_proyek_mahasiswa, dm.lokasi_proyek_mahasiswa
-            FROM public.proyek p
-            LEFT JOIN public.detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
-            LEFT JOIN public.detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
-            WHERE p.id_proyek = :id";
+    // A. CEK PROYEK INI MILIK DOSEN ATAU MAHASISWA?
+    // Kita cek dulu id_dosen dan id_mahasiswa di tabel induk
+    $stmtCheck = $pdo->prepare("SELECT id_dosen, id_mahasiswa FROM proyek WHERE id_proyek = :id");
+    $stmtCheck->execute(['id' => $id_proyek]);
+    $check = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if (!$check) {
+        die("<div class='container py-5 text-center'><h3>Proyek tidak ditemukan.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+    }
+
+    // B. BUAT QUERY SESUAI JENIS PROYEK
+    // Kita gunakan teknik STRING_AGG untuk menggabungkan banyak nama tim jadi satu string.
+    
+    if (!empty($check['id_dosen']) && empty($check['id_mahasiswa'])) {
+        // === KASUS 1: PROYEK MURNI DOSEN ===
+        // Ambil list dosen dari tabel detail_proyek_dosen
+        // Ambil detail lain dari salah satu baris (MAX)
+        $sql = "SELECT 
+                    p.*,
+                    STRING_AGG(DISTINCT d.nama_dosen, ', ') as tim_penulis,
+                    MAX(dd.tanggal_mulai_proyek_dosen) as tgl_mulai,
+                    MAX(dd.tanggal_selesai_proyek_dosen) as tgl_selesai,
+                    MAX(dd.kategori_proyek_dosen) as kategori,
+                    MAX(dd.lokasi_proyek_dosen) as lokasi
+                FROM proyek p
+                JOIN detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
+                LEFT JOIN dosen d ON dd.id_dosen = d.id_dosen
+                WHERE p.id_proyek = :id
+                GROUP BY p.id_proyek";
+                
+    } elseif (!empty($check['id_mahasiswa']) && empty($check['id_dosen'])) {
+        // === KASUS 2: PROYEK MURNI MAHASISWA ===
+        $sql = "SELECT 
+                    p.*,
+                    STRING_AGG(DISTINCT u.nama_users, ', ') as tim_penulis,
+                    MAX(dm.tanggal_mulai_proyek_mahasiswa) as tgl_mulai,
+                    MAX(dm.tanggal_selesai_proyek_mahasiswa) as tgl_selesai,
+                    MAX(dm.kategori_proyek_mahasiswa) as kategori,
+                    MAX(dm.lokasi_proyek_mahasiswa) as lokasi
+                FROM proyek p
+                JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
+                LEFT JOIN mahasiswa m ON dm.id_mahasiswa = m.id_mahasiswa
+                LEFT JOIN users u ON m.id_users = u.id_users
+                WHERE p.id_proyek = :id
+                GROUP BY p.id_proyek";
+                
+    } else {
+        // === KASUS 3: PROYEK KOLABORASI (DOSEN + ASISTEN atau MAHASISWA + PEMBIMBING) ===
+        // Kita prioritaskan ambil data detail dari siapa "pemilik utama" proyek (biasanya yang create)
+        // Untuk amannya, kita cek detail mana yang tidak kosong.
+        
+        // Coba cek detail dosen dulu
+        $cekDetail = $pdo->prepare("SELECT count(*) FROM detail_proyek_dosen WHERE id_proyek = :id");
+        $cekDetail->execute(['id' => $id_proyek]);
+        $isDosenOwner = $cekDetail->fetchColumn() > 0;
+
+        if ($isDosenOwner) {
+            // Pemilik: Dosen (Ada Asisten)
+            $sql = "SELECT p.*,
+                        STRING_AGG(DISTINCT d.nama_dosen, ', ') as tim_penulis,
+                        -- Kita bisa tambahkan nama asisten kalau mau, tapi UI minta 'Penulis/Tim' jadi satu baris saja cukup
+                        MAX(dd.tanggal_mulai_proyek_dosen) as tgl_mulai,
+                        MAX(dd.tanggal_selesai_proyek_dosen) as tgl_selesai,
+                        MAX(dd.kategori_proyek_dosen) as kategori,
+                        MAX(dd.lokasi_proyek_dosen) as lokasi
+                    FROM proyek p
+                    JOIN detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
+                    LEFT JOIN dosen d ON dd.id_dosen = d.id_dosen
+                    WHERE p.id_proyek = :id GROUP BY p.id_proyek";
+        } else {
+            // Pemilik: Mahasiswa (Ada Pembimbing)
+            $sql = "SELECT p.*,
+                        STRING_AGG(DISTINCT u.nama_users, ', ') as tim_penulis,
+                        MAX(dm.tanggal_mulai_proyek_mahasiswa) as tgl_mulai,
+                        MAX(dm.tanggal_selesai_proyek_mahasiswa) as tgl_selesai,
+                        MAX(dm.kategori_proyek_mahasiswa) as kategori,
+                        MAX(dm.lokasi_proyek_mahasiswa) as lokasi
+                    FROM proyek p
+                    JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
+                    LEFT JOIN mahasiswa m ON dm.id_mahasiswa = m.id_mahasiswa
+                    LEFT JOIN users u ON m.id_users = u.id_users
+                    WHERE p.id_proyek = :id GROUP BY p.id_proyek";
+        }
+    }
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id' => $id_proyek]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$data) {
-        die("<div class='container py-5 text-center'><h3>Proyek tidak ditemukan.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+        die("<div class='container py-5 text-center'><h3>Detail tidak ditemukan.</h3></div>");
     }
 
-    // 3. MAPPING DATA (Logika untuk menentukan data mana yang dipakai)
-    // Cek apakah data ada di tabel detail_dosen atau detail_mahasiswa
-    if (!empty($data['nama_penulis_proyek_dosen'])) {
-        // Data dari Dosen
-        $tgl_mulai   = $data['tanggal_mulai_proyek_dosen'];
-        $tgl_selesai = $data['tanggal_selesai_proyek_dosen'];
-        $penulis     = $data['nama_penulis_proyek_dosen'];
-        $kategori    = $data['kategori_proyek_dosen'];
-        $lokasi      = $data['lokasi_proyek_dosen'];
-    } else {
-        // Data dari Mahasiswa (Default)
-        $tgl_mulai   = $data['tanggal_mulai_proyek_mahasiswa'];
-        $tgl_selesai = $data['tanggal_selesai_proyek_mahasiswa'];
-        $penulis     = $data['nama_penulis_proyek_mahasiswa'];
-        $kategori    = $data['kategori_proyek_mahasiswa'];
-        $lokasi      = $data['lokasi_proyek_mahasiswa'];
-    }
-
-    // Format Tanggal agar cantik
-    $tgl_mulai_fmt = $tgl_mulai ? date('d M Y', strtotime($tgl_mulai)) : '-';
-    $tgl_selesai_fmt = $tgl_selesai ? date('d M Y', strtotime($tgl_selesai)) : '-';
+    // Format Tanggal
+    $tgl_mulai_fmt = $data['tgl_mulai'] ? date('d M Y', strtotime($data['tgl_mulai'])) : '-';
+    $tgl_selesai_fmt = $data['tgl_selesai'] ? date('d M Y', strtotime($data['tgl_selesai'])) : '-';
 
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
@@ -169,11 +223,11 @@ try {
                 <table class="table table-borderless m-0 bg-transparent">
                     <tr>
                         <td width="150"><strong>Penulis/Tim</strong></td>
-                        <td>: <?= htmlspecialchars($penulis ?? '-'); ?></td>
+                        <td>: <?= htmlspecialchars($data['tim_penulis'] ?? '-'); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Kategori</strong></td>
-                        <td>: <?= htmlspecialchars($kategori ?? '-'); ?></td>
+                        <td>: <?= htmlspecialchars($data['kategori'] ?? '-'); ?></td>
                     </tr>
                     <tr>
                         <td><strong>Tanggal Mulai</strong></td>
@@ -183,10 +237,10 @@ try {
                         <td><strong>Tanggal Selesai</strong></td>
                         <td>: <?= $tgl_selesai_fmt; ?></td>
                     </tr>
-                    <?php if (!empty($lokasi) && $lokasi != '-'): ?>
+                    <?php if (!empty($data['lokasi']) && $data['lokasi'] != '-'): ?>
                     <tr>
                         <td><strong>Lokasi/Jurnal</strong></td>
-                        <td>: <?= htmlspecialchars($lokasi); ?></td>
+                        <td>: <?= htmlspecialchars($data['lokasi']); ?></td>
                     </tr>
                     <?php endif; ?>
                 </table>

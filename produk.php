@@ -1,7 +1,6 @@
 <?php
 include 'dashboard/db.php'; 
 
-
 // 2. LOGIKA PENCARIAN & PAGINASI
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
@@ -13,6 +12,7 @@ $offset = ($page - 1) * $limit;
 
 try {
     // A. HITUNG TOTAL DATA (Untuk Paginasi)
+    // Kita hitung dari tabel induk 'proyek'
     $sql_count = "SELECT COUNT(*) FROM public.proyek 
                   WHERE judul_proyek ILIKE :keyword 
                   OR deskripsi_proyek ILIKE :keyword";
@@ -24,7 +24,9 @@ try {
     $total_pages = ceil($total_data / $limit);
 
     // B. AMBIL DATA (DENGAN LIMIT & OFFSET)
-    $sql = "SELECT * FROM public.proyek 
+    // Ambil kolom standar dari tabel proyek
+    $sql = "SELECT id_proyek, judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek 
+            FROM public.proyek 
             WHERE judul_proyek ILIKE :keyword 
             OR deskripsi_proyek ILIKE :keyword 
             ORDER BY tahun_proyek DESC
@@ -40,7 +42,7 @@ try {
     $stmt->execute();
     $proyek_list = $stmt->fetchAll();
 
-    // Hitung item yang sedang ditampilkan (misal: 1-4 of 10)
+    // Hitung item yang sedang ditampilkan
     $start_item = ($total_data > 0) ? $offset + 1 : 0;
     $end_item = min($offset + $limit, $total_data);
 
@@ -212,6 +214,7 @@ try {
                         
                         <div class="mb-3">
                             <?php
+                                // Logika Badge Warna tetap dipertahankan
                                 $badgeColor = 'bg-blue';
                                 if (stripos($row['tipe_proyek'], 'Aktif') !== false) {
                                     $badgeColor = 'bg-orange';
