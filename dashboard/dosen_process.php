@@ -14,8 +14,14 @@ $nidn   = $_POST['nidn_dosen'];
 $bidang = $_POST['bidang_riset'];
 $jabatan = $_POST['jabatan_dosen'];
 
-$uploadDir = __DIR__ . '/../uploads/';
+$uploadDirDash = __DIR__ . '/../uploads/';
+$uploadDirRoot = __DIR__ . '/uploads/';
 $fotoName = null;
+
+// helper: pastikan folder ada
+foreach ([$uploadDirDash, $uploadDirRoot] as $dir) {
+    if (!is_dir($dir)) mkdir($dir, 0755, true);
+}
 
 // Jika EDIT → ambil foto lama
 if ($id) {
@@ -30,11 +36,18 @@ if (!empty($_FILES['foto_dosen']['name'])) {
     $ext = pathinfo($_FILES['foto_dosen']['name'], PATHINFO_EXTENSION);
     $fotoName = 'dosen_' . time() . '.' . $ext;
 
-    move_uploaded_file($_FILES['foto_dosen']['tmp_name'], $uploadDir . $fotoName);
+    // simpan ke folder dashboard
+    if (move_uploaded_file($_FILES['foto_dosen']['tmp_name'], $uploadDirDash . $fotoName)) {
+        // salin ke folder frontend
+        @copy($uploadDirDash . $fotoName, $uploadDirRoot . $fotoName);
+    } else {
+        $fotoName = $fotoLama ?? null;
+    }
 
-    // Hapus foto lama
-    if ($id && $fotoLama && file_exists($uploadDir . $fotoLama)) {
-        @unlink($uploadDir . $fotoLama);
+    // Hapus foto lama di kedua lokasi
+    if ($id && $fotoLama) {
+        if (file_exists($uploadDirDash . $fotoLama)) @unlink($uploadDirDash . $fotoLama);
+        if (file_exists($uploadDirRoot . $fotoLama)) @unlink($uploadDirRoot . $fotoLama);
     }
 }
 

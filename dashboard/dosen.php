@@ -139,7 +139,7 @@ include __DIR__ . '/sidebar.php';
                                 <tr>
                                     <td class="text-center">
                                         <?php 
-                                        $foto = !empty($d['foto_dosen']) ? $d['foto_dosen'] : 'default_profile.jpg';
+                                        $foto = !empty($d['foto_dosen']) ? '../uploads/' . $d['foto_dosen'] : '../Asset/default_profile.jpg';
                                         ?>
                                         <img src="<?= htmlspecialchars($foto) ?>" width="60" class="rounded"
                                              onerror="this.src='../Asset/default_profile.jpg'">
