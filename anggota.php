@@ -25,7 +25,8 @@ $offset = ($page - 1) * $limit;
 try {
     // A. Hitung Total Data (untuk menentukan jumlah halaman)
     $sql_count = "SELECT COUNT(*) FROM public.pendaftaran 
-                  WHERE nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword";
+                  WHERE status_mahasiswa = 'Diterima' 
+                  AND (nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword)";
     $stmt_count = $pdo->prepare($sql_count);
     $stmt_count->execute(['keyword' => $search_param]);
     $total_data = $stmt_count->fetchColumn();
@@ -33,7 +34,8 @@ try {
 
     // B. Ambil Data Mahasiswa (dengan LIMIT dan OFFSET)
     $sql_mhs = "SELECT * FROM public.pendaftaran 
-                WHERE nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword 
+                WHERE status_mahasiswa = 'Diterima' 
+                AND (nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword)
                 ORDER BY nama_mahasiswa ASC 
                 LIMIT :limit OFFSET :offset";
     
