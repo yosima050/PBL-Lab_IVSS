@@ -211,7 +211,12 @@ try {
                 
                 <div class="col-md-4 border-right-custom">
                     <div class="profile-img-box">
-                        <img src="<?= htmlspecialchars($row['foto_dosen']); ?>" alt="Foto Profil Dosen" onerror="this.src='Asset/default_profile.jpg';">
+                        <?php 
+                            $foto = !empty($row['foto_dosen']) ? 'uploads/' . htmlspecialchars($row['foto_dosen']) : 'Asset/default_profile.jpg';
+                        ?>
+                        <img src="<?= $foto ?>" class="img-fluid rounded"
+                             alt="Foto <?= htmlspecialchars($row['nama_dosen']) ?>"
+                             onerror="this.src='Asset/default_profile.jpg'">
                     </div>
 
                     <div class="mb-3">
