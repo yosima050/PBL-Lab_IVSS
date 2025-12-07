@@ -300,7 +300,7 @@ try {
                                     </li>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <li><span>-</span></li>
+                                <li><span>Belum ada data</span></li>
                             <?php endif; ?>
                         </ul>
                     </div>
