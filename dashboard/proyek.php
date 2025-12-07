@@ -33,7 +33,8 @@ $listMahasiswa = $pdo->query("SELECT m.id_mahasiswa, u.nama_users, m.status_maha
 // 2. QUERY PROYEK DOSEN
 try {
     $stmt = $pdo->query("
-        SELECT p.id_proyek, p.judul_proyek, p.tahun_proyek, p.tipe_proyek, p.deskripsi_proyek,
+        SELECT p.id_proyek, p.judul_proyek, p.tahun_proyek, p.tipe_proyek, p.deskripsi_proyek, 
+            p.foto_proyek, p.file_proyek, -- TAMBAHAN: Ambil kolom foto & file
             STRING_AGG(DISTINCT d.nama_dosen, ', ') as list_nama_dosen,
             STRING_AGG(DISTINCT CAST(d.id_dosen AS TEXT), ',') as list_id_dosen,
             STRING_AGG(DISTINCT u.nama_users, ', ') as list_nama_asisten,
@@ -58,6 +59,7 @@ try {
 try {
     $stmt = $pdo->query("
         SELECT p.id_proyek, p.judul_proyek, p.tahun_proyek, p.tipe_proyek, p.deskripsi_proyek, p.id_dosen AS id_pembimbing,
+            p.foto_proyek, p.file_proyek, -- TAMBAHAN: Ambil kolom foto & file
             d_pembimbing.nama_dosen AS nama_pembimbing,
             STRING_AGG(u.nama_users, ', ') as list_nama_mahasiswa,
             STRING_AGG(CAST(m.id_mahasiswa AS TEXT), ',') as list_id_mahasiswa,
@@ -91,92 +93,42 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" rel="stylesheet">
 
 <style>
-    /* === 1. CSS TABEL (Tetap Pertahankan) === */
+    /* === 1. CSS TABEL === */
     td.truncate { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     td.date-col { white-space: nowrap; font-size: 0.85rem; padding: 4px 6px !important; }
     .table th { vertical-align: middle; text-align: center; }
     #tableDosen tbody td, #tableMahasiswa tbody td { vertical-align: middle !important; padding: 6px 8px !important; }
 
-    /* === 2. PERBAIKAN TOTAL SELECT2 UI === */
-
-    /* A. Container Input Utama */
+    /* === 2. SELECT2 UI FIX === */
     .select2-container--bootstrap4 .select2-selection--multiple {
-        min-height: 42px !important; /* Sedikit lebih tinggi agar tags muat */
-        height: auto !important;     /* Biarkan memanjang ke bawah jika tags banyak */
+        min-height: 42px !important; 
+        height: auto !important; 
         border: 1px solid #d1d3e2;
         padding: 4px 8px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
+        display: flex; flex-wrap: wrap; align-items: center;
     }
-
     .select2-container--bootstrap4 .select2-selection--single {
         height: 42px !important;
         padding: 6px 12px;
         border: 1px solid #d1d3e2;
-        display: flex;
-        align-items: center;
+        display: flex; align-items: center;
     }
-
-    /* B. Styling Item yang Dipilih (TAGS/PILLS) - Ini yang bikin rapi */
     .select2-container--bootstrap4 .select2-selection__choice {
-        background-color: #4e73df !important; /* Warna Biru SB Admin */
-        border: none !important;
-        border-radius: 20px !important;       /* Membuat bulat (Pill shape) */
-        color: #fff !important;               /* Teks Putih */
-        padding: 4px 12px !important;         /* Jarak dalam tags */
-        margin: 3px 5px 3px 0 !important;     /* Jarak antar tags */
-        font-size: 0.85rem;
-        font-weight: 600;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        
-        /* Flexbox untuk merapikan ikon X dan Teks */
-        display: inline-flex !important; 
-        flex-direction: row-reverse;          /* X di kanan, Teks di kiri */
-        align-items: center;
+        background-color: #4e73df !important; 
+        border: none !important; border-radius: 20px !important; 
+        color: #fff !important; padding: 4px 12px !important; 
+        margin: 3px 5px 3px 0 !important; font-size: 0.85rem; font-weight: 600;
+        display: inline-flex !important; flex-direction: row-reverse; align-items: center;
     }
-
-    /* C. Styling Tombol Hapus (X) di dalam Tags */
     .select2-container--bootstrap4 .select2-selection__choice__remove {
-        border: none !important;
-        background: transparent !important;
-        color: #fff !important;               /* X warna putih */
-        margin-left: 8px !important;          /* Jarak X dari teks */
-        margin-right: 0 !important;
-        font-weight: bold;
-        font-size: 14px;
-        padding: 0 !important;
-        opacity: 0.7;
+        border: none !important; background: transparent !important; color: #fff !important;
+        margin-left: 8px !important; margin-right: 0 !important; font-weight: bold; font-size: 14px; padding: 0 !important; opacity: 0.7;
     }
-
-    .select2-container--bootstrap4 .select2-selection__choice__remove:hover {
-        opacity: 1;
-        color: #ffcccc !important;            /* Warna merah muda saat hover */
-    }
-
-    /* D. Placeholder & Teks Input */
-    .select2-search__field {
-        margin-top: 5px !important;
-        font-size: 0.9rem;
-    }
-    
-    .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
-        color: #6e707e;
-        line-height: normal !important;
-        padding-left: 0;
-    }
-
-    /* E. Warna Border saat Fokus */
-    .select2-container--bootstrap4.select2-container--focus .select2-selection {
-        border-color: #bac8f3;
-        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-    }
-    
-    /* F. Styling Header Modal */
-    .modal-header {
-        background: linear-gradient(45deg, #4e73df, #224abe);
-        color: white;
-    }
+    .select2-container--bootstrap4 .select2-selection__choice__remove:hover { opacity: 1; color: #ffcccc !important; }
+    .select2-search__field { margin-top: 5px !important; font-size: 0.9rem; }
+    .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered { color: #6e707e; line-height: normal !important; padding-left: 0; }
+    .select2-container--bootstrap4.select2-container--focus .select2-selection { border-color: #bac8f3; box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25); }
+    .modal-header { background: linear-gradient(45deg, #4e73df, #224abe); color: white; }
     .close { color: white !important; opacity: 0.8; }
     .close:hover { opacity: 1; }
 </style>
@@ -184,15 +136,12 @@ try {
 
 <body id="page-top">
     <div id="wrapper">
-        <?php include __DIR__ . '/sidebar.php'; ?>
+        <?php include 'sidebar.php'; ?>
 
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
-
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"><i class="fa fa-bars"></i></button>
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
@@ -234,9 +183,9 @@ try {
                                     <thead class="thead-light">
                                         <tr>
                                             <th width="5%">ID</th>
-                                            <th width="25%">Tim & Asisten</th>
-                                            <th width="25%">Judul Proyek</th>
-                                            <th width="10%">Kategori</th>
+                                            <th width="20%">Tim & Asisten</th>
+                                            <th width="20%">Judul Proyek</th>
+                                            <th width="10%">Media</th> <th width="10%">Kategori</th>
                                             <th width="10%">Lokasi</th>
                                             <th width="15%">Periode</th>
                                             <th width="10%">Aksi</th>
@@ -249,7 +198,6 @@ try {
                                             <td>
                                                 <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Dosen:</small><br>
                                                 <i class="fas fa-users text-success"></i> <?= htmlspecialchars($d['list_nama_dosen']) ?>
-                                                
                                                 <?php if(!empty($d['list_nama_asisten'])): ?>
                                                     <hr class="my-1">
                                                     <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Asisten:</small><br>
@@ -260,6 +208,27 @@ try {
                                                 <span class="font-weight-bold text-dark"><?= htmlspecialchars($d['judul_proyek']) ?></span>
                                                 <br><small class="text-muted"><?= htmlspecialchars(substr($d['deskripsi_proyek'], 0, 50)) ?>...</small>
                                             </td>
+                                            
+                                            <td class="text-center">
+                                                <?php if(!empty($d['foto_proyek'])): ?>
+                                                    <a href="uploads/proyek/<?= htmlspecialchars($d['foto_proyek']) ?>" target="_blank">
+                                                        <img src="uploads/proyek/<?= htmlspecialchars($d['foto_proyek']) ?>" alt="Foto" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    </a>
+                                                <?php endif; ?>
+                                                
+                                                <?php if(!empty($d['file_proyek'])): ?>
+                                                    <div class="mt-1">
+                                                        <a href="uploads/proyek/<?= htmlspecialchars($d['file_proyek']) ?>" class="btn btn-sm btn-info btn-circle" title="Download File" download>
+                                                            <i class="fas fa-file-download"></i>
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
+                                                
+                                                <?php if(empty($d['foto_proyek']) && empty($d['file_proyek'])): ?>
+                                                    <span class="text-muted small">-</span>
+                                                <?php endif; ?>
+                                            </td>
+
                                             <td><span class="badge badge-secondary"><?= htmlspecialchars($d['kategori']) ?></span></td>
                                             <td class="col-truncate"><?= htmlspecialchars($d['lokasi']) ?></td>
                                             <td class="col-date">
@@ -293,9 +262,9 @@ try {
                                     <thead class="thead-light">
                                         <tr>
                                             <th width="5%">ID</th>
-                                            <th width="25%">Tim & Pembimbing</th>
-                                            <th width="25%">Judul Proyek</th>
-                                            <th width="10%">Kategori</th>
+                                            <th width="20%">Tim & Pembimbing</th>
+                                            <th width="20%">Judul Proyek</th>
+                                            <th width="10%">Media</th> <th width="10%">Kategori</th>
                                             <th width="10%">Lokasi</th>
                                             <th width="15%">Periode</th>
                                             <th width="10%">Aksi</th>
@@ -308,7 +277,6 @@ try {
                                             <td>
                                                 <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Mhs:</small><br>
                                                 <i class="fas fa-users text-primary"></i> <?= htmlspecialchars($p['list_nama_mahasiswa']) ?>
-                                                
                                                 <?php if(!empty($p['nama_pembimbing'])): ?>
                                                     <hr class="my-1">
                                                     <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Pembimbing:</small><br>
@@ -319,6 +287,27 @@ try {
                                                 <span class="font-weight-bold text-dark"><?= htmlspecialchars($p['judul_proyek']) ?></span>
                                                 <br><small class="text-muted"><?= htmlspecialchars(substr($p['deskripsi_proyek'], 0, 50)) ?>...</small>
                                             </td>
+
+                                            <td class="text-center">
+                                                <?php if(!empty($p['foto_proyek'])): ?>
+                                                    <a href="uploads/proyek/<?= htmlspecialchars($p['foto_proyek']) ?>" target="_blank">
+                                                        <img src="uploads/proyek/<?= htmlspecialchars($p['foto_proyek']) ?>" alt="Foto" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    </a>
+                                                <?php endif; ?>
+                                                
+                                                <?php if(!empty($p['file_proyek'])): ?>
+                                                    <div class="mt-1">
+                                                        <a href="uploads/proyek/<?= htmlspecialchars($p['file_proyek']) ?>" class="btn btn-sm btn-info btn-circle" title="Download File" download>
+                                                            <i class="fas fa-file-download"></i>
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
+
+                                                <?php if(empty($p['foto_proyek']) && empty($p['file_proyek'])): ?>
+                                                    <span class="text-muted small">-</span>
+                                                <?php endif; ?>
+                                            </td>
+
                                             <td><span class="badge badge-info"><?= htmlspecialchars($p['kategori']) ?></span></td>
                                             <td class="col-truncate"><?= htmlspecialchars($p['lokasi']) ?></td>
                                             <td class="col-date">
@@ -358,7 +347,7 @@ try {
 
     <div class="modal fade" id="createProyekDosen" tabindex="-1">
         <div class="modal-dialog modal-lg">
-            <form action="process_proyek.php" method="POST">
+            <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Tambah Proyek Dosen</h5>
@@ -416,9 +405,22 @@ try {
                             <div class="col-md-6"><label>Tanggal Selesai</label><input type="date" name="tgl_selesai" class="form-control" required></div>
                         </div>
 
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6"><label>Penulis/Publikasi</label><input type="text" name="nama_penulis" class="form-control" required></div>
                             <div class="col-md-6"><label>Lokasi</label><input type="text" name="lokasi" class="form-control" required></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Foto Proyek:</label>
+                                <input type="file" name="foto_proyek" class="form-control" accept="image/*">
+                                <small class="text-muted">Format: JPG, PNG (Max 2MB)</small>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>File Dokumentasi:</label>
+                                <input type="file" name="file_proyek" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                <small class="text-muted">Format: PDF, DOC, DOCX, XLS, XLSX (Max 5MB)</small>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -433,7 +435,7 @@ try {
     <?php foreach($proyekDosen as $d): ?>
     <div class="modal fade" id="editProyekDosen<?= $d['id_proyek'] ?>" tabindex="-1">
         <div class="modal-dialog modal-lg">
-            <form action="process_proyek.php" method="POST">
+            <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header bg-warning">
                         <h5 class="modal-title text-white"><i class="fas fa-edit"></i> Edit Proyek Dosen</h5>
@@ -488,9 +490,26 @@ try {
                             <div class="col-md-6"><label>Mulai</label><input type="date" name="edit_tgl_mulai" value="<?= $d['tanggal_mulai'] ?>" class="form-control"></div>
                             <div class="col-md-6"><label>Selesai</label><input type="date" name="edit_tgl_selesai" value="<?= $d['tanggal_selesai'] ?>" class="form-control"></div>
                         </div>
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6"><label>Penulis</label><input type="text" name="edit_nama_penulis" value="<?= htmlspecialchars($d['nama_penulis']) ?>" class="form-control"></div>
                             <div class="col-md-6"><label>Lokasi</label><input type="text" name="edit_lokasi" value="<?= htmlspecialchars($d['lokasi']) ?>" class="form-control"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Foto Proyek (Upload jika ingin ganti):</label>
+                                <input type="file" name="foto_proyek" class="form-control" accept="image/*">
+                                <?php if(!empty($d['foto_proyek'])): ?>
+                                    <small class="text-success"><i class="fas fa-check"></i> Foto tersimpan: <?= $d['foto_proyek'] ?></small>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>File (Upload jika ingin ganti):</label>
+                                <input type="file" name="file_proyek" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                <?php if(!empty($d['file_proyek'])): ?>
+                                    <small class="text-success"><i class="fas fa-check"></i> File tersimpan: <?= $d['file_proyek'] ?></small>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -505,7 +524,7 @@ try {
 
     <div class="modal fade" id="createProyekMahasiswa" tabindex="-1">
         <div class="modal-dialog modal-lg">
-            <form action="process_proyek.php" method="POST">
+            <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header" style="background: linear-gradient(45deg, #1cc88a, #13855c);">
                         <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Tambah Proyek Mahasiswa</h5>
@@ -554,9 +573,22 @@ try {
                             <div class="col-md-6"><label>Mulai</label><input type="date" name="tgl_mulai" class="form-control" required></div>
                             <div class="col-md-6"><label>Selesai</label><input type="date" name="tgl_selesai" class="form-control" required></div>
                         </div>
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6"><label>Penulis</label><input type="text" name="nama_penulis" class="form-control" required></div>
                             <div class="col-md-6"><label>Lokasi</label><input type="text" name="lokasi" class="form-control" required></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Foto Proyek:</label>
+                                <input type="file" name="foto_proyek" class="form-control" accept="image/*">
+                                <small class="text-muted">Format: JPG, PNG (Max 2MB)</small>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>File Dokumentasi:</label>
+                                <input type="file" name="file_proyek" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                <small class="text-muted">Format: PDF, DOC, DOCX, XLS, XLSX (Max 5MB)</small>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -571,7 +603,7 @@ try {
     <?php foreach($proyekMahasiswa as $p): ?>
     <div class="modal fade" id="editProyekMahasiswa<?= $p['id_proyek'] ?>" tabindex="-1">
         <div class="modal-dialog modal-lg">
-            <form action="process_proyek.php" method="POST">
+            <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header bg-warning">
                         <h5 class="modal-title text-white"><i class="fas fa-edit"></i> Edit Proyek Mahasiswa</h5>
@@ -619,9 +651,26 @@ try {
                             <div class="col-md-6"><label>Mulai</label><input type="date" name="edit_tgl_mulai" value="<?= $p['tanggal_mulai'] ?>" class="form-control"></div>
                             <div class="col-md-6"><label>Selesai</label><input type="date" name="edit_tgl_selesai" value="<?= $p['tanggal_selesai'] ?>" class="form-control"></div>
                         </div>
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6"><label>Penulis</label><input type="text" name="edit_nama_penulis_mhs" value="<?= htmlspecialchars($p['nama_penulis']) ?>" class="form-control"></div>
                             <div class="col-md-6"><label>Lokasi</label><input type="text" name="edit_lokasi_mhs" value="<?= htmlspecialchars($p['lokasi']) ?>" class="form-control"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Foto Proyek:</label>
+                                <input type="file" name="edit_foto_proyek" class="form-control" accept="image/*">
+                                <?php if(!empty($p['foto_proyek'])): ?>
+                                    <small class="text-success"><i class="fas fa-check"></i> Foto tersimpan: <?= $p['foto_proyek'] ?></small>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>File Dokumentasi:</label>
+                                <input type="file" name="edit_file_proyek" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                <?php if(!empty($p['file_proyek'])): ?>
+                                    <small class="text-success"><i class="fas fa-check"></i> File tersimpan: <?= $p['file_proyek'] ?></small>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -645,7 +694,7 @@ try {
         $(document).ready(function() { 
             // 1. Inisialisasi DataTable
             if (!$.fn.DataTable.isDataTable('#tableDosen')) { 
-                $('#tableDosen').DataTable({ "order": [[ 0, "desc" ]], "language": { "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Indonesian.json" } }); 
+                $('#tableDosen').DataTable({ "order": [[ 0, "desc" ]]}); 
             }
             if (!$.fn.DataTable.isDataTable('#tableMahasiswa')) { 
                 $('#tableMahasiswa').DataTable({ "order": [[ 0, "desc" ]] }); 
