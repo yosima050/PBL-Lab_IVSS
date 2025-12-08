@@ -193,7 +193,8 @@
         }
 
         .pagination button:hover {
-            background-color: #E3F2FD;
+            background-color: #F9D723;
+            color: #0047AB;
         }
 
         .pagination span {

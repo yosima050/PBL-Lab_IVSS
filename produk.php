@@ -1,18 +1,21 @@
 <?php
+// Pastikan path ini benar sesuai struktur folder Anda
+// Jika file ini ada di folder root (luar), dan db.php ada di dalam folder dashboard
 include 'dashboard/db.php'; 
 
-// 2. LOGIKA PENCARIAN & PAGINASI
+// 1. CONFIG PAGINASI & PENCARIAN
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
-// Setup Halaman
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+// Tentukan halaman saat ini (Default 1)
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+
 $limit = 4; // Jumlah item per halaman
 $offset = ($page - 1) * $limit;
 
 try {
     // A. HITUNG TOTAL DATA (Untuk Paginasi)
-    // Kita hitung dari tabel induk 'proyek'
     $sql_count = "SELECT COUNT(*) FROM public.proyek 
                   WHERE judul_proyek ILIKE :keyword 
                   OR deskripsi_proyek ILIKE :keyword";
@@ -24,12 +27,12 @@ try {
     $total_pages = ceil($total_data / $limit);
 
     // B. AMBIL DATA (DENGAN LIMIT & OFFSET)
-    // Ambil kolom standar dari tabel proyek
+    // Mengurutkan berdasarkan ID terbaru (DESC)
     $sql = "SELECT id_proyek, judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek 
             FROM public.proyek 
             WHERE judul_proyek ILIKE :keyword 
             OR deskripsi_proyek ILIKE :keyword 
-            ORDER BY tahun_proyek DESC
+            ORDER BY id_proyek DESC 
             LIMIT :limit OFFSET :offset"; 
             
     $stmt = $pdo->prepare($sql);
@@ -42,7 +45,7 @@ try {
     $stmt->execute();
     $proyek_list = $stmt->fetchAll();
 
-    // Hitung item yang sedang ditampilkan
+    // Hitung item yang sedang ditampilkan (Info: 1-4 of 10)
     $start_item = ($total_data > 0) ? $offset + 1 : 0;
     $end_item = min($offset + $limit, $total_data);
 
@@ -50,6 +53,7 @@ try {
     echo "Error fetching data: " . $e->getMessage();
     $proyek_list = [];
     $total_data = 0;
+    $total_pages = 1;
 }
 ?>
 
@@ -61,8 +65,10 @@ try {
     <title>Halaman Produk dan Riset</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="footer.css">
     <link rel="stylesheet" href="navbar.css">
+    
     <style>
         body { font-family: 'Roboto', sans-serif; }
         .banner1{
@@ -209,16 +215,18 @@ try {
                         </h5>
                         
                         <p class="card-text text-muted">
-                            <?= htmlspecialchars(substr($row['deskripsi_proyek'], 0, 150)) . '...'; ?>
+                            <?= htmlspecialchars(substr($row['deskripsi_proyek'], 0, 150)) . (strlen($row['deskripsi_proyek']) > 150 ? '...' : ''); ?>
                         </p>
                         
                         <div class="mb-3">
                             <?php
-                                // Logika Badge Warna tetap dipertahankan
+                                // Logika Warna Badge Berdasarkan Tipe
                                 $badgeColor = 'bg-blue';
-                                if (stripos($row['tipe_proyek'], 'Aktif') !== false) {
+                                $tipe = strtolower($row['tipe_proyek']);
+                                
+                                if (strpos($tipe, 'aktif') !== false) {
                                     $badgeColor = 'bg-orange';
-                                } elseif (stripos($row['tipe_proyek'], 'Publikasi') !== false) {
+                                } elseif (strpos($tipe, 'publikasi') !== false || strpos($tipe, 'selesai') !== false) {
                                     $badgeColor = 'bg-green';
                                 }
                             ?>

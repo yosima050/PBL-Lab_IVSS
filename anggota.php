@@ -1,36 +1,59 @@
 <?php
 // 1. HUBUNGKAN KE DATABASE
-include 'dashboard/db.php'; // Pastikan file koneksi.php sudah ada
+include 'dashboard/db.php'; 
 
 // 2. LOGIKA PENGAMBILAN DATA DOSEN (TEAM MEMBER)
 try {
-    // Mengambil maksimal 7 dosen untuk ditampilkan di lingkaran atas
-    // Diurutkan berdasarkan ID atau urutan tertentu
     $stmt_dosen = $pdo->prepare("SELECT id_dosen, nama_dosen, foto_dosen FROM public.dosen ORDER BY id_dosen ASC LIMIT 7");
     $stmt_dosen->execute();
     $team_members = $stmt_dosen->fetchAll();
 } catch (PDOException $e) {
-    $team_members = []; // Jika error, set array kosong agar tidak crash
+    $team_members = [];
     echo "Error fetching dosen: " . $e->getMessage();
 }
 
-// 3. LOGIKA PENGAMBILAN DATA MAHASISWA & PENCARIAN
+// 3. LOGIKA PENGAMBILAN DATA MAHASISWA & PAGINASI
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
+// --- Konfigurasi Paginasi ---
+$limit = 10; // Batas data per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+$offset = ($page - 1) * $limit;
+
 try {
-    // Query mengambil data mahasiswa dari tabel pendaftaran
-    // Filter berdasarkan Nama atau NIM jika ada pencarian
+    // A. Hitung Total Data (untuk menentukan jumlah halaman)
+    $sql_count = "SELECT COUNT(*) FROM public.pendaftaran 
+                  WHERE status_mahasiswa = 'Diterima' 
+                  AND (nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword)";
+    $stmt_count = $pdo->prepare($sql_count);
+    $stmt_count->execute(['keyword' => $search_param]);
+    $total_data = $stmt_count->fetchColumn();
+    $total_pages = ceil($total_data / $limit);
+
+    // B. Ambil Data Mahasiswa (dengan LIMIT dan OFFSET)
     $sql_mhs = "SELECT * FROM public.pendaftaran 
-                WHERE nama_mahasiswa ILIKE :keyword 
-                OR nim ILIKE :keyword 
-                ORDER BY nama_mahasiswa ASC";
+                WHERE status_mahasiswa = 'Diterima' 
+                AND (nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword)
+                ORDER BY nama_mahasiswa ASC 
+                LIMIT :limit OFFSET :offset";
     
     $stmt_mhs = $pdo->prepare($sql_mhs);
-    $stmt_mhs->execute(['keyword' => $search_param]);
+    $stmt_mhs->bindValue(':keyword', $search_param, PDO::PARAM_STR);
+    $stmt_mhs->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt_mhs->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt_mhs->execute();
     $mahasiswa_list = $stmt_mhs->fetchAll();
+    
+    // Info item yang sedang tampil
+    $start_item = ($total_data > 0) ? $offset + 1 : 0;
+    $end_item = min($offset + $limit, $total_data);
+
 } catch (PDOException $e) {
     $mahasiswa_list = [];
+    $total_data = 0;
+    $total_pages = 1;
     echo "Error fetching mahasiswa: " . $e->getMessage();
 }
 ?>
@@ -61,81 +84,93 @@ try {
         background-size:cover;
         min-height:250px;
     }
-    body {
-        font-family: 'Roboto', sans-serif;
-    }
+    body { font-family: 'Roboto', sans-serif; }
 
     .container {
-        max-width: 100%;
-        padding-left: 50px;
-        padding-right: 50px;
-        padding-top: 20px;
-        /* Tambahkan padding bawah di container agar konten tidak mepet footer */
-        padding-bottom: 50px; 
-    }
-    
-    @media (min-width: 768px) {
-        .container {
-            /* Dibuat lebih lebar agar 6 foto muat di baris atas pada layar besar */
-            max-width: 1500px; 
-        }
-    }
-    
-    /* Styling untuk Lingkaran Foto - UKURAN FINAL LEBIH BESAR */
-    .team-member-circle {
-        /* Ukuran baru: 160px x 160px */
-        width: 160px; 
-        height: 160px; 
-        
-        object-fit: cover; 
-        
-        border-radius: 50%;
-        border: 4px solid #f8f9fa;
-        transition: transform 0.2s; 
-    }
-    
-    /* Efek saat foto disorot mouse */
-    .rounded-avatar-wrapper:hover .team-member-circle {
-        transform: scale(1.05); 
-        border-color: #0047AB;
+        max-width: 1200px;
+        padding: 20px 24px 50px 24px;
     }
 
-    .rounded-avatar-wrapper {
-        display: inline-block;
-        border-radius: 50%;
-        /* Padding dibuat sedikit lebih besar untuk mengimbangi ukuran foto */
-        padding: 7px; 
-        border: 1px solid #adb5bd;
-        cursor: pointer; 
-        margin: 8px; /* Margin diperbesar sedikit */
+    /* === ANIMASI FLIP CARD === */
+    .flip-container {
+        background-color: transparent;
+        width: 200px;
+        height: 200px;
+        perspective: 1000px; /* Memberikan efek 3D */
+        margin: 10px;
+    }
+
+    /* Container dalam yang berputar */
+    .flip-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+        cursor: pointer;
+    }
+
+    /* Efek Hover untuk memutar */
+    .flip-container:hover .flip-inner {
+        transform: rotateY(180deg);
+    }
+
+    /* Sisi Depan dan Belakang */
+    .flip-front, .flip-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden; /* Safari */
+        backface-visibility: hidden;
+        border-radius: 50%; /* Membuat lingkaran */
+        border: 4px solid #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    /* Sisi Depan (Foto) */
+    .flip-front {
+        background-color: #fff;
+    }
+    .flip-front img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Sisi Belakang (Nama) */
+    .flip-back {
+        background-color: #0047AB; /* Warna Biru */
+        color: white;
+        transform: rotateY(180deg);
+        padding: 15px;
+        flex-direction: column;
+    }
+    
+    .flip-back h5 {
+        font-size: 1rem;
+        margin: 0;
+        font-weight: bold;
+    }
+    
+    .flip-back small {
+        margin-top: 5px;
+        font-size: 0.8rem;
+        opacity: 0.8;
     }
 
     .team-member-container {
         display: flex;
         flex-wrap: wrap; 
         justify-content: center;
-        gap: 30px; /* Gap antar lingkaran dibuat lebih besar */
+        gap: 20px;
         margin-bottom: 40px; 
-        padding: 10px 0; 
     }
-
-    /* Pengaturan Flexbox untuk memastikan wrapping yang benar */
-    .team-member-container .row {
-        flex-grow: 1; 
-        display: contents; 
-    }
-
-    .team-member-container .col-auto {
-        flex: 0 0 auto; 
-        width: auto;
-    }
-
-    /* Margin yang lebih besar untuk memisahkan baris bawah */
-    .team-member-container .row:nth-child(2) {
-        margin-top: 20px;
-    }
-    /* Akhir Perubahan Layout Foto */
-
+    /* === AKHIR ANIMASI FLIP === */
 
     .category-header {
         background-color: #F9D723;
@@ -146,14 +181,10 @@ try {
         font-weight: bold;
         margin-bottom: 15px;
     }
-    .search-filter-row {
-        margin-bottom: 15px;
-    }
     
-    /* Margin bawah pada tabel agar tidak mepet footer */
-    .table-responsive {
-        margin-bottom: 50px; 
-    }
+    .search-filter-row { margin-bottom: 15px; }
+    
+    .table-responsive { margin-bottom: 20px; }
 
     .table-custom-layout {
         width: 100%;
@@ -171,29 +202,17 @@ try {
         text-align: center;
     }
 
-    .table-custom-layout th,
-    .table-custom-layout td {
+    .table-custom-layout th, .table-custom-layout td {
         border: 1px solid var(--color-table-header-border);
         height: 38px;
         padding: 0.5rem;
         text-align: center;
         font-weight: normal;
     }
-    .table-custom-layout tbody tr:nth-child(odd) td {
-        background-color: #F5F9FF;
-    }
-    .table-custom-layout tbody tr:nth-child(even) td {
-        background-color: #fff;
-    }
+    .table-custom-layout tbody tr:nth-child(odd) td { background-color: #F5F9FF; }
+    .table-custom-layout tbody tr:nth-child(even) td { background-color: #fff; }
 
-    /* Mengatur lebar kolom agar seimbang */
-    .table-custom-layout th:nth-child(1), .table-custom-layout td:nth-child(1),
-    .table-custom-layout th:nth-child(2), .table-custom-layout td:nth-child(2),
-    .table-custom-layout th:nth-child(3), .table-custom-layout td:nth-child(3),
-    .table-custom-layout th:nth-child(4), .table-custom-layout td:nth-child(4),
-    .table-custom-layout th:nth-child(5), .table-custom-layout td:nth-child(5) {
-        width: 20%; 
-    }
+    .table-custom-layout th, .table-custom-layout td { width: 20%; }
     
     .input-search-custom {
         border-right: 1px solid #ced4da !important; 
@@ -203,9 +222,7 @@ try {
         height: 38px; 
     }
 
-    .input-group-custom {
-        position: relative;
-    }
+    .input-group-custom { position: relative; }
     .input-group-custom .fa-search {
         position: absolute;
         left: 1rem;
@@ -224,10 +241,40 @@ try {
         border-radius: .25rem;
     }
 
-    /* Link styling agar tidak merusak layout */
-    a.member-link {
+    /* Style Paginasi */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .btn-page {
+        background-color: #fff;
+        color: #0047AB;
+        border: 1px solid #0047AB;
+        padding: 6px 16px;
+        border-radius: 4px;
         text-decoration: none;
-        display: inline-block;
+        transition: all 0.3s;
+        font-weight: bold;
+    }
+    
+    .btn-page:hover {
+        background-color: #F9D723;
+        color: #0047AB;
+    }
+    
+    .btn-page.disabled {
+        border-color: #ccc;
+        color: #ccc;
+        pointer-events: none;
+    }
+    
+    .page-info {
+        font-weight: 500;
+        color: #555;
     }
 </style>
 
@@ -245,25 +292,32 @@ try {
     </div>
     
     <div class="team-member-container">
-        <div class="row w-100 justify-content-center">
-            
-            <?php if (count($team_members) > 0): ?>
-                <?php foreach ($team_members as $member): ?>
-                    <div class="col-auto">
-                        <a href="Profil_dosen.php?id=<?= $member['id_dosen']; ?>" class="member-link" title="<?= htmlspecialchars($member['nama_dosen']); ?>">
-                            <div class="rounded-avatar-wrapper">
-                                <img src="<?= htmlspecialchars($member['foto_dosen']); ?>" 
-                                     class="team-member-circle" 
-                                     alt="<?= htmlspecialchars($member['nama_dosen']); ?>"
-                                     onerror="this.src='Asset/default_profile.jpg';"> </div>
-                        </a>
-                    </div>
+        <?php if (count($team_members) > 0): ?>
+            <?php foreach ($team_members as $member): ?>
+                <?php
+                    $fileName = $member['foto_dosen'] ?? '';
+                    $exists   = $fileName && file_exists(__DIR__ . '/uploads/' . $fileName);
+                    $src      = $exists ? 'uploads/' . htmlspecialchars($fileName)
+                                      : 'Asset/default_profile.jpg';
+                ?>
+                
+                <div class="flip-container">
+                    <a href="Profil_dosen.php?id=<?= $member['id_dosen']; ?>" class="text-decoration-none">
+                        <div class="flip-inner">
+                            <div class="flip-front">
+                                <img src="<?= $src ?>" alt="<?= htmlspecialchars($member['nama_dosen']); ?>">
+                            </div>
+                            <div class="flip-back">
+                                <h5><?= htmlspecialchars($member['nama_dosen']); ?></h5>
+                                <small>Klik untuk Detail</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
                 <?php endforeach; ?>
-            <?php else: ?>
-                <div class="col-12 text-center">Data anggota tim belum tersedia.</div>
-            <?php endif; ?>
-
-        </div>
+        <?php else: ?>
+            <div class="col-12 text-center">Data anggota tim belum tersedia.</div>
+        <?php endif; ?>
     </div>
     
     <div class="category-header">
@@ -273,7 +327,6 @@ try {
     <form action="" method="GET">
         <div class="row search-filter-row align-items-center">
             <div class="col-12 d-flex justify-content-between">
-                
                 <div class="input-group-custom me-2" style="max-width: 300px;"> 
                     <i class="fas fa-search"></i>
                     <input type="text" name="q" class="form-control input-search-custom" 
@@ -284,7 +337,6 @@ try {
                 <button class="btn btn-filter-custom" type="submit">
                     <i class="fas fa-filter"></i> Cari
                 </button>
-                
             </div>
         </div>
     </form>
@@ -293,11 +345,11 @@ try {
         <table class="table table-custom-layout">
             <thead>
                 <tr>
-                    <th>Nim</th>
+                    <th>NIM</th>
                     <th>Nama Mahasiswa</th>
                     <th>Jurusan</th>
                     <th>Prodi</th>
-                    <th>Status</th>
+                    <th>Email</th>
                 </tr>
             </thead>
             <tbody>
@@ -308,7 +360,7 @@ try {
                         <td><?= htmlspecialchars($mhs['nama_mahasiswa']); ?></td>
                         <td>Teknologi Informasi</td> 
                         <td><?= htmlspecialchars($mhs['prodi']); ?></td>
-                        <td><?= htmlspecialchars($mhs['status_mahasiswa']); ?></td>
+                        <td><?= htmlspecialchars($mhs['email_mahasiswa']); ?></td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -320,7 +372,24 @@ try {
         </table>
     </div>
 
-</div>
+    <?php if ($total_data > 0): ?>
+    <div class="pagination-container">
+        <a href="?q=<?= htmlspecialchars($keyword) ?>&page=<?= $page - 1 ?>" 
+           class="btn-page <?= ($page <= 1) ? 'disabled' : '' ?>">
+           <i class="fas fa-chevron-left me-1"></i> Prev
+        </a>
+
+        <span class="page-info">
+            Menampilkan <?= $start_item ?> - <?= $end_item ?> dari <?= $total_data ?> Mahasiswa
+        </span>
+
+        <a href="?q=<?= htmlspecialchars($keyword) ?>&page=<?= $page + 1 ?>" 
+           class="btn-page <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+           Next <i class="fas fa-chevron-right ms-1"></i>
+        </a>
+    </div>
+    <?php endif; ?>
+    </div>
 
 <?php include 'footer.php'; ?>
 

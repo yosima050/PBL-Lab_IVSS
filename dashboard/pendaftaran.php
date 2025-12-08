@@ -27,8 +27,7 @@ if ($action === 'update' && isset($_GET['id'])) {
         try {
             $sql = "UPDATE pendaftaran 
                     SET id_users = :id_users, nim = :nim, nama_mahasiswa = :nama_mahasiswa, prodi = :prodi,
-                        email_mahasiswa = :email_mahasiswa, status_mahasiswa = :status_mahasiswa,
-                        nama_dosen = :nama_dosen, password = :password
+                        status_mahasiswa = :status_mahasiswa, nama_dosen = :nama_dosen
                     WHERE id_pendaftaran = :id";
 
             $stmt = $pdo->prepare($sql);
@@ -37,10 +36,8 @@ if ($action === 'update' && isset($_GET['id'])) {
                 'nim' => $_POST['nim'],
                 'nama_mahasiswa' => $_POST['nama_mahasiswa'],
                 'prodi' => $_POST['prodi'],
-                'email_mahasiswa' => $_POST['email_mahasiswa'],
                 'status_mahasiswa' => $_POST['status_mahasiswa'],
                 'nama_dosen' => $_POST['nama_dosen'],
-                'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
                 'id' => $id
             ]);
 
@@ -170,7 +167,17 @@ include __DIR__ . '/sidebar.php';
                             <td><?= htmlspecialchars($p['nama_dosen']) ?></td>
                             <td><span class="badge badge-info"> <?= $p['status_mahasiswa'] ?> </span></td>
                             <td class="text-center">
-                                <a href="pendaftaran_edit.php?id=<?= $p['id_pendaftaran'] ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                                <button class="btn btn-warning btn-sm btn-edit"
+                                    data-id="<?= $p['id_pendaftaran'] ?>"
+                                    data-id_users="<?= $p['id_users'] ?>"
+                                    data-nama="<?= htmlspecialchars($p['nama_mahasiswa']) ?>"
+                                    data-nim="<?= htmlspecialchars($p['nim']) ?>"
+                                    data-prodi="<?= htmlspecialchars($p['prodi']) ?>"
+                                    data-status="<?= htmlspecialchars($p['status_mahasiswa']) ?>"
+                                    data-dosen="<?= htmlspecialchars($p['nama_dosen']) ?>">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
                                 <a href="?action=delete&id=<?= $p['id_pendaftaran'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
 
                                 <button class="btn btn-primary btn-sm btn-forward"
@@ -188,6 +195,65 @@ include __DIR__ . '/sidebar.php';
         </div>
     </div>
 </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Edit Pendaftaran</h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <form method="POST" id="editForm">
+        <div class="modal-body">
+
+          <input type="hidden" name="id_users" id="edit_id_users">
+
+          <div class="form-group">
+            <label>Nama Mahasiswa</label>
+            <input type="text" name="nama_mahasiswa" id="edit_nama" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>NIM</label>
+            <input type="text" name="nim" id="edit_nim" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Prodi</label>
+            <input type="text" name="prodi" id="edit_prodi" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Dosen Pembimbing</label>
+            <input type="text" name="nama_dosen" id="edit_dosen" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status_mahasiswa" id="edit_status" class="form-control">
+              <option value="Pending">Pending</option>
+              <option value="Menunggu">Menunggu</option>
+              <option value="Disetujui">Disetujui</option>
+              <option value="Ditolak">Ditolak</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
+          <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
 </div>
 
 <footer class="sticky-footer bg-white">
@@ -248,6 +314,29 @@ include __DIR__ . '/sidebar.php';
             $('#btn-confirm-forward').attr('href', url);
         });
     });
+</script>
+
+<script>
+$(document).ready(function() {
+
+    $(".btn-edit").on("click", function() {
+
+        const id = $(this).data("id");
+
+        $("#edit_id_users").val($(this).data("id_users"));
+        $("#edit_nama").val($(this).data("nama"));
+        $("#edit_nim").val($(this).data("nim"));
+        $("#edit_prodi").val($(this).data("prodi"));
+        $("#edit_dosen").val($(this).data("dosen"));
+        $("#edit_status").val($(this).data("status"));
+        
+        // Set action form ke URL UPDATE
+        $("#editForm").attr("action", "pendaftaran.php?action=update&id=" + id);
+
+        $("#editModal").modal("show");
+    });
+
+});
 </script>
 </body>
 </html>
