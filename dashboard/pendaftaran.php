@@ -282,7 +282,7 @@ include __DIR__ . '/sidebar.php';
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
-                <a id="btn-confirm-forward" href="#" class="btn btn-primary">Ya, Teruskan</a>
+                <a id="btn-confirm-forward" href="pendaftaran.php" class="btn btn-primary">Ya, Teruskan</a>
             </div>
         </div>
     </div>
