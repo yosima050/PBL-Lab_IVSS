@@ -5,81 +5,105 @@ include 'dashboard/db.php';
 $id_proyek = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 try {
-    // A. CEK KEPEMILIKAN PROYEK (Dosen atau Mahasiswa)
-    $stmtCheck = $pdo->prepare("SELECT id_dosen, id_mahasiswa FROM proyek WHERE id_proyek = :id");
-    $stmtCheck->execute(['id' => $id_proyek]);
-    $check = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+    // ==========================================
+    // LANGKAH 1: CEK DATA DASAR (TABEL INDUK)
+    // ==========================================
+    $stmtBase = $pdo->prepare("SELECT * FROM proyek WHERE id_proyek = :id");
+    $stmtBase->execute(['id' => $id_proyek]);
+    $baseData = $stmtBase->fetch(PDO::FETCH_ASSOC);
 
-    if (!$check) {
-        die("<div class='container py-5 text-center'><h3>Proyek tidak ditemukan.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+    if (!$baseData) {
+        die("<div class='container py-5 text-center'>
+                <div class='alert alert-warning'>
+                    <h3>Data proyek tidak ditemukan di database.</h3>
+                    <p>ID yang dicari: " . htmlspecialchars($id_proyek) . "</p>
+                </div>
+                <a href='produk.php' class='btn btn-primary'>Kembali ke Daftar</a>
+             </div>");
     }
 
-    // Variabel Default
-    $label_tim_utama = "Tim Penulis";
-    $label_tim_kedua = ""; // Bisa jadi Asisten atau Pembimbing
-    $data_tim_kedua  = ""; 
+    // ==========================================
+    // LANGKAH 2: DETEKSI JENIS PROYEK
+    // ==========================================
+    // Cek apakah ada data di tabel detail dosen?
+    $stmtCek = $pdo->prepare("SELECT COUNT(*) FROM detail_proyek_dosen WHERE id_proyek = :id");
+    $stmtCek->execute(['id' => $id_proyek]);
+    $isDosenProject = $stmtCek->fetchColumn() > 0;
 
-    // B. LOGIKA QUERY BERDASARKAN PEMILIK
+    $label_tim_utama = "Tim Penulis";
+    $label_tim_kedua = ""; 
     
-    // --- KASUS 1: PROYEK DOSEN (Ada Asisten Mahasiswa) ---
-    // Cek apakah id_dosen di tabel PROYEK terisi (sebagai ketua)
-    if (!empty($check['id_dosen'])) {
+    // ==========================================
+    // LANGKAH 3: QUERY DETAIL (JOIN)
+    // ==========================================
+    
+    if ($isDosenProject) {
+        // --- KASUS: PROYEK DOSEN ---
         $label_tim_utama = "Tim Dosen";
         $label_tim_kedua = "Asisten Mahasiswa";
 
         $sql = "SELECT 
                     p.*,
-                    -- Tim Utama (Dosen)
+                    -- Tim Utama: Dosen (Ambil dari detail_dosen)
                     STRING_AGG(DISTINCT d.nama_dosen, ', ') as tim_utama,
-                    -- Tim Kedua (Mahasiswa Asisten)
+                    
+                    -- Tim Kedua: Mahasiswa (Ambil dari detail_mahasiswa yg bertindak sbg asisten)
                     STRING_AGG(DISTINCT u.nama_users, ', ') as tim_kedua,
                     
+                    -- Detail Lainnya (Pakai MAX agar aman dari GROUP BY)
                     MAX(dd.tanggal_mulai_proyek_dosen) as tgl_mulai,
                     MAX(dd.tanggal_selesai_proyek_dosen) as tgl_selesai,
                     MAX(dd.kategori_proyek_dosen) as kategori,
                     MAX(dd.lokasi_proyek_dosen) as lokasi
                 FROM proyek p
-                JOIN detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
+                LEFT JOIN detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
                 LEFT JOIN dosen d ON dd.id_dosen = d.id_dosen
-                -- Join ke Asisten (Detail Mahasiswa)
+                
+                -- Join untuk Asisten
                 LEFT JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
                 LEFT JOIN mahasiswa m ON dm.id_mahasiswa = m.id_mahasiswa
                 LEFT JOIN users u ON m.id_users = u.id_users
+                
                 WHERE p.id_proyek = :id
                 GROUP BY p.id_proyek";
 
     } else {
-        // --- KASUS 2: PROYEK MAHASISWA (Ada Dosen Pembimbing) ---
+        // --- KASUS: PROYEK MAHASISWA ---
         $label_tim_utama = "Tim Mahasiswa";
         $label_tim_kedua = "Dosen Pembimbing";
 
         $sql = "SELECT 
                     p.*,
-                    -- Tim Utama (Mahasiswa)
+                    -- Tim Utama: Mahasiswa (Ambil dari detail_mahasiswa)
                     STRING_AGG(DISTINCT u.nama_users, ', ') as tim_utama,
-                    -- Tim Kedua (Dosen Pembimbing dari tabel Proyek)
-                    dbimbing.nama_dosen as tim_kedua,
                     
+                    -- Tim Kedua: Pembimbing (Ambil dari tabel proyek kolom id_dosen)
+                    MAX(dbimbing.nama_dosen) as tim_kedua,
+                    
+                    -- Detail Lainnya
                     MAX(dm.tanggal_mulai_proyek_mahasiswa) as tgl_mulai,
                     MAX(dm.tanggal_selesai_proyek_mahasiswa) as tgl_selesai,
                     MAX(dm.kategori_proyek_mahasiswa) as kategori,
                     MAX(dm.lokasi_proyek_mahasiswa) as lokasi
                 FROM proyek p
-                JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
+                LEFT JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
                 LEFT JOIN mahasiswa m ON dm.id_mahasiswa = m.id_mahasiswa
                 LEFT JOIN users u ON m.id_users = u.id_users
-                -- Join Pembimbing
+                
+                -- Join untuk Pembimbing
                 LEFT JOIN dosen dbimbing ON p.id_dosen = dbimbing.id_dosen
+                
                 WHERE p.id_proyek = :id
-                GROUP BY p.id_proyek, dbimbing.nama_dosen";
+                GROUP BY p.id_proyek";
     }
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id' => $id_proyek]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Fallback jika query join gagal tapi data base ada (sangat jarang terjadi)
     if (!$data) {
-        die("<div class='container py-5 text-center'><h3>Detail data tidak lengkap/rusak.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+        $data = $baseData; // Gunakan data dasar dari langkah 1
     }
 
     // Format Tanggal
