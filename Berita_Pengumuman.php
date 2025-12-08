@@ -1,48 +1,80 @@
 <?php
 // 1. HUBUNGKAN KE DATABASE
-// Pastikan file koneksi Anda menggunakan PDO ($pdo)
 include 'dashboard/db.php'; 
 
+// 2. CONFIG PAGINASI & PENCARIAN
+$keyword = isset($_GET['q']) ? $_GET['q'] : '';
+$search_param = "%" . $keyword . "%";
+
+// Tentukan halaman saat ini
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+
+$limit = 3; // Jumlah item per halaman untuk berita utama
+$offset = ($page - 1) * $limit;
+
 try {
-    $sql_count = "SELECT COUNT(*) FROM public.proyek 
-                  WHERE judul_proyek ILIKE :keyword 
-                  OR deskripsi_proyek ILIKE :keyword";
+    // A. HITUNG TOTAL DATA BERITA (Untuk Paginasi)
+    $sql_count = "SELECT COUNT(*) FROM public.berita 
+                  WHERE (judul_berita ILIKE :keyword 
+                  OR isi_berita ILIKE :keyword)
+                  AND (kategori_berita NOT ILIKE 'pengumuman' 
+                  AND kategori_berita NOT ILIKE 'agenda'
+                  AND kategori_berita NOT ILIKE '%kegiatan%')";
     $stmt_count = $pdo->prepare($sql_count);
+    $stmt_count->execute(['keyword' => $search_param]);
     $total_data = $stmt_count->fetchColumn();
-    // 2. QUERY UTAMA: Ambil Semua Berita (Urut Terbaru)
-    $sql = "SELECT * FROM public.berita ORDER BY created_at_berita DESC";
-    $stmt = $pdo->query($sql);
-    $all_data = $stmt->fetchAll();
-    $items_per_page = 4;
-    $current_page = 1;
-    $start_item = (($current_page - 1) * $items_per_page) + 1;
-    $end_item = min($current_page * $items_per_page, $total_data);
+    $total_pages = ceil($total_data / $limit);
 
-    // 3. FILTER DATA BERDASARKAN KATEGORI (Dari kolom 'kategori_berita')
-    $berita_list = [];
-    $pengumuman_list = [];
-    $agenda_list = [];
+    // B. AMBIL DATA BERITA DENGAN LIMIT & OFFSET
+    $sql_berita = "SELECT * FROM public.berita 
+                   WHERE (judul_berita ILIKE :keyword 
+                   OR isi_berita ILIKE :keyword)
+                   AND (kategori_berita NOT ILIKE 'pengumuman' 
+                   AND kategori_berita NOT ILIKE 'agenda'
+                   AND kategori_berita NOT ILIKE '%kegiatan%')
+                   ORDER BY created_at_berita DESC
+                   LIMIT :limit OFFSET :offset";
+    
+    $stmt_berita = $pdo->prepare($sql_berita);
+    $stmt_berita->bindValue(':keyword', $search_param, PDO::PARAM_STR);
+    $stmt_berita->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt_berita->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt_berita->execute();
+    $berita_list = $stmt_berita->fetchAll();
 
-    foreach ($all_data as $row) {
-        $kategori = strtolower($row['kategori_berita'] ?? ''); // Ubah ke huruf kecil biar aman
+    // C. AMBIL PENGUMUMAN (Tanpa Paginasi - Semua Data)
+    $sql_pengumuman = "SELECT * FROM public.berita 
+                       WHERE kategori_berita ILIKE 'pengumuman'
+                       ORDER BY created_at_berita DESC
+                       LIMIT 5"; // Batasi 5 pengumuman terbaru
+    $stmt_pengumuman = $pdo->query($sql_pengumuman);
+    $pengumuman_list = $stmt_pengumuman->fetchAll();
 
-        if ($kategori === 'pengumuman') {
-            $pengumuman_list[] = $row;
-        } elseif ($kategori === 'agenda' || strpos($kategori, 'kegiatan') !== false) {
-            $agenda_list[] = $row;
-        } else {
-            // Default: Masuk ke Berita (Termasuk jika kategori 'Berita' atau 'Tautan')
-            $berita_list[] = $row;
-        }
-    }
+    // D. AMBIL AGENDA (Tanpa Paginasi - Semua Data)
+    $sql_agenda = "SELECT * FROM public.berita 
+                   WHERE (kategori_berita ILIKE 'agenda' 
+                   OR kategori_berita ILIKE '%kegiatan%')
+                   ORDER BY created_at_berita DESC
+                   LIMIT 5"; // Batasi 5 agenda terbaru
+    $stmt_agenda = $pdo->query($sql_agenda);
+    $agenda_list = $stmt_agenda->fetchAll();
 
     // Ambil 1 Berita Utama (Featured) dari list berita
     $featured_news = !empty($berita_list) ? array_shift($berita_list) : null;
 
+    // Hitung item yang sedang ditampilkan
+    $start_item = ($total_data > 0) ? $offset + 1 : 0;
+    $end_item = min($offset + $limit, $total_data);
+
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
-    $aktivitas_list = [];
-    $total_data = 0; // Inisialisasi jika ada error
+    $berita_list = [];
+    $pengumuman_list = [];
+    $agenda_list = [];
+    $featured_news = null;
+    $total_data = 0;
+    $total_pages = 1;
     $start_item = 0;
     $end_item = 0;
 }
@@ -61,6 +93,15 @@ try {
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="footer.css">
     <link rel="stylesheet" href="css/styleBP.css">
+    
+    <style>
+        /* Style Paginasi (Agar tombol disabled terlihat jelas) */
+        .btn-nav.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: default;
+        }
+    </style>
 </head>
 
 <body>
@@ -124,6 +165,10 @@ try {
                     </div>
                 </div>
                 <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Tidak ada berita yang ditemukan.</p>
+                </div>
             <?php endif; ?>
 
         </div>
@@ -171,24 +216,32 @@ try {
             </div>            
         </div>
     </div>
-</div>
-<div class="pagination-controls">
-    <a href="#" class="btn-nav">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill me-2" viewBox="0 0 16 16">
-    <path d="m3.86 8.753 5.48-4.796A1 1 0 0 1 10 4.907v6.186a1 1 0 0 1-1.66 1.154l-5.48-4.796a1 1 0 0 1 0-1.509"/>
-        </svg>
+
+    <!-- Pagination Controls -->
+    <?php if ($total_data > 0): ?>
+    <div class="pagination-controls">
+        <a href="?page=<?= max(1, $page - 1) ?>&q=<?= htmlspecialchars($keyword) ?>" 
+           class="btn-nav <?= ($page <= 1) ? 'disabled' : '' ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill me-2" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.48-4.796A1 1 0 0 1 10 4.907v6.186a1 1 0 0 1-1.66 1.154l-5.48-4.796a1 1 0 0 1 0-1.509"/>
+            </svg>
             Previous
-            </a>
+        </a>
+        
         <span>
             <?= $start_item; ?>-<?= $end_item; ?> of <?= $total_data; ?>
         </span>
-    <a href="#" class="btn-nav">
-        Next
+        
+        <a href="?page=<?= min($total_pages, $page + 1) ?>&q=<?= htmlspecialchars($keyword) ?>" 
+           class="btn-nav <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+            Next
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill ms-2" viewBox="0 0 16 16">
                 <path d="m12.14 8.753-5.48-4.796A1 1 0 0 0 6 4.907v6.186a1 1 0 0 0 1.66 1.154l5.48-4.796a1 1 0 0 0 0-1.509"/>
             </svg>
         </a>
     </div>
+    <?php endif; ?>
+</div>
 </div>
 
 <?php include 'footer.php'; ?>
