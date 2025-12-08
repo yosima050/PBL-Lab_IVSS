@@ -83,8 +83,16 @@ try {
     }
 
     // Format Tanggal
-    $tgl_mulai_fmt = !empty($data['tgl_mulai']) ? date('d M Y', strtotime($data['tgl_mulai'])) : '-';
-    $tgl_selesai_fmt = !empty($data['tgl_selesai']) ? date('d M Y', strtotime($data['tgl_selesai'])) : '-';
+    $tgl_mulai_fmt = !empty($data['tgl_mulai']) ? date('d M Y', strtotime($data['tgl_mulai'])) : 'DD/MM/YYYY';
+    $tgl_selesai_fmt = !empty($data['tgl_selesai']) ? date('d M Y', strtotime($data['tgl_selesai'])) : 'DD/MM/YYYY';
+    $kategori_fmt = htmlspecialchars($data['kategori'] ?? '[Kategori]');
+    $lokasi_fmt = htmlspecialchars($data['lokasi'] ?? '[Info]');
+    $tim_utama_fmt = htmlspecialchars($data['tim_utama'] ?? 'N/A');
+    $tim_kedua_fmt = htmlspecialchars($data['tim_kedua'] ?? '');
+    $deskripsi_fmt = nl2br(htmlspecialchars($data['deskripsi_proyek']));
+    
+    // Status (Asumsi menggunakan tahun proyek sebagai status sederhana)
+    $status_proyek = "Aktif/Published/Progress"; // Hanya teks status
 
 } catch (PDOException $e) {
     die("Error Database: " . $e->getMessage());
@@ -103,51 +111,29 @@ try {
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="footer.css">
     <style>
-        body { font-family: 'Roboto', sans-serif; }
-        .banner1{
-            background:url(Asset/Coba.jpg) no-repeat 0px 0px;
-            background-size:cover;
-            min-height:250px;
+        body { font-family: 'Roboto', sans-serif; background-color: #f8f9fa; }
+        .banner1 {
+            min-height: 0;
+            background: none;
         }
         .header-riset {
-            background-color: #F9D723;
-            padding: 0.3rem 1rem;
-            color: #0047AB;
+            background-color: #F9D723; /* Kuning */
+            padding: 0.5rem 1rem;
+            color: #212529; /* Hitam/Dark */
             font-weight: bold;
-            font-size: 1.10rem;
+            font-size: 1.25rem;
             border-radius: 0.375rem;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             display: inline-block;
         }
         .content-card {
-            background-color: #F5F9FF !important;
-        }
-        .detail-box {
-            border: 2px solid #0047AB;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            background-color: transparent;
-        }
-        /* Style tabel detail agar lebih rapi */
-        .detail-box table tr td {
-            padding: 8px 0;
-            vertical-align: top;
-        }
-        .deskripsi-box {
-            border: 2px solid #0047AB;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            margin-bottom: 1.5rem;
-            background-color: white;
-        }
-        .dokumen-container {
-            background-color: #FFFCED;
-            padding: 1rem;
-            border-radius: 0.375rem;
+            background-color: #F5F9FF;
+            border: 1px solid #dee2e6;
+            padding: 2rem;
         }
         .image-placeholder {
-            background-color: #e9ecef;
-            height: 300px; /* Sedikit dipertinggi */
+            background-color: #f1f1f1; 
+            height: 200px; 
             width: 100%;
             display: flex;
             justify-content: center;
@@ -157,8 +143,69 @@ try {
             font-size: 3rem;
             color: #6c757d;
             overflow: hidden;
+            border: 1px solid #ced4da;
         }
-        .bg-custom-blue { background-color: #0047AB !important; }
+        .deskripsi-box {
+            border: 1px solid #0047AB;
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 2rem;
+            background-color: white;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            color: #343a40;
+        }
+        .detail-info-header, .dokumen-header {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #212529;
+            margin-bottom: 0.5rem;
+        }
+        .detail-box {
+            border: 1px solid #0047AB;
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            background-color: white;
+            color: #343a40;
+            line-height: 2;
+        }
+        .detail-box p {
+            margin-bottom: 0;
+        }
+        .dokumen-item {
+            background-color: #FFFCED;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .download-link {
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .download-link:hover {
+             text-decoration: underline;
+        }
+        .back-link {
+            color: #212529;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: #0047AB;
+        }
+        .status-badge {
+            background-color: #F9D723; /* Kuning Solid */
+            color: #212529; /* Teks Hitam */
+            padding: 0.3rem 1rem; /* Padding yang cukup */
+            border-radius: 30px; /* Rounded pill shape */
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
     </style>
 </head>
 <body>
@@ -170,21 +217,21 @@ try {
     <div class="container my-5">
         
         <div class="header-riset">
-            Halaman Produk dan Riset
+            Halaman Proyek dan Riset
         </div>
 
         <div class="card border-0 p-4 content-card shadow-sm">
             
-            <div class="d-flex align-items-center mb-4">
-                <a href="produk.php" class="text-decoration-none me-3 text-dark">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="produk.php" class="back-link">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
-                <h2 class="h5 m-0 text-muted ms-auto text-uppercase fw-bold">
-                    <?= htmlspecialchars($data['tipe_proyek']); ?>
+                <h2 class="h5 m-0 text-uppercase fw-bold text-end">
+                    <?= htmlspecialchars($data['judul_proyek']); ?>
                 </h2>
             </div>
             
-            <div class="image-placeholder mb-4 shadow-sm">
+            <div class="image-placeholder mb-4">
                 <?php 
                     // Path Foto (Sesuaikan jika path di dashboard Anda berbeda)
                     $fotoPath = 'dashboard/uploads/proyek/' . $data['foto_proyek'];
@@ -192,104 +239,72 @@ try {
                 ?>
                     <img src="<?= htmlspecialchars($fotoPath); ?>" alt="Foto Proyek" style="width: 100%; height: 100%; object-fit: cover;">
                 <?php else: ?>
-                    <div class="text-center">
-                        <i class="fas fa-image fa-2x mb-2"></i><br>
-                        <span class="fs-6">Tidak ada foto</span>
-                    </div>
+                    <i class="fas fa-image"></i>
                 <?php endif; ?>
             </div>
             
-            <h3 class="h3 fw-bold mb-2 text-dark"><?= htmlspecialchars($data['judul_proyek']); ?></h3>
-            <p class="text-muted mb-4"><i class="far fa-calendar-alt me-1"></i> Tahun Proyek: <strong><?= htmlspecialchars($data['tahun_proyek']); ?></strong></p>
+            <h3 class="h3 fw-bold mb-2 text-dark">[Judul Lengkap Item]</h3> 
             
-            <h4 class="h5 fw-bold text-primary"><i class="fas fa-align-left me-2"></i>Deskripsi</h4>
-            <div class="deskripsi-box shadow-sm">
-                <p class="text-secondary m-0" style="text-align: justify; line-height: 1.8;">
-                    <?= nl2br(htmlspecialchars($data['deskripsi_proyek'])); ?>
+            <span class="status-badge">
+                Status: **<?= htmlspecialchars($status_proyek); ?>**
+            </span>
+            
+            <h4 class="detail-info-header">Deskripsi</h4>
+            <div class="deskripsi-box">
+                <p class="m-0">
+                    <?php if (!empty($deskripsi_fmt)): ?>
+                        <?= $deskripsi_fmt; ?>
+                    <?php else: ?>
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                    <?php endif; ?>
                 </p>
             </div>
 
-            <hr class="my-4">
-            
-            <h4 class="h5 fw-bold text-primary"><i class="fas fa-info-circle me-2"></i>Informasi Detail</h4>
+            <h4 class="detail-info-header">Informasi Detail</h4>
             <div class="detail-box mb-4">
-                <table class="table table-borderless m-0 bg-transparent">
-                    <tr>
-                        <td width="180" class="fw-bold text-secondary">Tipe Proyek</td>
-                        <td>: <span class="badge bg-custom-blue"><?= htmlspecialchars($data['tipe_proyek']); ?></span></td>
-                    </tr>
-                    
-                    <tr>
-                        <td class="fw-bold text-secondary">Tahun Pelaksanaan</td>
-                        <td>: <?= htmlspecialchars($data['tahun_proyek']); ?></td>
-                    </tr>
+                <p>Tanggal Mulai: **<?= $tgl_mulai_fmt; ?>**</p>
+                <p>Tanggal Selesai: **<?= $tgl_selesai_fmt; ?>**</p>
+                
+                <p><?= $label_tim_utama; ?>: **<?= $tim_utama_fmt; ?>**</p>
+                <?php if(!empty($tim_kedua_fmt)): ?>
+                    <p><?= $label_tim_kedua; ?>: **<?= $tim_kedua_fmt; ?>**</p>
+                <?php endif; ?>
 
-                    <tr>
-                        <td class="fw-bold text-secondary"><?= $label_tim_utama; ?></td>
-                        <td>: 
-                            <span class="fw-semibold text-dark">
-                                <?= htmlspecialchars($data['tim_utama'] ?? '-'); ?>
-                            </span>
-                        </td>
-                    </tr>
-
-                    <?php if(!empty($data['tim_kedua'])): ?>
-                    <tr>
-                        <td class="fw-bold text-secondary"><?= $label_tim_kedua; ?></td>
-                        <td>: 
-                            <span class="text-primary">
-                                <?= htmlspecialchars($data['tim_kedua']); ?>
-                            </span>
-                        </td>
-                    </tr>
-                    <?php endif; ?>
-
-                    <tr>
-                        <td class="fw-bold text-secondary">Kategori</td>
-                        <td>: <?= htmlspecialchars($data['kategori'] ?? '-'); ?></td>
-                    </tr>
-
-                    <?php if (!empty($data['lokasi']) && $data['lokasi'] != '-'): ?>
-                    <tr>
-                        <td class="fw-bold text-secondary">Lokasi / Jurnal</td>
-                        <td>: <?= htmlspecialchars($data['lokasi']); ?></td>
-                    </tr>
-                    <?php endif; ?>
-
-                    <tr>
-                        <td class="fw-bold text-secondary">Durasi Proyek</td>
-                        <td>: <?= $tgl_mulai_fmt; ?> <span class="mx-1 text-muted">s/d</span> <?= $tgl_selesai_fmt; ?></td>
-                    </tr>
-                </table>
+                <p>Kategori: **<?= $kategori_fmt; ?>**</p>
+                <p>Lokasi/Jurnal: **<?= $lokasi_fmt; ?>**</p>
             </div>
             
-            <h4 class="h5 fw-bold text-primary"><i class="fas fa-paperclip me-2"></i>Dokumen Terkait</h4>
-            <div class="dokumen-container mb-4 shadow-sm">
-                <div class="list-group list-group-flush bg-transparent">
+            <h4 class="dokumen-header">Dokumen Terkait</h4>
+            <div class="dokumen-container mb-4">
                 <?php 
                     // Path File (Sesuaikan jika path di dashboard Anda berbeda)
                     $filePath = 'dashboard/uploads/proyek/' . $data['file_proyek'];
                     
                     if (!empty($data['file_proyek']) && file_exists($filePath)): 
                 ?>
-                    <div class="d-flex justify-content-between align-items-center p-2 border rounded bg-white">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-file-pdf fa-2x me-3 text-danger"></i>
-                            <div>
-                                <h6 class="mb-0 fw-bold"><?= htmlspecialchars(basename($data['file_proyek'])); ?></h6>
-                                <small class="text-muted">Klik tombol di kanan untuk mengunduh.</small>
-                            </div>
-                        </div>
-                        <a href="<?= htmlspecialchars($filePath); ?>" class="btn btn-primary btn-sm px-3" download>
-                            <i class="fas fa-download me-1"></i> Download
+                    <div class="dokumen-item">
+                        <span class="fw-semibold"><?= htmlspecialchars(basename($data['file_proyek'])); ?></span>
+                        <a href="<?= htmlspecialchars($filePath); ?>" class="download-link" download>
+                            [Download]
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="dokumen-item justify-content-center">
                         <span class="text-muted"><i class="fas fa-exclamation-circle me-2"></i>Tidak ada dokumen yang dilampirkan.</span>
                     </div>
+                    <div class="dokumen-item">
+                        <span class="fw-semibold">Dokumen_1.pdf</span>
+                        <a href="#" class="download-link">
+                            [Download]
+                        </a>
+                    </div>
+                     <div class="dokumen-item">
+                        <span class="fw-semibold">Dokumen_2.pdf</span>
+                        <a href="#" class="download-link">
+                            [Download]
+                        </a>
+                    </div>
                 <?php endif; ?>
-                </div>
             </div>
 
         </div>
