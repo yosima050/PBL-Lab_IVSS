@@ -50,7 +50,7 @@ if ($action === 'edit' && isset($_POST['id'])) {
                 prodi = :prodi,
                 nama_dosen = :dosen,
                 status_mahasiswa = :status,
-                email = :email_mahasiswa
+                email_mahasiswa = :email_mahasiswa
             WHERE id_pendaftaran = :id");
 
         $stmt->execute([
@@ -59,7 +59,7 @@ if ($action === 'edit' && isset($_POST['id'])) {
             'prodi' => $_POST['prodi'],
             'dosen' => $_POST['nama_dosen'],
             'status' => $_POST['status_mahasiswa'],
-            'email' => $_POST['email_mahasiswa'],
+            'email_mahasiswa' => $_POST['email'],
             'id' => $id
         ]);
 
@@ -123,7 +123,6 @@ include __DIR__ . '/sidebar.php';
 
 <div id="content-wrapper" class="d-flex flex-column">
 <div id="content">
-
 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 shadow">
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown no-arrow">
@@ -209,9 +208,11 @@ include __DIR__ . '/sidebar.php';
                                     <input type="hidden" name="id" value="<?= $m['id_pendaftaran'] ?>">
 
                                     <div class="modal-content">
-                                        <div class="modal-header">
+                                        <div class="modal-header bg-primary text-white">
                                             <h5 class="modal-title">Edit Data Mahasiswa</h5>
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <button type="button" class="close text-white" data-dismiss="modal">
+                                            <span>&times;</span>
+                                            </button>
                                         </div>
 
                                         <div class="modal-body">
@@ -256,7 +257,7 @@ include __DIR__ . '/sidebar.php';
                                         </div>
 
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                                         </div>
                                     </div>

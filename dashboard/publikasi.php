@@ -151,9 +151,11 @@ try {
                                             <div class="modal-dialog">
                                                 <form action="process_publikasi.php" method="POST">
                                                     <div class="modal-content">
-                                                        <div class="modal-header">
+                                                        <div class="modal-header bg-primary text-white">
                                                             <h5 class="modal-title">Edit Publikasi</h5>
-                                                            <button class="close" data-dismiss="modal"><span>×</span></button>
+                                                            <button type="button" class="close text-white" data-dismiss="modal">
+                                                            <span>&times;</span>
+                                                            </button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <input type="hidden" name="id_publikasi" value="<?= $p['id_publikasi'] ?>">
@@ -178,7 +180,7 @@ try {
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                            <button type="submit" name="update" class="btn btn-primary">Simpan</button>
+                                                            <button type="submit" name="update" class="btn btn-primary">Simpan Perubahan</button>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -206,16 +208,18 @@ try {
 
             </div>
         </div>
-    </div>
+    </div> 
 
     <!-- ===== MODAL CREATE ===== -->
     <div class="modal fade" id="createModal" tabindex="-1">
         <div class="modal-dialog">
             <form action="process_publikasi.php" method="POST">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tambah Publikasi</h5>
-                        <button class="close" data-dismiss="modal"><span>×</span></button>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Edit Data Mahasiswa</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
                         

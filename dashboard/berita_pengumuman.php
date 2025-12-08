@@ -285,7 +285,7 @@ $pendingCount = $waitingApproval = 0;
 
                             <div class="form-group">
                                 <label>URL Link (Opsional)</label>
-                                <input type="url" name="link_berita" class="form-control" value="<?= htmlspecialchars($d['link_berita']) ?>">
+                                <input type="url" name="link_berita" class="form-control" value="<?= htmlspecialchars($d['link_berita'] ?? '') ?>">
                             </div>
 
                             <div class="form-group">
