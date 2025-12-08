@@ -146,7 +146,7 @@ try {
                                             // Tampilkan foto dari folder uploads
                                             $foto = !empty($d['foto_dosen']) ? $d['foto_dosen'] : 'default_profile.jpg';
                                             ?>
-                                            <img src="../uploads/<?= htmlspecialchars($foto) ?>" width="60" class="rounded" onerror="this.src='../Asset/default_profile.jpg'">
+                                            <img src="<?= htmlspecialchars($foto) ?>" width="60" class="rounded" onerror="this.src='../Asset/default_profile.jpg'">
                                         </td>
                                         
                                         <td><?= htmlspecialchars($d['nama_dosen']) ?></td>

@@ -49,7 +49,8 @@ if ($action === 'edit' && isset($_POST['id'])) {
                 nim = :nim,
                 prodi = :prodi,
                 nama_dosen = :dosen,
-                status_mahasiswa = :status
+                status_mahasiswa = :status,
+                email = :email_mahasiswa
             WHERE id_pendaftaran = :id");
 
         $stmt->execute([
@@ -58,6 +59,7 @@ if ($action === 'edit' && isset($_POST['id'])) {
             'prodi' => $_POST['prodi'],
             'dosen' => $_POST['nama_dosen'],
             'status' => $_POST['status_mahasiswa'],
+            'email' => $_POST['email_mahasiswa'],
             'id' => $id
         ]);
 
@@ -160,6 +162,7 @@ include __DIR__ . '/sidebar.php';
                             <th>ID</th>
                             <th>Nama</th>
                             <th>NIM</th>
+                            <th>Email</th>
                             <th>Prodi</th>
                             <th>Dosen Pembimbing</th>
                             <th>Status</th>
@@ -173,6 +176,7 @@ include __DIR__ . '/sidebar.php';
                             <td>#<?= $m['id_pendaftaran'] ?></td>
                             <td><?= htmlspecialchars($m['nama_mahasiswa']) ?></td>
                             <td><?= htmlspecialchars($m['nim']) ?></td>
+                            <td><?= htmlspecialchars($m['email_mahasiswa'] ?? '') ?></td>
                             <td><?= htmlspecialchars($m['prodi']) ?></td>
                             <td><?= htmlspecialchars($m['nama_dosen']) ?></td>
                             <td><span class="badge badge-info"><?= $m['status_mahasiswa'] ?></span></td>
@@ -215,6 +219,12 @@ include __DIR__ . '/sidebar.php';
                                                 <label>Nama</label>
                                                 <input type="text" name="nama_mahasiswa" class="form-control"
                                                     value="<?= $m['nama_mahasiswa'] ?>" required>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Email</label>
+                                                <input type="email" name="email" class="form-control"
+                                                    value="<?= htmlspecialchars($m['email_mahasiswa'] ?? '') ?>" required>
                                             </div>
 
                                             <div class="form-group">

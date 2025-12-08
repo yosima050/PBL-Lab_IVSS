@@ -4,10 +4,19 @@
 include 'dashboard/db.php'; 
 
 try {
+    $sql_count = "SELECT COUNT(*) FROM public.proyek 
+                  WHERE judul_proyek ILIKE :keyword 
+                  OR deskripsi_proyek ILIKE :keyword";
+    $stmt_count = $pdo->prepare($sql_count);
+    $total_data = $stmt_count->fetchColumn();
     // 2. QUERY UTAMA: Ambil Semua Berita (Urut Terbaru)
     $sql = "SELECT * FROM public.berita ORDER BY created_at_berita DESC";
     $stmt = $pdo->query($sql);
     $all_data = $stmt->fetchAll();
+    $items_per_page = 4;
+    $current_page = 1;
+    $start_item = (($current_page - 1) * $items_per_page) + 1;
+    $end_item = min($current_page * $items_per_page, $total_data);
 
     // 3. FILTER DATA BERDASARKAN KATEGORI (Dari kolom 'kategori_berita')
     $berita_list = [];
@@ -32,6 +41,10 @@ try {
 
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
+    $aktivitas_list = [];
+    $total_data = 0; // Inisialisasi jika ada error
+    $start_item = 0;
+    $end_item = 0;
 }
 ?>
 
@@ -48,22 +61,6 @@ try {
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="footer.css">
     <link rel="stylesheet" href="css/styleBP.css">
-
-    <style>
-        /* Perbaikan CSS agar gambar konsisten */
-        .berita-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .berita-link {
-            text-decoration: none;
-            color: inherit;
-        }
-        .berita-link:hover {
-            color: #0047AB;
-        }
-    </style>
 </head>
 
 <body>
@@ -83,9 +80,11 @@ try {
             <?php if ($featured_news): ?>
             <div class="berita-card featured">
                 <div class="berita-image featured">
-                    <img src="uploads/<?= htmlspecialchars($featured_news['foto_berita']); ?>" 
-                         alt="Featured News" 
-                         onerror="this.src='Asset/default_news.png';">
+                    <a href="detail_berita.php?id=<?= $featured_news['id_berita']; ?>" class="berita-image-link">
+                        <img src="uploads/<?= htmlspecialchars($featured_news['foto_berita']); ?>" 
+                             alt="Featured News" 
+                             onerror="this.src='Asset/default_news.png';">
+                    </a>
                 </div>
                 <div class="berita-content">
                     <a href="detail_berita.php?id=<?= $featured_news['id_berita']; ?>" class="berita-link">
@@ -107,9 +106,11 @@ try {
                 <?php foreach ($berita_list as $news): ?>
                 <div class="berita-card regular">
                     <div class="berita-image regular">
-                        <img src="uploads/<?= htmlspecialchars($news['foto_berita']); ?>" 
-                             alt="Thumbnail" 
-                             onerror="this.src='Asset/default_news.png';">
+                        <a href="detail_berita.php?id=<?= $news['id_berita']; ?>" class="berita-image-link">
+                            <img src="uploads/<?= htmlspecialchars($news['foto_berita']); ?>" 
+                                 alt="Thumbnail" 
+                                 onerror="this.src='Asset/default_news.png';">
+                        </a>
                     </div>
                     <div class="berita-content">
                         <a href="detail_berita.php?id=<?= $news['id_berita']; ?>" class="berita-link">
@@ -167,10 +168,26 @@ try {
                 <?php else: ?>
                     <div class="sidebar-item"><p class="text-muted small">Tidak ada agenda terbaru.</p></div>
                 <?php endif; ?>
-            </div>
-            
+            </div>            
         </div>
     </div>
+</div>
+<div class="pagination-controls">
+    <a href="#" class="btn-nav">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill me-2" viewBox="0 0 16 16">
+    <path d="m3.86 8.753 5.48-4.796A1 1 0 0 1 10 4.907v6.186a1 1 0 0 1-1.66 1.154l-5.48-4.796a1 1 0 0 1 0-1.509"/>
+        </svg>
+            Previous
+            </a>
+        <span>
+            <?= $start_item; ?>-<?= $end_item; ?> of <?= $total_data; ?>
+        </span>
+    <a href="#" class="btn-nav">
+        Next
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill ms-2" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.48-4.796A1 1 0 0 0 6 4.907v6.186a1 1 0 0 0 1.66 1.154l5.48-4.796a1 1 0 0 0 0-1.509"/>
+            </svg>
+        </a>
     </div>
 </div>
 

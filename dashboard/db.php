@@ -2,7 +2,7 @@
 // Sesuaikan credential DB di bawah
 $DB_HOST = 'localhost';
 $DB_PORT = 5432;
-$DB_NAME = 'pbl_smt3';
+$DB_NAME = 'db_pbl';
 $DB_USER = 'postgres';
 $DB_PASS = 'Politeknik01_';
 

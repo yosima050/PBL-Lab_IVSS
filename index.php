@@ -281,7 +281,7 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
                             <img src="Asset/Rosa-Andrie-Asmara_2.jpg" alt="Pak Rosa" />
                         </div>
                         <div class="testimonial-right">
-                            <h5>Pak Rosa</h5>
+                            <h5>Prof. Dr. Eng. Rosa Andrie Asmara, ST., MT.</h5>
                             <p><span>"</span>Sebagai peneliti utama, saya melihat potensi besar mahasiswa Polinema dalam mengembangkan solusi AI yang berdampak nyata bagi industri.<span>"</span></p>
                         </div>
                         <div class="clearfix"> </div>
@@ -291,10 +291,10 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
                 <li>
                     <div class="testimonial-grids">
                         <div class="testimonial-left">
-                            <img src="Asset/Bu_Vivi.jpg" alt="Bu Vivi" onerror="this.src='Asset/default_profile.jpg'" />
+                            <img src="Asset/buvivifix.png" alt="Bu Vivi" onerror="this.src='Asset/default_profile.jpg'" />
                         </div>
                         <div class="testimonial-right">
-                            <h5>Vivi Nur Wijayaningrum</h5>
+                            <h5>Vivi Nur Wijayaningrum, S.Kom, M.Kom</h5>
                             <p><span>"</span>Laboratorium ini adalah tempat terbaik untuk mengasah kemampuan Artificial Intelligence. Fasilitas yang memadai sangat mendukung riset kami.<span>"</span></p>
                         </div>
                         <div class="clearfix"> </div>
@@ -304,10 +304,10 @@ if (!empty($_SESSION['flash']) && !empty($_SESSION['flash']['message'])) {
                 <li>
                     <div class="testimonial-grids">
                         <div class="testimonial-left">
-                            <img src="Asset/Bu_Mamluatul.jpg" alt="Bu Mamluatul" onerror="this.src='Asset/default_profile.jpg'" />
+                            <img src="Asset/buA1.png" alt="Bu Mamluatul" onerror="this.src='Asset/default_profile.jpg'" />
                         </div>
                         <div class="testimonial-right">
-                            <h5>Mamluatul Hani'ah</h5>
+                            <h5>Mamluatul Hani'ah, S.Kom., M.Kom</h5>
                             <p><span>"</span>Kolaborasi antara dosen dan mahasiswa di sini sangat kuat. Kami fokus menciptakan inovasi teknologi yang tidak hanya canggih, tapi juga bermanfaat.<span>"</span></p>
                         </div>
                         <div class="clearfix"> </div>

@@ -2,199 +2,245 @@
 session_start();
 require_once __DIR__ . '/db.php';
 
-// Cek Login
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
+// Cek Login & Role
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['admin_sistem', 'ketua_lab'])) {
+    header("Location: login.php"); exit;
 }
 
-// Hanya admin & ketua lab
-if (!in_array($_SESSION['role'], ['admin_sistem', 'ketua_lab'])) {
-    echo "Akses Ditolak!";
-    exit;
-}
-
-// ==============================================
-// ========== INSERT PROYEK DOSEN ===============
-// ==============================================
 if (isset($_POST['create_dosen'])) {
-
-    $id_dosen = $_POST['id_dosen'];
-    $judul = $_POST['judul'];
-    $deskripsi = $_POST['deskripsi'];
-    $tahun = $_POST['tahun'];
-    $tipe = $_POST['tipe'];
-
     try {
-        // Insert proyek
-        $stmt = $pdo->prepare("
-            INSERT INTO proyek (judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek)
-            VALUES (:judul, :deskripsi, :tahun, :tipe)
-            RETURNING id_proyek
-        ");
+        $pdo->beginTransaction();
 
+        $dosen_ids = $_POST['id_dosen'] ?? [];
+        if (count($dosen_ids) === 0) throw new Exception("Wajib memilih minimal satu dosen.");
+        
+        $ketua_id = $dosen_ids[0];
+        
+        // 1. Insert Proyek (Kolom id_mahasiswa KITA KOSONGKAN/NULL karena asistennya banyak)
+        $stmt = $pdo->prepare("INSERT INTO proyek (judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek, id_dosen, id_mahasiswa) VALUES (:judul, :deskripsi, :tahun, :tipe, :id_dosen, NULL) RETURNING id_proyek");
         $stmt->execute([
-            ':judul' => $judul,
-            ':deskripsi' => $deskripsi,
-            ':tahun' => $tahun,
-            ':tipe' => $tipe
+            ':judul' => $_POST['judul'],
+            ':deskripsi' => $_POST['deskripsi'],
+            ':tahun' => $_POST['tahun'],
+            ':tipe' => $_POST['tipe'],
+            ':id_dosen' => $ketua_id
         ]);
+        $newId = $stmt->fetchColumn();
 
-        $newProjectId = $stmt->fetchColumn();
+        // 2. Insert Tim Dosen (Tabel Detail Dosen)
+        $stmtDosen = $pdo->prepare("INSERT INTO detail_proyek_dosen (id_dosen, id_proyek, tanggal_mulai_proyek_dosen, tanggal_selesai_proyek_dosen, nama_penulis_proyek_dosen, kategori_proyek_dosen, lokasi_proyek_dosen) VALUES (:id_dosen, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
+        foreach ($dosen_ids as $dosen_id) {
+            $stmtDosen->execute([
+                ':id_dosen' => $dosen_id,
+                ':id_proyek' => $newId,
+                ':mulai' => $_POST['tgl_mulai'],
+                ':selesai' => $_POST['tgl_selesai'],
+                ':penulis' => $_POST['nama_penulis'],
+                ':kategori' => $_POST['kategori'],
+                ':lokasi' => $_POST['lokasi']
+            ]);
+        }
 
-        // Insert detail proyek dosen
-        $stmt2 = $pdo->prepare("
-            INSERT INTO detail_proyek_dosen (id_dosen, id_proyek)
-            VALUES (:id_dosen, :id_proyek)
-        ");
+        // 3. INSERT ASISTEN MAHASISWA (Tabel Detail Mahasiswa)
+        $asisten_ids = $_POST['mahasiswa_asisten'] ?? [];
+        if (!empty($asisten_ids)) {
+            $stmtAsisten = $pdo->prepare("INSERT INTO detail_proyek_mahasiswa (id_mahasiswa, id_proyek, tanggal_mulai_proyek_mahasiswa, tanggal_selesai_proyek_mahasiswa, nama_penulis_proyek_mahasiswa, kategori_proyek_mahasiswa, lokasi_proyek_mahasiswa) VALUES (:id_mhs, :id_proyek, :mulai, :selesai, 'Asisten', 'Asisten', :lokasi)");
+            foreach ($asisten_ids as $mhs_id) {
+                $stmtAsisten->execute([
+                    ':id_mhs' => $mhs_id,
+                    ':id_proyek' => $newId,
+                    ':mulai' => $_POST['tgl_mulai'],
+                    ':selesai' => $_POST['tgl_selesai'],
+                    ':lokasi' => $_POST['lokasi']
+                ]);
+            }
+        }
 
-        $stmt2->execute([
-            ':id_dosen' => $id_dosen,
-            ':id_proyek' => $newProjectId
-        ]);
-
-        header("Location: proyek.php?success=dosen_added");
-        exit;
-
-    } catch (PDOException $e) {
-        die("Insert Proyek Dosen Error: " . $e->getMessage());
+        $pdo->commit();
+        $_SESSION['flash'] = "Proyek Dosen (+ Asisten) berhasil ditambahkan!";
+        header("Location: proyek.php"); exit;
+    } catch (Exception $e) {
+        $pdo->rollBack(); die("Error: " . $e->getMessage());
     }
 }
 
-// ==============================================
-// ============ UPDATE PROYEK DOSEN =============
-// ==============================================
 if (isset($_POST['update_dosen'])) {
-
-    $id_proyek = $_POST['edit_id_proyek'];
-    $id_dosen = $_POST['edit_id_dosen'];
-    $judul = $_POST['edit_judul'];
-    $deskripsi = $_POST['edit_deskripsi'];
-    $tahun = $_POST['edit_tahun'];
-    $tipe = $_POST['edit_tipe'];
-
     try {
-        // Update tabel proyek
-        $stmt = $pdo->prepare("
-            UPDATE proyek
-            SET judul_proyek = :judul,
-                deskripsi_proyek = :deskripsi,
-                tahun_proyek = :tahun,
-                tipe_proyek = :tipe
-            WHERE id_proyek = :id_proyek
-        ");
+        $pdo->beginTransaction();
+        $id_proyek = $_POST['edit_id_proyek'];
+        
+        $dosen_ids = $_POST['edit_id_dosen'] ?? [];
+        if (count($dosen_ids) === 0) throw new Exception("Tim tidak boleh kosong.");
+        $ketua_id = $dosen_ids[0];
 
+        // 1. Update Proyek Utama (id_mahasiswa tetap NULL atau tidak diubah)
+        $stmt = $pdo->prepare("UPDATE proyek SET judul_proyek=:judul, deskripsi_proyek=:deskripsi, tahun_proyek=:tahun, tipe_proyek=:tipe, id_dosen=:id_dosen WHERE id_proyek=:id");
         $stmt->execute([
-            ':judul' => $judul,
-            ':deskripsi' => $deskripsi,
-            ':tahun' => $tahun,
-            ':tipe'   => $tipe,
-            ':id_proyek' => $id_proyek
+            ':judul' => $_POST['edit_judul'],
+            ':deskripsi' => $_POST['edit_deskripsi'],
+            ':tahun' => $_POST['edit_tahun'],
+            ':tipe' => $_POST['edit_tipe'],
+            ':id_dosen' => $ketua_id,
+            ':id' => $id_proyek
         ]);
 
-        // Update relasi dosen
-        $stmt2 = $pdo->prepare("
-            UPDATE detail_proyek_dosen
-            SET id_dosen = :id_dosen
-            WHERE id_proyek = :id_proyek
-        ");
+        // 2. Reset & Re-Insert Tim Dosen
+        $pdo->prepare("DELETE FROM detail_proyek_dosen WHERE id_proyek = :id")->execute([':id' => $id_proyek]);
+        $stmtDosen = $pdo->prepare("INSERT INTO detail_proyek_dosen (id_dosen, id_proyek, tanggal_mulai_proyek_dosen, tanggal_selesai_proyek_dosen, nama_penulis_proyek_dosen, kategori_proyek_dosen, lokasi_proyek_dosen) VALUES (:id_dosen, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
+        foreach ($dosen_ids as $dosen_id) {
+            $stmtDosen->execute([
+                ':id_dosen' => $dosen_id,
+                ':id_proyek' => $id_proyek,
+                ':mulai' => $_POST['edit_tgl_mulai'],
+                ':selesai' => $_POST['edit_tgl_selesai'],
+                ':penulis' => $_POST['edit_nama_penulis'],
+                ':kategori' => $_POST['edit_kategori'],
+                ':lokasi' => $_POST['edit_lokasi']
+            ]);
+        }
 
-        $stmt2->execute([
-            ':id_dosen' => $id_dosen,
-            ':id_proyek' => $id_proyek
-        ]);
+        // 3. Reset & Re-Insert Asisten Mahasiswa
+        // Hapus asisten lama (yang ada di detail_proyek_mahasiswa untuk proyek ini)
+        $pdo->prepare("DELETE FROM detail_proyek_mahasiswa WHERE id_proyek = :id")->execute([':id' => $id_proyek]);
+        
+        $asisten_ids = $_POST['edit_mahasiswa_asisten'] ?? [];
+        if (!empty($asisten_ids)) {
+            $stmtAsisten = $pdo->prepare("INSERT INTO detail_proyek_mahasiswa (id_mahasiswa, id_proyek, tanggal_mulai_proyek_mahasiswa, tanggal_selesai_proyek_mahasiswa, nama_penulis_proyek_mahasiswa, kategori_proyek_mahasiswa, lokasi_proyek_mahasiswa) VALUES (:id_mhs, :id_proyek, :mulai, :selesai, 'Asisten', 'Asisten', :lokasi)");
+            foreach ($asisten_ids as $mhs_id) {
+                $stmtAsisten->execute([
+                    ':id_mhs' => $mhs_id,
+                    ':id_proyek' => $id_proyek,
+                    ':mulai' => $_POST['edit_tgl_mulai'],
+                    ':selesai' => $_POST['edit_tgl_selesai'],
+                    ':lokasi' => $_POST['edit_lokasi']
+                ]);
+            }
+        }
 
-        header("Location: proyek.php?success=dosen_updated");
-        exit;
-
-    } catch (PDOException $e) {
-        die("Update Proyek Dosen Error: " . $e->getMessage());
+        $pdo->commit();
+        $_SESSION['flash'] = "Proyek Dosen berhasil diperbarui!";
+        header("Location: proyek.php"); exit;
+    } catch (Exception $e) {
+        $pdo->rollBack(); die("Error: " . $e->getMessage());
     }
 }
 
 // ==============================================
-// ======= INSERT PROYEK MAHASISWA ===============
+// 3. INSERT PROYEK MAHASISWA (+ DOSEN PEMBIMBING)
 // ==============================================
 if (isset($_POST['create_mahasiswa'])) {
-
-    $id_mahasiswa = $_POST['id_mahasiswa'];
-    $judul = $_POST['judul'];
-    $deskripsi = $_POST['deskripsi'];
-    $tahun = $_POST['tahun'];
-    $tipe = $_POST['tipe'];
-    $tgl_mulai = $_POST['tgl_mulai'];
-    $tgl_selesai = $_POST['tgl_selesai'];
-    $nama_penulis = $_POST['nama_penulis'];
-    $kategori = $_POST['kategori'];
-    $lokasi = $_POST['lokasi'];
-
     try {
-        // Panggil function insert proyek mahasiswa
-        $stmt = $pdo->prepare("
-            SELECT fn_insert_proyek_mahasiswa(
-                :judul,
-                :deskripsi,
-                :tahun,
-                :tipe,
-                :id_mahasiswa,
-                :tgl_mulai,
-                :tgl_selesai,
-                :nama_penulis,
-                :kategori,
-                :lokasi
-            )
-        ");
+        $pdo->beginTransaction();
 
+        $mhs_ids = $_POST['id_mahasiswa'] ?? [];
+        if (count($mhs_ids) === 0) throw new Exception("Wajib memilih minimal satu mahasiswa.");
+
+        $ketua_id = $mhs_ids[0];
+        // Tangkap Pembimbing
+        $id_pembimbing = !empty($_POST['dosen_pembimbing']) ? $_POST['dosen_pembimbing'] : null;
+
+        // Insert Proyek (Simpan Pembimbing di kolom id_dosen)
+        $stmt = $pdo->prepare("INSERT INTO proyek (judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek, id_mahasiswa, id_dosen) VALUES (:judul, :deskripsi, :tahun, :tipe, :id_mhs, :id_pembimbing) RETURNING id_proyek");
         $stmt->execute([
-            ':judul'        => $judul,
-            ':deskripsi'    => $deskripsi,
-            ':tahun'        => $tahun,
-            ':tipe'         => $tipe,
-            ':id_mahasiswa' => $id_mahasiswa,
-            ':tgl_mulai'    => $tgl_mulai,
-            ':tgl_selesai'  => $tgl_selesai,
-            ':nama_penulis' => $nama_penulis,
-            ':kategori'     => $kategori,
-            ':lokasi'       => $lokasi
+            ':judul' => $_POST['judul'],
+            ':deskripsi' => $_POST['deskripsi'],
+            ':tahun' => $_POST['tahun'],
+            ':tipe' => $_POST['tipe'],
+            ':id_mhs' => $ketua_id,
+            ':id_pembimbing' => $id_pembimbing // <-- Pembimbing Disimpan Disini
+        ]);
+        $newId = $stmt->fetchColumn();
+
+        // Insert Detail Tim Mahasiswa
+        $stmt2 = $pdo->prepare("INSERT INTO detail_proyek_mahasiswa (id_mahasiswa, id_proyek, tanggal_mulai_proyek_mahasiswa, tanggal_selesai_proyek_mahasiswa, nama_penulis_proyek_mahasiswa, kategori_proyek_mahasiswa, lokasi_proyek_mahasiswa) VALUES (:id_mhs, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
+        
+        foreach ($mhs_ids as $single_id) {
+            $stmt2->execute([
+                ':id_mhs' => $single_id,
+                ':id_proyek' => $newId,
+                ':mulai' => $_POST['tgl_mulai'],
+                ':selesai' => $_POST['tgl_selesai'],
+                ':penulis' => $_POST['nama_penulis'],
+                ':kategori' => $_POST['kategori'],
+                ':lokasi' => $_POST['lokasi']
+            ]);
+        }
+
+        $pdo->commit();
+        $_SESSION['flash'] = "Proyek Mahasiswa berhasil ditambahkan!";
+        header("Location: proyek.php"); exit;
+    } catch (Exception $e) {
+        $pdo->rollBack(); die("Error Insert Mahasiswa: " . $e->getMessage());
+    }
+}
+
+// ==============================================
+// 4. UPDATE PROYEK MAHASISWA (+ DOSEN PEMBIMBING)
+// ==============================================
+if (isset($_POST['update_mahasiswa'])) {
+    try {
+        $pdo->beginTransaction();
+        $id_proyek = $_POST['edit_id_proyek_mhs'];
+
+        $mhs_ids = $_POST['edit_id_mahasiswa'] ?? [];
+        if (count($mhs_ids) === 0) throw new Exception("Tim tidak boleh kosong.");
+
+        $ketua_id = $mhs_ids[0];
+        $id_pembimbing = !empty($_POST['edit_dosen_pembimbing']) ? $_POST['edit_dosen_pembimbing'] : null;
+
+        // Update Proyek Utama
+        $stmt = $pdo->prepare("UPDATE proyek SET judul_proyek=:judul, deskripsi_proyek=:deskripsi, tahun_proyek=:tahun, tipe_proyek=:tipe, id_mahasiswa=:id_mhs, id_dosen=:id_pembimbing WHERE id_proyek=:id");
+        $stmt->execute([
+            ':judul' => $_POST['edit_judul_mhs'],
+            ':deskripsi' => $_POST['edit_deskripsi_mhs'],
+            ':tahun' => $_POST['edit_tahun_mhs'],
+            ':tipe' => $_POST['edit_tipe_mhs'],
+            ':id_mhs' => $ketua_id,
+            ':id_pembimbing' => $id_pembimbing, // Update Pembimbing
+            ':id' => $id_proyek
         ]);
 
-        header("Location: proyek.php?success=mahasiswa_added");
-        exit;
+        // Update Detail
+        $pdo->prepare("DELETE FROM detail_proyek_mahasiswa WHERE id_proyek = :id")->execute([':id' => $id_proyek]);
+        $stmt2 = $pdo->prepare("INSERT INTO detail_proyek_mahasiswa (id_mahasiswa, id_proyek, tanggal_mulai_proyek_mahasiswa, tanggal_selesai_proyek_mahasiswa, nama_penulis_proyek_mahasiswa, kategori_proyek_mahasiswa, lokasi_proyek_mahasiswa) VALUES (:id_mhs, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
+        
+        foreach ($mhs_ids as $single_id) {
+            $stmt2->execute([
+                ':id_mhs' => $single_id,
+                ':id_proyek' => $id_proyek,
+                ':mulai' => $_POST['edit_tgl_mulai'],
+                ':selesai' => $_POST['edit_tgl_selesai'],
+                ':penulis' => $_POST['edit_nama_penulis_mhs'],
+                ':kategori' => $_POST['edit_kategori_mhs'],
+                ':lokasi' => $_POST['edit_lokasi_mhs']
+            ]);
+        }
 
-    } catch (PDOException $e) {
-        die("Insert Proyek Mahasiswa Error: " . $e->getMessage());
+        $pdo->commit();
+        $_SESSION['flash'] = "Proyek Mahasiswa berhasil diperbarui!";
+        header("Location: proyek.php"); exit;
+    } catch (Exception $e) {
+        $pdo->rollBack(); die("Error Update Mahasiswa: " . $e->getMessage());
     }
 }
 
 // ==============================================
-// ================= DELETE =====================
+// 5. DELETE PROYEK (Universal)
 // ==============================================
 if (isset($_GET['delete'])) {
-    $id_proyek = $_GET['delete'];
-
+    $id = $_GET['delete'];
     try {
-        // Hapus dari detail_proyek_dosen
-        $pdo->prepare("DELETE FROM detail_proyek_dosen WHERE id_proyek = :id")
-            ->execute([':id' => $id_proyek]);
-
-        // Hapus dari detail_proyek_mahasiswa
-        $pdo->prepare("DELETE FROM detail_proyek_mahasiswa WHERE id_proyek = :id")
-            ->execute([':id' => $id_proyek]);
-
-        // Hapus proyek utama
-        $pdo->prepare("DELETE FROM proyek WHERE id_proyek = :id")
-            ->execute([':id' => $id_proyek]);
-
-        header("Location: proyek.php?success=deleted");
-        exit;
-
+        $pdo->beginTransaction();
+        $pdo->prepare("DELETE FROM detail_proyek_dosen WHERE id_proyek = :id")->execute([':id' => $id]);
+        $pdo->prepare("DELETE FROM detail_proyek_mahasiswa WHERE id_proyek = :id")->execute([':id' => $id]);
+        $pdo->prepare("DELETE FROM proyek WHERE id_proyek = :id")->execute([':id' => $id]);
+        $pdo->commit();
+        $_SESSION['flash'] = "Proyek berhasil dihapus.";
+        header("Location: proyek.php"); exit;
     } catch (PDOException $e) {
-        die("Delete Proyek Error: " . $e->getMessage());
+        $pdo->rollBack(); die("Error Delete: " . $e->getMessage());
     }
 }
 
-// Jika tidak ada aksi → kembali
-header("Location: proyek.php");
-exit;
-
+header("Location: proyek.php"); exit;
 ?>
