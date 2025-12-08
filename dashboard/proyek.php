@@ -554,7 +554,7 @@ try {
                             </div>
                         </div>
                         
-                        <div class="form-group mb-3"><label>Judul Proyek</label><input type="text" name="judul" class="form-control" required></div>
+                        <div class="form-group mb-3"><label>Judul Proyek</label><input type="text" name="judul" class="form-control"  placeholder="Masukkan judul lengkap..." required></div>
                         <div class="form-group mb-3"><label>Deskripsi</label><textarea name="deskripsi" class="form-control" rows="3" required></textarea></div>
                         
                         <div class="row mb-3">
@@ -566,8 +566,8 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4"><label>Tipe</label><input type="text" name="tipe" class="form-control" required></div>
-                            <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" required></div>
+                            <div class="col-md-4"><label>Tipe</label><input type="text" name="tipe" class="form-control" placeholder="Ex: Penelitian" required></div>
+                            <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" placeholder="Ex: AI/IoT" required></div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6"><label>Mulai</label><input type="date" name="tgl_mulai" class="form-control" required></div>
