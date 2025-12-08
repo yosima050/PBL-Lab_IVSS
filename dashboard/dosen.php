@@ -204,9 +204,11 @@ include __DIR__ . '/sidebar.php';
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
-            <div class="modal-header">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Tambah Dosen Baru</h5>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                <span>&times;</span>
+                </button>
             </div>
 
             <form action="dosen_process.php" method="POST" enctype="multipart/form-data">
@@ -262,9 +264,11 @@ include __DIR__ . '/sidebar.php';
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Data Dosen</h5>
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Edit Data Mahasiswa</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                <span>&times;</span>
+                </button>
             </div>
 
             <form action="dosen_process.php" method="POST" enctype="multipart/form-data">
