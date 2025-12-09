@@ -130,7 +130,7 @@ try {
 
                                                 <!-- Edit -->
                                                 <button 
-                                                    class="btn btn-warning btn-sm"
+                                                    class="btn btn-warning btn-sm" style="margin: 1.5px;"
                                                     data-toggle="modal"
                                                     data-target="#editModal<?= $p['id_publikasi'] ?>">
                                                     <i class="fas fa-edit"></i>
