@@ -36,15 +36,27 @@ try {
 }
 
 /* =======================
-   READ DATA USERS (dipisah)
+   READ DATA USERS (JOIN TABLE)
+   Menggunakan JOIN langsung agar mendapatkan nama_role dan nama_users
 ========================== */
 try {
     // Admins: role id 1,2,3
-    $stmt = $pdo->query("SELECT * FROM view_users_roles WHERE id_role IN (1,2,3) ORDER BY id_users ASC");
+    // Kita ambil u.* (semua dari users termasuk nama_users) dan r.nama_role
+    $sqlAdmin = "SELECT u.*, r.nama_role 
+                 FROM users u 
+                 JOIN role r ON u.id_role = r.id_role 
+                 WHERE u.id_role IN (1,2,3) 
+                 ORDER BY u.id_users ASC";
+    $stmt = $pdo->query($sqlAdmin);
     $admins = $stmt->fetchAll();
 
     // Regular users: role id 4,5
-    $stmt = $pdo->query("SELECT * FROM view_users_roles WHERE id_role IN (4,5) ORDER BY id_users ASC");
+    $sqlUser = "SELECT u.*, r.nama_role 
+                FROM users u 
+                JOIN role r ON u.id_role = r.id_role 
+                WHERE u.id_role IN (4,5) 
+                ORDER BY u.id_users ASC";
+    $stmt = $pdo->query($sqlUser);
     $users = $stmt->fetchAll();
 
 } catch (PDOException $e) {
@@ -74,7 +86,6 @@ try {
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
 
-                <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 shadow">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown no-arrow">
@@ -104,20 +115,18 @@ try {
 
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <!-- Admins Card -->
-                            <div class="card mb-4">
+                            
+                            <div class="card mb-4 border-left-primary">
                                 <div class="card-header">
-                                    <h5 class="mb-0">Admins</h5>
+                                    <h5 class="mb-0 text-primary font-weight-bold">Daftar Admins & Ketua Lab</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTableAdmins">
-                                            <thead>
+                                        <table class="table table-bordered table-hover" id="dataTableAdmins">
+                                            <thead class="thead-light">
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Role</th>
-                                                    <th>Nama</th>
-                                                    <th>Email</th>
+                                                    <th>Nama Role</th> <th>Nama Lengkap</th> <th>Email</th>
                                                     <th class="text-center">Aksi</th>
                                                 </tr>
                                             </thead>
@@ -125,8 +134,11 @@ try {
                                                 <?php foreach ($admins as $u): ?>
                                                     <tr>
                                                         <td><?= $u['id_users'] ?></td>
-                                                        <td><?= htmlspecialchars($u['id_role']) ?></td>
-                                                        <td><?= htmlspecialchars($u['nama_role']) ?></td>
+                                                        
+                                                        <td><span class="badge badge-info"><?= htmlspecialchars($u['nama_role']) ?></span></td>
+                                                        
+                                                        <td><?= htmlspecialchars($u['nama_users']) ?></td>
+                                                        
                                                         <td><?= htmlspecialchars($u['email_users']) ?></td>
                                                         <td class="text-center">
                                                             <button class="btn btn-warning btn-sm" style="margin: 1.5px;" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
@@ -138,41 +150,33 @@ try {
                                                         </td>
                                                     </tr>
 
-                                                    <!-- MODAL EDIT -->
                                                     <div class="modal fade" id="editModal<?= $u['id_users'] ?>" tabindex="-1">
                                                         <div class="modal-dialog">
                                                             <form action="process_manajemen_admin.php" method="POST">
                                                                 <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">
-                                                                            <?= ((int)$u['id_role'] >= 1 && (int)$u['id_role'] <= 3) ? 'Edit Admin' : 'Edit User' ?>
-                                                                        </h5>
+                                                                    <div class="modal-header bg-warning text-white">
+                                                                        <h5 class="modal-title">Edit Admin</h5>
                                                                         <button class="close" data-dismiss="modal"><span>×</span></button>
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <input type="hidden" name="id_users" value="<?= $u['id_users'] ?>">
 
-                                                                        <label>Role (1–5):</label>
-                                                                        <select name="id_role" class="form-control mb-2" required>
-                                                                            <option value="">-- Pilih Role --</option>
-                                                                            <option value="1" <?= $u['id_role'] == 1 ? 'selected' : '' ?>>1 — Admin Sistem</option>
-                                                                            <option value="2" <?= $u['id_role'] == 2 ? 'selected' : '' ?>>2 — Admin Berita</option>
-                                                                            <option value="3" <?= $u['id_role'] == 3 ? 'selected' : '' ?>>3 — Ketua Lab</option>
-                                                                            <option value="4" <?= $u['id_role'] == 4 ? 'selected' : '' ?>>4 — Dosen</option>
-                                                                            <option value="5" <?= $u['id_role'] == 5 ? 'selected' : '' ?>>5 — Mahasiswa</option>
+                                                                        <label>Role:</label>
+                                                                        <select name="id_role" class="form-control mb-3" required>
+                                                                            <option value="1" <?= $u['id_role'] == 1 ? 'selected' : '' ?>>Admin Sistem</option>
+                                                                            <option value="2" <?= $u['id_role'] == 2 ? 'selected' : '' ?>>Admin Berita</option>
+                                                                            <option value="3" <?= $u['id_role'] == 3 ? 'selected' : '' ?>>Ketua Lab</option>
                                                                         </select>
-                                                                        <small class="form-text text-muted mb-3">
-                                                                        </small>
 
-                                                                        <label>Nama:</label>
-                                                                        <input type="text" name="nama_users" class="form-control mb-3" value="<?= htmlspecialchars($u['nama_users'] ?? $u['nama_role']) ?>" required>
+                                                                        <label>Nama Lengkap:</label>
+                                                                        <input type="text" name="nama_users" class="form-control mb-3" value="<?= htmlspecialchars($u['nama_users']) ?>" required>
 
                                                                         <label>Email:</label>
                                                                         <input type="email" name="email_users" class="form-control mb-3" value="<?= htmlspecialchars($u['email_users']) ?>" required>
 
                                                                         <label>Password (opsional):</label>
                                                                         <input type="password" name="password" class="form-control">
-                                                                        <small>Kosongkan jika tidak ingin mengganti password.</small>
+                                                                        <small class="text-muted">Kosongkan jika tidak ingin mengganti password.</small>
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -182,7 +186,6 @@ try {
                                                             </form>
                                                         </div>
                                                     </div>
-
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
@@ -190,20 +193,17 @@ try {
                                 </div>
                             </div>
 
-                            <!-- Users Card -->
-                            <div class="card">
+                            <div class="card border-left-success">
                                 <div class="card-header">
-                                    <h5 class="mb-0">Users</h5>
+                                    <h5 class="mb-0 text-success font-weight-bold">Daftar Dosen & Mahasiswa</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTableUsers">
-                                            <thead>
+                                        <table class="table table-bordered table-hover" id="dataTableUsers">
+                                            <thead class="thead-light">
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Role</th>
-                                                    <th>Nama</th>
-                                                    <th>Email</th>
+                                                    <th>Nama Role</th> <th>Nama Lengkap</th> <th>Email</th>
                                                     <th class="text-center">Aksi</th>
                                                 </tr>
                                             </thead>
@@ -211,8 +211,8 @@ try {
                                                 <?php foreach ($users as $u): ?>
                                                     <tr>
                                                         <td><?= $u['id_users'] ?></td>
-                                                        <td><?= htmlspecialchars($u['id_role']) ?></td>
-                                                        <td><?= htmlspecialchars($u['nama_role']) ?></td>
+                                                        <td><span class="badge badge-secondary"><?= htmlspecialchars($u['nama_role']) ?></span></td>
+                                                        <td><?= htmlspecialchars($u['nama_users']) ?></td>
                                                         <td><?= htmlspecialchars($u['email_users']) ?></td>
                                                         <td class="text-center">
                                                             <button class="btn btn-warning btn-sm" style="margin: 1.5px;" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
@@ -224,41 +224,32 @@ try {
                                                         </td>
                                                     </tr>
 
-                                                    <!-- MODAL EDIT -->
                                                     <div class="modal fade" id="editModal<?= $u['id_users'] ?>" tabindex="-1">
                                                         <div class="modal-dialog">
                                                             <form action="process_manajemen_admin.php" method="POST">
                                                                 <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title">
-                                                                            <?= ((int)$u['id_role'] >= 1 && (int)$u['id_role'] <= 3) ? 'Edit Admin' : 'Edit User' ?>
-                                                                        </h5>
+                                                                    <div class="modal-header bg-warning text-white">
+                                                                        <h5 class="modal-title">Edit User</h5>
                                                                         <button class="close" data-dismiss="modal"><span>×</span></button>
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         <input type="hidden" name="id_users" value="<?= $u['id_users'] ?>">
 
                                                                         <label>Role:</label>
-                                                                        <select name="id_role" class="form-control mb-2" required>
-                                                                            <option value="">-- Pilih Role --</option>
-                                                                            <option value="1" <?= $u['id_role'] == 1 ? 'selected' : '' ?>>1 — Admin Sistem</option>
-                                                                            <option value="2" <?= $u['id_role'] == 2 ? 'selected' : '' ?>>2 — Admin Berita</option>
-                                                                            <option value="3" <?= $u['id_role'] == 3 ? 'selected' : '' ?>>3 — Ketua Lab</option>
-                                                                            <option value="4" <?= $u['id_role'] == 4 ? 'selected' : '' ?>>4 — Dosen</option>
-                                                                            <option value="5" <?= $u['id_role'] == 5 ? 'selected' : '' ?>>5 — Mahasiswa</option>
+                                                                        <select name="id_role" class="form-control mb-3" required>
+                                                                            <option value="4" <?= $u['id_role'] == 4 ? 'selected' : '' ?>>Dosen</option>
+                                                                            <option value="5" <?= $u['id_role'] == 5 ? 'selected' : '' ?>>Mahasiswa</option>
                                                                         </select>
-                                                                        <small class="form-text text-muted mb-3">
-                                                                        </small>
 
-                                                                        <label>Nama:</label>
-                                                                        <input type="text" name="nama_users" class="form-control mb-3" value="<?= htmlspecialchars($u['nama_users'] ?? $u['nama_role']) ?>" required>
+                                                                        <label>Nama Lengkap:</label>
+                                                                        <input type="text" name="nama_users" class="form-control mb-3" value="<?= htmlspecialchars($u['nama_users']) ?>" required>
 
                                                                         <label>Email:</label>
                                                                         <input type="email" name="email_users" class="form-control mb-3" value="<?= htmlspecialchars($u['email_users']) ?>" required>
 
                                                                         <label>Password (opsional):</label>
                                                                         <input type="password" name="password" class="form-control">
-                                                                        <small>Kosongkan jika tidak ingin mengganti password.</small>
+                                                                        <small class="text-muted">Kosongkan jika tidak ingin mengganti password.</small>
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -268,19 +259,18 @@ try {
                                                             </form>
                                                         </div>
                                                     </div>
-
                                                 <?php endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
                 </div>
 
-                <!-- FOOTER -->
                 <footer class="sticky-footer bg-white">
                     <div class="container my-auto">
                         <div class="copyright text-center">
@@ -293,7 +283,6 @@ try {
         </div>
     </div>
 
-    <!-- MODAL CREATE -->
     <div class="modal fade" id="createModal" tabindex="-1">
         <div class="modal-dialog">
             <form action="process_manajemen_admin.php" method="POST">
@@ -309,20 +298,20 @@ try {
                     <div class="modal-body">
 
                         <label>Role:</label>
-                        <select name="id_role" class="form-control mb-2" required>
+                        <select name="id_role" class="form-control mb-3" required>
                             <option value="">-- Pilih Role --</option>
-                            <option value="1">1 — Admin Sistem</option>
-                            <option value="2">2 — Admin Berita</option>
-                            <option value="3">3 — Ketua Lab</option>
+                            <option value="1">Admin Sistem</option>
+                            <option value="2">Admin Berita</option>
+                            <option value="3">Ketua Lab</option>
+                            <option value="4">Dosen</option>
+                            <option value="5">Mahasiswa</option>
                         </select>
-                        <small class="form-text text-muted mb-3">
-                        </small>
 
-                        <label>Nama:</label>
-                        <input type="text" name="nama_users" class="form-control mb-3" required>
+                        <label>Nama Lengkap:</label>
+                        <input type="text" name="nama_users" class="form-control mb-3" placeholder="Masukkan nama lengkap" required>
 
                         <label>Email:</label>
-                        <input type="email" name="email_users" class="form-control mb-3" required>
+                        <input type="email" name="email_users" class="form-control mb-3" placeholder="email@contoh.com" required>
 
                         <label>Password:</label>
                         <input type="password" name="password" class="form-control" required>
@@ -339,7 +328,6 @@ try {
         </div>
     </div>
 
-    <!-- Logout Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1">
         <div class="modal-dialog"><div class="modal-content">
             <div class="modal-header">
