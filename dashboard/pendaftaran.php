@@ -167,7 +167,7 @@ include __DIR__ . '/sidebar.php';
                             <td><?= htmlspecialchars($p['nama_dosen']) ?></td>
                             <td><span class="badge badge-info"> <?= $p['status_mahasiswa'] ?> </span></td>
                             <td class="text-center">
-                                <button class="btn btn-warning btn-sm btn-edit"
+                                <button class="btn btn-warning btn-sm btn-edit" style="margin: 1.5px;"
                                     data-id="<?= $p['id_pendaftaran'] ?>"
                                     data-id_users="<?= $p['id_users'] ?>"
                                     data-nama="<?= htmlspecialchars($p['nama_mahasiswa']) ?>"
@@ -180,7 +180,7 @@ include __DIR__ . '/sidebar.php';
 
                                 <a href="?action=delete&id=<?= $p['id_pendaftaran'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
 
-                                <button class="btn btn-primary btn-sm btn-forward"
+                                <button class="btn btn-primary btn-sm btn-forward" style="margin: 1.5px;"
                                         data-id="<?= $p['id_pendaftaran'] ?>"
                                         data-toggle="modal"
                                         data-target="#forwardModal">

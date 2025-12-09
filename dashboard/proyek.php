@@ -237,10 +237,10 @@ try {
                                                 <?= date('d M Y', strtotime($d['tanggal_selesai'])) ?>
                                             </td>
                                             <td class="text-center">
-                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>" title="Edit">
+                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>" title="Edit" style="margin: 1.5px;">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus">
+                                                <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus" style="margin: 1.5px;">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -275,7 +275,7 @@ try {
                                         <tr>
                                             <td class="text-center font-weight-bold"><?= $p['id_proyek'] ?></td>
                                             <td>
-                                                <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Mhs:</small><br>
+                                                <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Mahasiswa:</small><br>
                                                 <i class="fas fa-users text-primary"></i> <?= htmlspecialchars($p['list_nama_mahasiswa']) ?>
                                                 <?php if(!empty($p['nama_pembimbing'])): ?>
                                                     <hr class="my-1">
@@ -316,10 +316,10 @@ try {
                                                 <?= date('d M Y', strtotime($p['tanggal_selesai'])) ?>
                                             </td>
                                             <td class="text-center">
-                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>" title="Edit">
+                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>" title="Edit" style="margin: 1.5px;">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus">
+                                                <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus" style="margin: 1.5px;" >
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -514,7 +514,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_dosen" class="btn btn-warning">Update Data</button>
+                        <button type="submit" name="update_dosen" class="btn btn-primary">Update Data</button>
                     </div>
                 </div>
             </form>
@@ -675,7 +675,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_mahasiswa" class="btn btn-warning">Update Data</button>
+                        <button type="submit" name="update_mahasiswa" class="btn btn-primary">Update Data</button>
                     </div>
                 </div>
             </form>

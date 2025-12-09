@@ -183,7 +183,7 @@ include __DIR__ . '/sidebar.php';
                             <td class="text-center">
 
                                 <!-- Tombol Edit -->
-                                <button class="btn btn-warning btn-sm"
+                                <button class="btn btn-warning btn-sm" style="margin: 1.5px;"
                                     data-toggle="modal"
                                     data-target="#editModal<?= $m['id_pendaftaran'] ?>">
                                     <i class="fas fa-edit"></i>
