@@ -396,7 +396,16 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4"><label>Tipe Proyek</label><input type="text" name="tipe" class="form-control" placeholder="Ex: Penelitian" required></div>
+                            <div class="col-md-4">
+                                <label>Tipe Proyek</label>
+                                <select name="tipe" class="form-control" required>
+                                    <option value="">-- Pilih Tipe Proyek --</option>
+                                    <option value="Penelitian">Penelitian</option>
+                                    <option value="Riset">Riset</option>
+                                    <option value="Publikasi">Publikasi</option>
+                                    <option value="Pengabdian">Pengabdian</option>
+                                </select>
+                            </div>
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" placeholder="Ex: AI/IoT" required></div>
                         </div>
 
@@ -455,7 +464,7 @@ try {
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-info">Asisten Mahasiswa</label>
+                                <label class="text-success">Asisten Mahasiswa</label>
                                 <select name="edit_mahasiswa_asisten[]" class="form-control select2-multiple" multiple required data-placeholder="-- Pilih Mahasiswa --">
                                     <?php $asisten_ids = !empty($d['list_id_asisten']) ? explode(',', $d['list_id_asisten']) : []; ?>
                                     <?php foreach($listMahasiswa as $lm): ?>
@@ -483,7 +492,17 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4"><label>Tipe</label><input type="text" name="edit_tipe" value="<?= $d['tipe_proyek'] ?>" class="form-control" required></div>
+                            <div class="col-md-4">
+                                <label>Tipe Proyek</label>
+                                <select name="tipe" class="form-control" required>
+                                    <option value="">-- Pilih Tipe Proyek --</option>
+                                    <option value="Penelitian" <?= ($d['tipe_proyek'] == 'Penelitian') ? 'selected' : '' ?>>Penelitian</option>
+                                    <option value="Riset" <?= ($d['tipe_proyek'] == 'Riset') ? 'selected' : '' ?>>Riset</option>
+                                    <option value="Publikasi" <?= ($d['tipe_proyek'] == 'Publikasi') ? 'selected' : '' ?>>Publikasi</option>
+                                    <option value="Pengabdian" <?= ($d['tipe_proyek'] == 'Pengabdian') ? 'selected' : '' ?>>Pengabdian</option>
+                                </select>
+                            </div>
+
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="edit_kategori" value="<?= htmlspecialchars($d['kategori']) ?>" class="form-control" required></div>
                         </div>
                         <div class="row mb-3">
@@ -514,7 +533,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_dosen" class="btn btn-primary">Update Data</button>
+                        <button type="submit" name="update_dosen" class="btn btn-success">Update Data</button>
                     </div>
                 </div>
             </form>
@@ -566,7 +585,17 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4"><label>Tipe</label><input type="text" name="tipe" class="form-control" placeholder="Ex: Penelitian" required></div>
+                            <div class="col-md-4">
+                                <label>Tipe Proyek</label>
+                                <select name="tipe" class="form-control" required>
+                                    <option value="">-- Pilih Tipe Proyek --</option>
+                                    <option value="Penelitian">Penelitian</option>
+                                    <option value="Riset">Riset</option>
+                                    <option value="Publikasi">Publikasi</option>
+                                    <option value="Pengabdian">Pengabdian</option>
+                                </select>
+                            </div>
+
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" placeholder="Ex: AI/IoT" required></div>
                         </div>
                         <div class="row mb-3">
@@ -605,7 +634,7 @@ try {
         <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
-                    <div class="modal-header bg-warning">
+                    <div class="modal-header bg-warning" style="background: linear-gradient(45deg, #4e73df, #224abe); color: white;">
                         <h5 class="modal-title text-white"><i class="fas fa-edit"></i> Edit Proyek Mahasiswa</h5>
                         <button class="close" data-dismiss="modal">×</button>
                     </div>
@@ -622,7 +651,7 @@ try {
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-success">Dosen Pembimbing</label>
+                                <label class="text-primary">Dosen Pembimbing</label>
                                 <select name="edit_dosen_pembimbing" class="form-control select2-single">
                                     <option value="">-- Pilih Pembimbing --</option>
                                     <?php foreach($listDosen as $ld): ?>
@@ -644,7 +673,16 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4"><label>Tipe</label><input type="text" name="edit_tipe_mhs" value="<?= $p['tipe_proyek'] ?>" class="form-control"></div>
+                            <div class="col-md-4">
+                                <label>Tipe Proyek</label>
+                                <select name="tipe" class="form-control" required>
+                                    <option value="">-- Pilih Tipe Proyek --</option>
+                                    <option value="Penelitian" <?= ($d['tipe_proyek'] == 'Penelitian') ? 'selected' : '' ?>>Penelitian</option>
+                                    <option value="Riset" <?= ($d['tipe_proyek'] == 'Riset') ? 'selected' : '' ?>>Riset</option>
+                                    <option value="Publikasi" <?= ($d['tipe_proyek'] == 'Publikasi') ? 'selected' : '' ?>>Publikasi</option>
+                                    <option value="Pengabdian" <?= ($d['tipe_proyek'] == 'Pengabdian') ? 'selected' : '' ?>>Pengabdian</option>
+                                </select>
+                            </div>
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="edit_kategori_mhs" value="<?= htmlspecialchars($p['kategori']) ?>" class="form-control"></div>
                         </div>
                         <div class="row mb-3">
