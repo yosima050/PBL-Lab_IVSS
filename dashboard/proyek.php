@@ -128,7 +128,7 @@ try {
     .select2-search__field { margin-top: 5px !important; font-size: 0.9rem; }
     .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered { color: #6e707e; line-height: normal !important; padding-left: 0; }
     .select2-container--bootstrap4.select2-container--focus .select2-selection { border-color: #bac8f3; box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25); }
-    .modal-header { background: linear-gradient(45deg, #4e73df, #224abe); color: white; }
+    .modal-header { background: linear-gradient(45deg, #1cc88a, #13855c); color: white; }
     .close { color: white !important; opacity: 0.8; }
     .close:hover { opacity: 1; }
 </style>
@@ -237,10 +237,10 @@ try {
                                                 <?= date('d M Y', strtotime($d['tanggal_selesai'])) ?>
                                             </td>
                                             <td class="text-center">
-                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>" title="Edit">
+                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekDosen<?= $d['id_proyek'] ?>" title="Edit" style="margin: 1.5px;">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus">
+                                                <a href="process_proyek.php?delete=<?= $d['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus" style="margin: 1.5px;">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -275,7 +275,7 @@ try {
                                         <tr>
                                             <td class="text-center font-weight-bold"><?= $p['id_proyek'] ?></td>
                                             <td>
-                                                <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Mhs:</small><br>
+                                                <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Mahasiswa:</small><br>
                                                 <i class="fas fa-users text-primary"></i> <?= htmlspecialchars($p['list_nama_mahasiswa']) ?>
                                                 <?php if(!empty($p['nama_pembimbing'])): ?>
                                                     <hr class="my-1">
@@ -316,10 +316,10 @@ try {
                                                 <?= date('d M Y', strtotime($p['tanggal_selesai'])) ?>
                                             </td>
                                             <td class="text-center">
-                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>" title="Edit">
+                                                <button class="btn btn-warning btn-sm btn-circle" data-toggle="modal" data-target="#editProyekMahasiswa<?= $p['id_proyek'] ?>" title="Edit" style="margin: 1.5px;">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus">
+                                                <a href="process_proyek.php?delete=<?= $p['id_proyek'] ?>" onclick="return confirm('Hapus proyek ini?')" class="btn btn-danger btn-sm btn-circle" title="Hapus" style="margin: 1.5px;">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -367,7 +367,7 @@ try {
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="text-info">Asisten Mahasiswa</label>
+                                    <label class="text-success">Asisten Mahasiswa</label>
                                     <select name="mahasiswa_asisten[]" class="form-control select2-multiple" multiple required data-placeholder="-- Pilih Mahasiswa --">
                                         <?php foreach($listMahasiswa as $lm): ?>
                                             <option value="<?= $lm['id_mahasiswa'] ?>"><?= htmlspecialchars($lm['nama_users']) ?></option>
@@ -425,7 +425,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="create_dosen" class="btn btn-primary">Simpan Data</button>
+                        <button type="submit" name="create_dosen" class="btn btn-success">Simpan Data</button>
                     </div>
                 </div>
             </form>
@@ -514,7 +514,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_dosen" class="btn btn-warning">Update Data</button>
+                        <button type="submit" name="update_dosen" class="btn btn-primary">Update Data</button>
                     </div>
                 </div>
             </form>
@@ -526,7 +526,7 @@ try {
         <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
-                    <div class="modal-header" style="background: linear-gradient(45deg, #1cc88a, #13855c);">
+                    <div class="modal-header" style="background: linear-gradient(45deg, #4e73df, #224abe); color: white;">
                         <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Tambah Proyek Mahasiswa</h5>
                         <button class="close" data-dismiss="modal">×</button>
                     </div>
@@ -544,7 +544,7 @@ try {
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="text-success">Dosen Pembimbing</label>
+                                    <label class="text-primary">Dosen Pembimbing</label>
                                     <select name="dosen_pembimbing" class="form-control select2-multiple" multiple required data-placeholder="-- Pilih Dosen --">
                                         <?php foreach($listDosen as $ld): ?>
                                             <option value="<?= $ld['id_dosen'] ?>"><?= htmlspecialchars($ld['nama_dosen']) ?></option>
@@ -593,7 +593,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="create_mahasiswa" class="btn btn-success">Simpan Data</button>
+                        <button type="submit" name="create_mahasiswa" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </div>
             </form>
@@ -675,7 +675,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_mahasiswa" class="btn btn-warning">Update Data</button>
+                        <button type="submit" name="update_mahasiswa" class="btn btn-primary">Update Data</button>
                     </div>
                 </div>
             </form>

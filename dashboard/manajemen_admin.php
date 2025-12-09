@@ -129,7 +129,7 @@ try {
                                                         <td><?= htmlspecialchars($u['nama_role']) ?></td>
                                                         <td><?= htmlspecialchars($u['email_users']) ?></td>
                                                         <td class="text-center">
-                                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
+                                                            <button class="btn btn-warning btn-sm" style="margin: 1.5px;" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
                                                                 <i class="fas fa-edit"></i>
                                                             </button>
                                                             <a href="process_manajemen_admin.php?delete=<?= $u['id_users'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus user ini?')">
@@ -215,7 +215,7 @@ try {
                                                         <td><?= htmlspecialchars($u['nama_role']) ?></td>
                                                         <td><?= htmlspecialchars($u['email_users']) ?></td>
                                                         <td class="text-center">
-                                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
+                                                            <button class="btn btn-warning btn-sm" style="margin: 1.5px;" data-toggle="modal" data-target="#editModal<?= $u['id_users'] ?>">
                                                                 <i class="fas fa-edit"></i>
                                                             </button>
                                                             <a href="process_manajemen_admin.php?delete=<?= $u['id_users'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus user ini?')">
@@ -299,9 +299,11 @@ try {
             <form action="process_manajemen_admin.php" method="POST">
                 <div class="modal-content">
 
-                    <div class="modal-header">
+                    <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title">Tambah Admin Baru</h5>
-                        <button class="close" data-dismiss="modal"><span>×</span></button>
+                        <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                        </button>
                     </div>
 
                     <div class="modal-body">

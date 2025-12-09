@@ -156,7 +156,7 @@ include __DIR__ . '/sidebar.php';
                                     <td><?= htmlspecialchars($d['jabatan_dosen']) ?></td>
 
                                     <td class="text-center">
-                                        <button class="btn btn-warning btn-sm btnEditDosen"
+                                        <button class="btn btn-warning btn-sm btnEditDosen" style="margin: 1.5px;"
                                                 data-id="<?= $d['id_dosen'] ?>"
                                                 data-nama="<?= htmlspecialchars($d['nama_dosen']) ?>"
                                                 data-nip="<?= htmlspecialchars($d['nip']) ?>"
