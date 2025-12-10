@@ -118,7 +118,7 @@ try {
                             
                             <div class="card mb-4 border-left-primary">
                                 <div class="card-header">
-                                    <h5 class="mb-0 text-primary font-weight-bold">Daftar Admins & Ketua Lab</h5>
+                                    <h5 class="mb-0 text-primary font-weight-bold">Daftar Admin & Ketua Lab</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -154,7 +154,7 @@ try {
                                                         <div class="modal-dialog">
                                                             <form action="process_manajemen_admin.php" method="POST">
                                                                 <div class="modal-content">
-                                                                    <div class="modal-header bg-warning text-white">
+                                                                    <div class="modal-header bg-primary text-white">
                                                                         <h5 class="modal-title">Edit Admin</h5>
                                                                         <button class="close" data-dismiss="modal"><span>×</span></button>
                                                                     </div>
@@ -228,7 +228,7 @@ try {
                                                         <div class="modal-dialog">
                                                             <form action="process_manajemen_admin.php" method="POST">
                                                                 <div class="modal-content">
-                                                                    <div class="modal-header bg-warning text-white">
+                                                                    <div class="modal-header bg-success text-white">
                                                                         <h5 class="modal-title">Edit User</h5>
                                                                         <button class="close" data-dismiss="modal"><span>×</span></button>
                                                                     </div>
@@ -253,7 +253,7 @@ try {
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                        <button type="submit" name="update" class="btn btn-primary">Simpan</button>
+                                                                        <button type="submit" name="update" class="btn btn-success">Simpan</button>
                                                                     </div>
                                                                 </div>
                                                             </form>
