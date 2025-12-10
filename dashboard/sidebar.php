@@ -97,13 +97,13 @@ function collapse_show($names) {
         <li class="nav-item">
             <a class="nav-link collapsed <?= (in_array($current, ['mahasiswa.php','dosen.php','manajemen_admin.php'])) ? 'active' : '' ?>" href="#" data-toggle="collapse" data-target="#collapseDataAnggota" aria-expanded="true" aria-controls="collapseDataAnggota">
                 <i class="fas fa-fw fa-database"></i>
-                <span>Data Anggota</span>
+                <span>Manajemen Anggota</span>
             </a>
             <div id="collapseDataAnggota" class="collapse <?= collapse_show(['mahasiswa.php','dosen.php','manajemen_admin.php']) ?>" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item <?= is_active('mahasiswa.php') ?>" href="mahasiswa.php">Data Mahasiswa</a>
                     <a class="collapse-item <?= is_active('dosen.php') ?>" href="dosen.php">Data Dosen</a>
-                    <a class="collapse-item <?= is_active('manajemen_admin.php') ?>" href="manajemen_admin.php">Manajemen Admin</a>
+                    <a class="collapse-item <?= is_active('manajemen_admin.php') ?>" href="manajemen_admin.php">Data Anggota Lab</a>
                 </div>
             </div>
         </li>

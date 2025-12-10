@@ -70,7 +70,7 @@ try {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Manajemen Admin</title>
+    <title>Manajemen Data Anggota Lab</title>
 
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -106,8 +106,8 @@ try {
 
                 <div class="container-fluid">
 
-                    <h1 class="h3 mb-2 text-gray-800">Manajemen Admin</h1>
-                    <p class="mb-4">Kelola akun pengguna sistem.</p>
+                    <h1 class="h3 mb-2 text-gray-800">Manajemen Data Anggota Lab</h1>
+                    <p class="mb-4">Kelola data administrator, dosen, dan mahasiswa</p>
 
                     <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#createModal">
                         <i class="fas fa-plus"></i> Tambah Admin
@@ -118,7 +118,7 @@ try {
                             
                             <div class="card mb-4 border-left-primary">
                                 <div class="card-header">
-                                    <h5 class="mb-0 text-primary font-weight-bold">Daftar Admin & Ketua Lab</h5>
+                                    <h5 class="mb-0 text-primary font-weight-bold">Daftar Admin Lab & Ketua Lab</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -195,7 +195,7 @@ try {
 
                             <div class="card border-left-success">
                                 <div class="card-header">
-                                    <h5 class="mb-0 text-success font-weight-bold">Daftar Dosen & Mahasiswa</h5>
+                                    <h5 class="mb-0 text-success font-weight-bold">Daftar Dosen Lab & Mahasiswa Lab</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -303,8 +303,6 @@ try {
                             <option value="1">Admin Sistem</option>
                             <option value="2">Admin Berita</option>
                             <option value="3">Ketua Lab</option>
-                            <option value="4">Dosen</option>
-                            <option value="5">Mahasiswa</option>
                         </select>
 
                         <label>Nama Lengkap:</label>
