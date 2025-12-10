@@ -265,7 +265,7 @@ include __DIR__ . '/sidebar.php';
         <div class="modal-content">
 
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Edit Data Mahasiswa</h5>
+                <h5 class="modal-title">Edit Data Dosen</h5>
                 <button type="button" class="close text-white" data-dismiss="modal">
                 <span>&times;</span>
                 </button>
@@ -345,7 +345,7 @@ $(document).on('click', '.btnEditDosen', function() {
 
     let foto = $(this).data('foto');
     if (foto) {
-        $('#edit_foto_preview').attr('src', foto);
+        $('#edit_foto_preview').attr('src', '../uploads/' + foto); 
     } else {
         $('#edit_foto_preview').attr('src', '../Asset/default_profile.jpg');
     }
