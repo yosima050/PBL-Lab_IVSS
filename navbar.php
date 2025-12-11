@@ -54,7 +54,6 @@ if (!function_exists('is_active')) {
                         <a href="#" class="nav-link dropdown-toggle<?= is_active(['anggota.php','dosen.php','Sorotan_Publikasi.php','produk.php', 'produk2.php', 'Profil_dosen.php']) ?>">Anggota & Riset</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="anggota.php">Anggota Lab</a></li>
-                            <li><a class="dropdown-item" href="anggota.php">Dosen Peneliti</a></li>
                             <li><a class="dropdown-item" href="Sorotan_Publikasi.php">Fokus Riset</a></li>
                             <li><a class="dropdown-item" href="Sorotan_Publikasi.php">Sorotan Publikasi</a></li>
                             <li><a class="dropdown-item" href="produk.php">Produk dan Riset</a></li>
