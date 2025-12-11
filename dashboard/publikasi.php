@@ -21,6 +21,24 @@ $role = $_SESSION['role'] ?? null;
 $pendingCount = 0;
 $waitingApproval = 0;
 
+try {
+    // Hitung Pendaftar Baru (Status: Pending)
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
+    $stmt->execute();
+    $pendingCount = (int)$stmt->fetchColumn();
+} catch (Exception $e) {
+    $pendingCount = 0;
+}
+
+try {
+    // Hitung Validasi Data (Status: Menunggu)
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
+    $stmt->execute();
+    $waitingApproval = (int)$stmt->fetchColumn();
+} catch (Exception $e) {
+    $waitingApproval = 0;
+}
+
 // Get data publikasi
 try {
     $stmt = $pdo->query("
