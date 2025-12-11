@@ -158,7 +158,7 @@ include __DIR__ . '/sidebar.php';
                 <table class="table table-bordered" id="dataTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Nama</th>
                             <th>NIM</th>
                             <th>Email</th>
@@ -170,15 +170,29 @@ include __DIR__ . '/sidebar.php';
                     </thead>
 
                     <tbody>
+                        <?php $no = 1; ?>
                         <?php foreach ($mahasiswa as $m): ?>
                         <tr>
-                            <td>#<?= $m['id_pendaftaran'] ?></td>
+                            <td><?= $no++ ?></td>
                             <td><?= htmlspecialchars($m['nama_mahasiswa']) ?></td>
                             <td><?= htmlspecialchars($m['nim']) ?></td>
                             <td><?= htmlspecialchars($m['email_mahasiswa'] ?? '') ?></td>
                             <td><?= htmlspecialchars($m['prodi']) ?></td>
                             <td><?= htmlspecialchars($m['nama_dosen']) ?></td>
-                            <td><span class="badge badge-info"><?= $m['status_mahasiswa'] ?></span></td>
+                            <td>
+                                <?php 
+                                    $status = $m['status_mahasiswa'];
+                                    $badgeClass = [
+                                        'Pending'   => 'badge-warning',
+                                        'Menunggu'  => 'badge-info',
+                                        'Diterima'  => 'badge-success',
+                                        'Ditolak'   => 'badge-danger'
+                                    ];
+                                ?>
+                                <span class="badge <?= $badgeClass[$status] ?? 'badge-secondary' ?>">
+                                    <?= htmlspecialchars($status) ?>
+                                </span>
+                            </td>
 
                             <td class="text-center">
 

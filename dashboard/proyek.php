@@ -182,7 +182,7 @@ try {
                                 <table class="table table-bordered table-hover" id="tableDosen" width="100%" cellspacing="0">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th width="5%">ID</th>
+                                            <th width="5%">No</th>
                                             <th width="20%">Tim & Asisten</th>
                                             <th width="20%">Judul Proyek</th>
                                             <th width="10%">Media</th> <th width="10%">Kategori</th>
@@ -192,9 +192,10 @@ try {
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php $no = 1; ?>
                                         <?php foreach ($proyekDosen as $d): ?>
                                         <tr>
-                                            <td class="text-center font-weight-bold"><?= $d['id_proyek'] ?></td>
+                                            <td><?= $no++ ?></td>
                                             <td>
                                                 <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Dosen:</small><br>
                                                 <i class="fas fa-users text-success"></i> <?= htmlspecialchars($d['list_nama_dosen']) ?>
@@ -261,7 +262,7 @@ try {
                                 <table class="table table-bordered table-hover" id="tableMahasiswa" width="100%" cellspacing="0">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th width="5%">ID</th>
+                                            <th width="5%">No</th>
                                             <th width="20%">Tim & Pembimbing</th>
                                             <th width="20%">Judul Proyek</th>
                                             <th width="10%">Media</th> <th width="10%">Kategori</th>
@@ -271,9 +272,10 @@ try {
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php $no = 1; ?>
                                         <?php foreach ($proyekMahasiswa as $p): ?>
                                         <tr>
-                                            <td class="text-center font-weight-bold"><?= $p['id_proyek'] ?></td>
+                                            <td><?= $no++ ?></td>
                                             <td>
                                                 <small class="text-uppercase text-secondary font-weight-bold" style="font-size: 0.7rem;">Tim Mahasiswa:</small><br>
                                                 <i class="fas fa-users text-primary"></i> <?= htmlspecialchars($p['list_nama_mahasiswa']) ?>
@@ -732,10 +734,10 @@ try {
         $(document).ready(function() { 
             // 1. Inisialisasi DataTable
             if (!$.fn.DataTable.isDataTable('#tableDosen')) { 
-                $('#tableDosen').DataTable({ "order": [[ 0, "desc" ]]}); 
+                $('#tableDosen').DataTable({ "order": [[ 0, "asc" ]]}); 
             }
             if (!$.fn.DataTable.isDataTable('#tableMahasiswa')) { 
-                $('#tableMahasiswa').DataTable({ "order": [[ 0, "desc" ]] }); 
+                $('#tableMahasiswa').DataTable({ "order": [[ 0, "asc" ]] }); 
             }
 
             // 2. Setup Select2 Global

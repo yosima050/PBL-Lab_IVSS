@@ -17,7 +17,7 @@ function collapse_show($names) {
 }
 ?>
 <style>
-/* Scoped styles for sidebar active state */
+/* Scoped styles for sidebar active state *
 .sidebar .nav-link.active {
   background: rgba(255,255,255,0.12);
   color: #fff !important;
@@ -87,8 +87,8 @@ function collapse_show($names) {
         <li class="nav-item <?= is_active('pendaftaran.php') ?>">
             <a class="nav-link <?= is_active('pendaftaran.php') ?>" href="pendaftaran.php">
                 <i class="fas fa-fw fa-user-plus"></i>
-                <span>Pendaftaran Baru</span>
-                <?php if (!empty($pendingCount) && $pendingCount > 0): ?>
+                <span>Verifikasi Anggota Baru</span>
+                <?php if (!empty($pendingCount) & $pendingCount > 0): ?>
                     <span class="badge badge-danger badge-counter"><?= (int)$pendingCount ?></span>
                 <?php endif; ?>
             </a>

@@ -104,7 +104,7 @@ try {
                                 <table class="table table-bordered" id="dataTable">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>No</th>
                                             <th>Penulis (User)</th>
                                             <th>Judul</th>
                                             <th>Tahun</th>
@@ -114,9 +114,10 @@ try {
                                     </thead>
 
                                     <tbody>
+                                        <?php $no = 1; ?>
                                         <?php foreach ($publikasi as $p): ?>
                                         <tr>
-                                            <td><?= $p['id_publikasi'] ?></td>
+                                            <td><?= $no++ ?></td>
                                             <td><?= htmlspecialchars($p['nama_users']) ?></td>
                                             <td><?= htmlspecialchars($p['judul_publikasi']) ?></td>
                                             <td><?= htmlspecialchars($p['tahun_publikasi']) ?></td>
@@ -216,7 +217,7 @@ try {
             <form action="process_publikasi.php" method="POST">
                 <div class="modal-content">
                     <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">Edit Data Mahasiswa</h5>
+                        <h5 class="modal-title">Edit Data Publikasi</h5>
                         <button type="button" class="close text-white" data-dismiss="modal">
                         <span>&times;</span>
                         </button>
