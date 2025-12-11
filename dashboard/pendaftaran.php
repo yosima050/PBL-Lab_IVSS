@@ -140,15 +140,13 @@ include __DIR__ . '/sidebar.php';
         <?php unset($_SESSION['message'], $_SESSION['msg_type']); ?>
     <?php endif; ?>
 
-    <!-- Tombol tambah DIHAPUS -->
-
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Nama</th>
                             <th>NIM</th>
                             <th>Prodi</th>
@@ -158,15 +156,32 @@ include __DIR__ . '/sidebar.php';
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pendaftar as $p): ?>
+                        <?php 
+                        $no = 1; 
+                        foreach ($pendaftar as $p): 
+                        ?>
                         <tr>
-                            <td>#<?= $p['id_pendaftaran'] ?></td>
+                            <td><?= $no++ ?></td>
                             <td><?= htmlspecialchars($p['nama_mahasiswa']) ?></td>
                             <td><?= htmlspecialchars($p['nim']) ?></td>
                             <td><?= htmlspecialchars($p['prodi']) ?></td>
                             <td><?= htmlspecialchars($p['nama_dosen']) ?></td>
-                            <td><span class="badge badge-info"> <?= $p['status_mahasiswa'] ?> </span></td>
+                            <td>
+                                <?php 
+                                    $status = $p['status_mahasiswa'];
+                                    $badgeClass = [
+                                        'Pending'   => 'badge-warning',
+                                        'Menunggu'  => 'badge-info',
+                                        'Diterima'  => 'badge-success',
+                                        'Ditolak'   => 'badge-danger'
+                                    ];
+                                ?>
+                                <span class="badge <?= $badgeClass[$status] ?? 'badge-secondary' ?>">
+                                    <?= htmlspecialchars($status) ?>
+                                </span>
+                            </td>
                             <td class="text-center">
+
                                 <button class="btn btn-warning btn-sm btn-edit" style="margin: 1.5px;"
                                     data-id="<?= $p['id_pendaftaran'] ?>"
                                     data-id_users="<?= $p['id_users'] ?>"
@@ -178,18 +193,24 @@ include __DIR__ . '/sidebar.php';
                                     <i class="fas fa-edit"></i>
                                 </button>
 
-                                <a href="?action=delete&id=<?= $p['id_pendaftaran'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
+                                <a href="?action=delete&id=<?= $p['id_pendaftaran'] ?>" 
+                                class="btn btn-danger btn-sm" 
+                                onclick="return confirm('Hapus data ini?')">
+                                <i class="fas fa-trash"></i>
+                                </a>
 
-                                <button class="btn btn-primary btn-sm btn-forward" style="margin: 1.5px;"
+                                <button class="btn btn-primary btn-sm btn-forward"
                                         data-id="<?= $p['id_pendaftaran'] ?>"
                                         data-toggle="modal"
                                         data-target="#forwardModal">
                                     <i class="fas fa-share"></i> Teruskan
                                 </button>
+
                             </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
+
                 </table>
             </div>
         </div>
@@ -239,7 +260,7 @@ include __DIR__ . '/sidebar.php';
             <select name="status_mahasiswa" id="edit_status" class="form-control">
               <option value="Pending">Pending</option>
               <option value="Menunggu">Menunggu</option>
-              <option value="Disetujui">Disetujui</option>
+              <option value="Diterima">Diterima</option>
               <option value="Ditolak">Ditolak</option>
             </select>
           </div>

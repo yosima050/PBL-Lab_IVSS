@@ -125,16 +125,16 @@ try {
                                         <table class="table table-bordered table-hover" id="dataTableAdmins">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th>ID</th>
+                                                    <th>No</th>
                                                     <th>Nama Role</th> <th>Nama Lengkap</th> <th>Email</th>
                                                     <th class="text-center">Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                <?php $no = 1; ?>
                                                 <?php foreach ($admins as $u): ?>
                                                     <tr>
-                                                        <td><?= $u['id_users'] ?></td>
-                                                        
+                                                        <td><?= $no++ ?></td>
                                                         <td><span class="badge badge-info"><?= htmlspecialchars($u['nama_role']) ?></span></td>
                                                         
                                                         <td><?= htmlspecialchars($u['nama_users']) ?></td>
@@ -202,15 +202,16 @@ try {
                                         <table class="table table-bordered table-hover" id="dataTableUsers">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th>ID</th>
+                                                    <th>No</th>
                                                     <th>Nama Role</th> <th>Nama Lengkap</th> <th>Email</th>
                                                     <th class="text-center">Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                <?php $no = 1; ?>
                                                 <?php foreach ($users as $u): ?>
                                                     <tr>
-                                                        <td><?= $u['id_users'] ?></td>
+                                                        <td><?= $no++ ?></td>
                                                         <td><span class="badge badge-secondary"><?= htmlspecialchars($u['nama_role']) ?></span></td>
                                                         <td><?= htmlspecialchars($u['nama_users']) ?></td>
                                                         <td><?= htmlspecialchars($u['email_users']) ?></td>
