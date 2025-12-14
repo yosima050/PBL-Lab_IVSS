@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Cek apakah role user adalah 'admin_berita'?
-// Jika bukan (misal: admin_sistem atau ketua_lab mencoba akses), tendang ke login.php
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin_berita') {
     header("Location: login.php");
     exit;
@@ -17,13 +16,17 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin_berita') {
 // 2. LOGIKA PROGRAM
 // ============================================================
 
-// Sesuaikan path ini. Jika file ini ada di folder dashboard, gunakan __DIR__ . '/db.php'
-// Kode asli Anda: require '../dashboard/db.php'; 
-// Saya ganti ke yang lebih aman relatif terhadap file ini:
 require_once __DIR__ . '/db.php';
 
-// Ambil username dari session
 $username = $_SESSION['nama_users'] ?? $_SESSION['nama'] ?? 'Admin';
+
+// Set Path Upload (Keluar dari folder dashboard)
+$uploadDir = __DIR__ . '/../uploads/';
+
+// Buat folder jika belum ada
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
 
 // ---------------------------
 // DELETE FASILITAS
@@ -31,12 +34,14 @@ $username = $_SESSION['nama_users'] ?? $_SESSION['nama'] ?? 'Admin';
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
     $id = $_GET['id'];
     
-    // (Opsional) Hapus foto lama dari folder
+    // Hapus foto lama
     $stmt = $pdo->prepare("SELECT foto_fasilitas FROM fasilitas WHERE id_fasilitas = :id");
     $stmt->execute(['id' => $id]);
     $fotoLama = $stmt->fetchColumn();
-    if ($fotoLama && file_exists("uploads/" . $fotoLama)) {
-        unlink("uploads/" . $fotoLama);
+    
+    // Gunakan path absolut untuk unlink
+    if ($fotoLama && file_exists($uploadDir . $fotoLama)) {
+        unlink($uploadDir . $fotoLama);
     }
 
     $stmt = $pdo->prepare("DELETE FROM fasilitas WHERE id_fasilitas = :id");
@@ -56,13 +61,21 @@ if (isset($_POST['update'])) {
     $id        = $_POST['id_fasilitas'];
     $nama      = $_POST['nama_fasilitas'];
     $deskripsi = $_POST['deskripsi_fasilitas'];
+    $foto      = $_POST['foto_lama']; // Default pakai foto lama
 
+    // Jika ada upload foto baru
     if (!empty($_FILES['foto_fasilitas']['name'])) {
-        $foto = time() . '_' . $_FILES['foto_fasilitas']['name']; // Tambah time() agar unik
-        $tmp  = $_FILES['foto_fasilitas']['tmp_name'];
-        move_uploaded_file($tmp, "uploads/".$foto);
-    } else {
-        $foto = $_POST['foto_lama'];
+        $ext = pathinfo($_FILES['foto_fasilitas']['name'], PATHINFO_EXTENSION);
+        $fotoBaru = time() . '_' . uniqid() . '.' . $ext;
+        $tmp = $_FILES['foto_fasilitas']['tmp_name'];
+        
+        if (move_uploaded_file($tmp, $uploadDir . $fotoBaru)) {
+            // Hapus foto lama jika ada dan beda file
+            if ($foto && file_exists($uploadDir . $foto)) {
+                unlink($uploadDir . $foto);
+            }
+            $foto = $fotoBaru;
+        }
     }
 
     $stmt = $pdo->prepare("UPDATE fasilitas SET 
@@ -91,22 +104,20 @@ if (isset($_POST['update'])) {
 if (isset($_POST['tambah'])) {
     $nama      = $_POST['nama_fasilitas'];
     $deskripsi = $_POST['deskripsi_fasilitas'];
+    $foto      = null;
 
-    $foto = time() . '_' . $_FILES['foto_fasilitas']['name']; // Tambah time() agar unik
-    $tmp  = $_FILES['foto_fasilitas']['tmp_name'];
-    move_uploaded_file($tmp, "uploads/" . $foto);
+    if (!empty($_FILES['foto_fasilitas']['name'])) {
+        $ext = pathinfo($_FILES['foto_fasilitas']['name'], PATHINFO_EXTENSION);
+        $foto = time() . '_' . uniqid() . '.' . $ext;
+        $tmp = $_FILES['foto_fasilitas']['tmp_name'];
+        
+        move_uploaded_file($tmp, $uploadDir . $foto);
+    }
     
-    // Ambil ID User yang login (untuk audit trail, jika kolom id_users ada di tabel fasilitas)
     $id_users = $_SESSION['user_id'];
 
-    $stmt = $pdo->prepare("
-        SELECT fn_insert_fasilitas(
-            :uid,
-            :nama,
-            :deskripsi,
-            :foto
-        );
-    ");
+    $stmt = $pdo->prepare("INSERT INTO fasilitas (id_users, nama_fasilitas, deskripsi_fasilitas, foto_fasilitas) 
+                           VALUES (:uid, :nama, :deskripsi, :foto)");
 
     $stmt->execute([
         'uid'       => $id_users,
@@ -126,7 +137,6 @@ if (isset($_POST['tambah'])) {
 $role = $_SESSION['role'] ?? null;
 $pendingCount = $waitingApproval = 0;
 
-// Hitung badge (Opsional untuk sidebar)
 try {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
     $stmt->execute();
@@ -158,7 +168,6 @@ try {
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
 
-            <!-- Topbar -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                     <i class="fa fa-bars"></i>
@@ -179,8 +188,6 @@ try {
                     </li>
                 </ul>
             </nav>
-            <!-- End Topbar -->
-
             <div class="container-fluid">
                 <h1 class="h3 mb-4 text-gray-800">Fasilitas Lab</h1>
 
@@ -223,13 +230,13 @@ try {
 
                             <div class="form-group">
                                 <label>Deskripsi</label>
-                                <textarea name="deskripsi_fasilitas" class="form-control" rows="5" required="<?= htmlspecialchars($f['deskripsi_fasilitas']) ?>"><?= htmlspecialchars($f['deskripsi_fasilitas']) ?></textarea>
+                                <textarea name="deskripsi_fasilitas" class="form-control" rows="5" required><?= htmlspecialchars($f['deskripsi_fasilitas']) ?></textarea>
                             </div>
 
                             <div class="form-group">
                                 <label>Foto Saat Ini</label><br>
                                 <?php if(!empty($f['foto_fasilitas'])): ?>
-                                    <img src="<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="150" class="img-thumbnail mb-2">
+                                    <img src="../uploads/<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="150" class="img-thumbnail mb-2">
                                 <?php endif; ?>
                                 <input type="file" name="foto_fasilitas" class="form-control-file">
                                 <small class="text-muted">Biarkan kosong jika tidak ingin mengganti foto.</small>
@@ -308,7 +315,7 @@ try {
                                         <td><?= $no++ ?></td>
                                         <td>
                                             <?php if(!empty($f['foto_fasilitas'])): ?>
-                                                <img src="<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="80" class="img-thumbnail">
+                                                <img src="../uploads/<?= htmlspecialchars($f['foto_fasilitas']) ?>" width="80" class="img-thumbnail">
                                             <?php else: ?>
                                                 <span class="text-muted">No Image</span>
                                             <?php endif; ?>
@@ -331,7 +338,6 @@ try {
             </div>
         </div>
 
-        <!-- Footer -->
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
@@ -343,7 +349,6 @@ try {
     </div>
 </div>
 
-<!-- Logout Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

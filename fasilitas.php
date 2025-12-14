@@ -1,7 +1,8 @@
 <?php
+// Pastikan path ini benar (keluar dari folder dashboard jika perlu)
 include 'dashboard/db.php'; 
 
-// 2. LOGIKA PENCARIAN (Opsional)
+// 2. LOGIKA PENCARIAN
 $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
@@ -53,7 +54,6 @@ try {
         body {
             background-color: #f8f9fa;
             font-family: 'Roboto', sans-serif;
-            /* Padding top dihapus karena navbar biasanya sudah handle layout */
         }
 
         .btn-mahasiswa-custom {
@@ -126,7 +126,7 @@ try {
             border: 1px solid var(--color-table-header-border);
             height: 38px;
             padding: 0.5rem;
-            width: 33.33%;
+            /* width dihapus agar responsif mengikuti konten, diatur inline style nanti */
             font-weight: normal;
             text-align: center;
             vertical-align: middle;
@@ -139,11 +139,13 @@ try {
             background-color: #fff;
         }
         .fasilitas-img {
-            width: 80px; 
-            height: 60px; 
+            width: 100px; /* Sedikit diperbesar */
+            height: 75px; 
             object-fit: cover; 
             border-radius: 5px;
-            margin-right: 10px;
+            border: 1px solid #ddd;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -178,8 +180,8 @@ try {
         <table class="table-custom">
             <thead>
                 <tr>
-                    <th style="width: 30%;">Nama Fasilitas</th>
-                    <th style="width: 50%;">Deskripsi</th>
+                    <th style="width: 25%;">Nama Fasilitas</th>
+                    <th style="width: 55%;">Deskripsi</th>
                     <th style="width: 20%;">Foto</th> 
                 </tr>
             </thead>
@@ -190,24 +192,38 @@ try {
                         <td class="text-start ps-4 fw-bold">
                             <?= htmlspecialchars($row['nama_fasilitas']); ?>
                         </td>
-                        <td class="text-start ps-3">
-                            <?= htmlspecialchars($row['deskripsi_fasilitas']); ?>
+                        <td class="text-start ps-3 text-justify">
+                            <?= nl2br(htmlspecialchars($row['deskripsi_fasilitas'])); ?>
                         </td>
                         <td>
-                            <?php if(!empty($row['foto_fasilitas'])): ?>
-                                <img src="<?= htmlspecialchars($row['foto_fasilitas']); ?>" 
+                            <?php 
+                                // PERBAIKAN PATH GAMBAR
+                                $fileName = $row['foto_fasilitas'];
+                                $path = 'uploads/' . $fileName; // Path folder 'uploads' di root
+                                
+                                if (!empty($fileName) && file_exists($path)): 
+                            ?>
+                                <img src="<?= htmlspecialchars($path); ?>" 
                                      class="fasilitas-img" 
-                                     alt="Foto"
-                                     onerror="this.src='Asset/noimage.png';">
+                                     alt="Foto <?= htmlspecialchars($row['nama_fasilitas']); ?>"
+                                     onclick="window.open(this.src, '_blank')" 
+                                     style="cursor: pointer;" 
+                                     title="Klik untuk memperbesar">
                             <?php else: ?>
-                                <span>Tidak ada Foto</span>
+                                <span class="text-muted fst-italic small">
+                                    <i class="fas fa-image fa-2x d-block mb-1"></i>
+                                    Tidak ada foto
+                                </span>
                             <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="3" class="text-center py-3">Tidak ada data fasilitas.</td>
+                        <td colspan="3" class="text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i><br>
+                            Tidak ada data fasilitas yang ditemukan.
+                        </td>
                     </tr>
                 <?php endif; ?>
             </tbody>

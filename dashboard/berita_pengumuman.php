@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 
 // Cek apakah role user adalah Admin Berita?
 if ($_SESSION['role'] !== 'admin_berita') {
-    // Jika bukan, tampilkan pesan dan kembalikan ke dashboard atau login
     echo "<script>
             alert('AKSES DITOLAK! Halaman ini hanya untuk Admin Berita.');
             window.location = 'dashboard.php';
@@ -39,7 +38,9 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
         unlink("../uploads/" . $fotoLama); // Hapus file fisik
     }
 
-    $stmt = $pdo->prepare("CALL sp_delete_berita(:id)");
+    // Perbaikan: Gunakan DELETE biasa jika SP tidak ada, atau pastikan SP ada
+    // $stmt = $pdo->prepare("CALL sp_delete_berita(:id)"); 
+    $stmt = $pdo->prepare("DELETE FROM berita WHERE id_berita = :id");
     $stmt->execute(['id' => $id]);
 
     $_SESSION['message'] = "Berita berhasil dihapus!";
@@ -100,21 +101,21 @@ if (isset($_POST['tambah'])) {
     $isi      = $_POST['isi_berita'];
     $kategori = $_POST['kategori_berita'];
 
-    $foto = $_FILES['foto_berita']['name'];
-    $tmp  = $_FILES['foto_berita']['tmp_name'];
-    move_uploaded_file($tmp, "../uploads/" . $foto);
+    $foto = '';
+    if (!empty($_FILES['foto_berita']['name'])) {
+        $foto = time() . '_' . $_FILES['foto_berita']['name'];
+        $tmp  = $_FILES['foto_berita']['tmp_name'];
+        move_uploaded_file($tmp, "../uploads/" . $foto);
+    }
 
-    $author  = $_SESSION['nama'] ?? 'Admin';
-    $id_users = $_SESSION['id_users'] ?? 1;
+    $author   = $_SESSION['nama_users'] ?? 'Admin'; // PERBAIKAN: Gunakan nama_users
+    $id_users = $_SESSION['user_id'];               // PERBAIKAN: Gunakan user_id yang valid
 
-    $stmt = $pdo->prepare("SELECT fn_insert_berita(
-        :judul,
-        :isi,
-        :kategori,
-        :foto,
-        :author,
-        :id_users,
-        NULL
+    // Gunakan INSERT manual agar lebih aman daripada memanggil function PL/pgSQL yang mungkin error
+    $stmt = $pdo->prepare("INSERT INTO berita (
+        judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita, link_berita
+    ) VALUES (
+        :judul, :isi, :kategori, :foto, :author, :id_users, NOW(), NULL
     )");
 
     $stmt->execute([
@@ -140,21 +141,20 @@ if (isset($_POST['tambah_tautan'])) {
     $judul = $_POST['judul_berita'];
     $link  = $_POST['link_berita'];
 
-    $foto = $_FILES['foto_berita']['name'];
-    $tmp  = $_FILES['foto_berita']['tmp_name'];
-    move_uploaded_file($tmp, "../uploads/" . $foto);
+    $foto = '';
+    if (!empty($_FILES['foto_berita']['name'])) {
+        $foto = time() . '_' . $_FILES['foto_berita']['name'];
+        $tmp  = $_FILES['foto_berita']['tmp_name'];
+        move_uploaded_file($tmp, "../uploads/" . $foto);
+    }
 
-    $author  = $_SESSION['nama'] ?? 'Admin';
-    $id_users = $_SESSION['id_users'] ?? 1;
+    $author   = $_SESSION['nama_users'] ?? 'Admin'; // PERBAIKAN
+    $id_users = $_SESSION['user_id'];               // PERBAIKAN
 
-    $stmt = $pdo->prepare("SELECT fn_insert_berita(
-        :judul,
-        '',
-        'Tautan',
-        :foto,
-        :author,
-        :id_users,
-        :link
+    $stmt = $pdo->prepare("INSERT INTO berita (
+        judul_berita, isi_berita, kategori_berita, foto_berita, author, id_users, created_at_berita, link_berita
+    ) VALUES (
+        :judul, '', 'Tautan', :foto, :author, :id_users, NOW(), :link
     )");
 
     $stmt->execute([
@@ -193,14 +193,10 @@ $pendingCount = $waitingApproval = 0;
 <body id="page-top">
 <div id="wrapper">
 
-    <!-- Sidebar -->
     <?php include __DIR__ . '/sidebar.php'; ?>
-    <!-- End Sidebar -->
-
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
 
-            <!-- Topbar -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                     <i class="fa fa-bars"></i>
@@ -221,12 +217,9 @@ $pendingCount = $waitingApproval = 0;
                     </li>
                 </ul>
             </nav>
-            <!-- End Topbar -->
-
             <div class="container-fluid">
 
                 <h1 class="h3 mb-4 text-gray-800">Berita / Pengumuman</h1>
-                <!-- ALERT -->
                 <?php if (isset($_SESSION['message'])): ?>
                     <div class="alert alert-<?= $_SESSION['msg_type'] ?> alert-dismissible fade show" role="alert">
                         <?= $_SESSION['message'] ?>
@@ -237,7 +230,6 @@ $pendingCount = $waitingApproval = 0;
                     <?php unset($_SESSION['message'], $_SESSION['msg_type']); ?>
                 <?php endif; ?>
 
-                <!-- KONTEN UTAMA (Tabel/Form) SESUAI LOGIKA SEBELUMNYA -->
                 <?php
                 // --- FORM EDIT ---
                 if (isset($_GET['aksi']) && $_GET['aksi'] == 'edit') {
@@ -379,7 +371,6 @@ $pendingCount = $waitingApproval = 0;
                     $stmt = $pdo->query("SELECT * FROM berita ORDER BY created_at_berita DESC");
                     $data = $stmt->fetchAll();
                 ?>
-                <!-- Tabel Data Berita -->
                 <div class="card shadow mb-4">
                     <div class="card-header d-flex justify-content-between">
                         <h6 class="m-0 font-weight-bold text-primary">Data Berita</h6>
@@ -431,10 +422,9 @@ $pendingCount = $waitingApproval = 0;
             </div>
         </div>
 
-        <!-- Footer -->
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
-                <div class="copyright text-center my-auto">
+                <div class="text-center">
                     <span>Copyright &copy; LAB IVSS</span>
                 </div>
             </div>
@@ -443,7 +433,6 @@ $pendingCount = $waitingApproval = 0;
     </div>
 </div>
 
-<!-- Logout Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -466,14 +455,12 @@ $pendingCount = $waitingApproval = 0;
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="vendor/datatables/jquery.dataTables.min.js"></script>
 <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-<script src="js/sb-admin-2.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#dataTable').DataTable();
-});
+    $(document).ready(function() {
+        $('#dataTable').DataTable();
+    });
 </script>
 
 </body>
 </html>
-    
