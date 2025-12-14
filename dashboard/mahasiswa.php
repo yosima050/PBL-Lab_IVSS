@@ -14,7 +14,6 @@ if (!in_array($_SESSION['role'], ['admin_sistem'])) {
 }
 
 $username = $_SESSION['nama_users'] ?? 'User';
-
 $action = $_GET['action'] ?? '';
 
 /* ============================
@@ -22,8 +21,9 @@ $action = $_GET['action'] ?? '';
 ============================ */
 if ($action === 'delete' && isset($_GET['id'])) {
     $id = $_GET['id'];
-
     try {
+        // Hapus hanya dari pendaftaran (sesuai logika awal)
+        // Catatan: Idealnya hapus juga dari tabel users/mahasiswa jika perlu bersih total
         $stmt = $pdo->prepare("DELETE FROM pendaftaran WHERE id_pendaftaran = :id");
         $stmt->execute(['id' => $id]);
 
@@ -38,35 +38,49 @@ if ($action === 'delete' && isset($_GET['id'])) {
 }
 
 /* ============================
-   UPDATE (EDIT)
+   UPDATE (EDIT) - Data & Keaktifan
 ============================ */
-if ($action === 'edit' && isset($_POST['id'])) {
-    $id = $_POST['id'];
+if ($action === 'edit' && isset($_POST['id_pendaftaran'])) {
+    $id_pendaftaran = $_POST['id_pendaftaran'];
+    $id_mahasiswa   = $_POST['id_mahasiswa'];
 
     try {
-        $stmt = $pdo->prepare("UPDATE pendaftaran 
+        $pdo->beginTransaction();
+
+        // 1. Update Data Diri di Tabel Pendaftaran
+        $stmt1 = $pdo->prepare("UPDATE pendaftaran 
             SET nama_mahasiswa = :nama,
                 nim = :nim,
                 prodi = :prodi,
                 nama_dosen = :dosen,
-                status_mahasiswa = :status,
-                email_mahasiswa = :email_mahasiswa
+                email_mahasiswa = :email
             WHERE id_pendaftaran = :id");
 
-        $stmt->execute([
-            'nama' => $_POST['nama_mahasiswa'],
-            'nim' => $_POST['nim'],
+        $stmt1->execute([
+            'nama'  => $_POST['nama_mahasiswa'],
+            'nim'   => $_POST['nim'],
             'prodi' => $_POST['prodi'],
             'dosen' => $_POST['nama_dosen'],
-            'status' => $_POST['status_mahasiswa'],
-            'email_mahasiswa' => $_POST['email'],
-            'id' => $id
+            'email' => $_POST['email'],
+            'id'    => $id_pendaftaran
         ]);
 
-        $_SESSION['message'] = "Data berhasil diperbarui.";
+        // 2. Update Status Keaktifan di Tabel Mahasiswa
+        $stmt2 = $pdo->prepare("UPDATE mahasiswa 
+            SET keaktifan_mahasiswa = :keaktifan 
+            WHERE id_mahasiswa = :id_mhs");
+
+        $stmt2->execute([
+            'keaktifan' => $_POST['keaktifan_mahasiswa'],
+            'id_mhs'    => $id_mahasiswa
+        ]);
+
+        $pdo->commit();
+        $_SESSION['message'] = "Data dan status keaktifan berhasil diperbarui.";
         $_SESSION['msg_type'] = "success";
 
     } catch (PDOException $e) {
+        $pdo->rollBack();
         $_SESSION['message'] = "Gagal update: " . $e->getMessage();
         $_SESSION['msg_type'] = "danger";
     }
@@ -76,11 +90,29 @@ if ($action === 'edit' && isset($_POST['id'])) {
 }
 
 /* ============================
-   READ ALL DATA
+   READ DATA (HANYA YANG DITERIMA)
 ============================ */
+// Ambil Keyword Pencarian
+$keyword = isset($_GET['q']) ? $_GET['q'] : '';
+$search_param = "%" . $keyword . "%";
+
 try {
-    $stmt = $pdo->query("SELECT * FROM pendaftaran ORDER BY id_pendaftaran DESC");
+    // Query Join: Pendaftaran + Mahasiswa
+    // Filter: status_mahasiswa = 'Diterima'
+    $query = "SELECT 
+                p.*, 
+                m.id_mahasiswa, 
+                m.keaktifan_mahasiswa 
+              FROM pendaftaran p
+              JOIN mahasiswa m ON p.id_users = m.id_users
+              WHERE p.status_mahasiswa = 'Diterima'
+              AND (p.nama_mahasiswa ILIKE :kwd OR p.nim ILIKE :kwd)
+              ORDER BY p.nama_mahasiswa ASC";
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute(['kwd' => $search_param]);
     $mahasiswa = $stmt->fetchAll();
+
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
@@ -91,7 +123,7 @@ try {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Data Mahasiswa</title>
+    <title>Data Mahasiswa - Lab IVSS</title>
 
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -102,21 +134,16 @@ try {
 <div id="wrapper">
 
 <?php
+// Sidebar Counters
 $role = $_SESSION['role'] ?? null;
+$pendingCount = 0; $waitingApproval = 0;
 try {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Pending'");
-    $stmt->execute();
-    $pendingCount = (int) $stmt->fetchColumn();
-} catch (Exception $e) {
-    $pendingCount = 0;
-}
-try {
+    $stmt->execute(); $pendingCount = (int) $stmt->fetchColumn();
+    
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM pendaftaran WHERE status_mahasiswa = 'Menunggu'");
-    $stmt->execute();
-    $waitingApproval = (int) $stmt->fetchColumn();
-} catch (Exception $e) {
-    $waitingApproval = 0;
-}
+    $stmt->execute(); $waitingApproval = (int) $stmt->fetchColumn();
+} catch (Exception $e) {}
 
 include __DIR__ . '/sidebar.php';
 ?>
@@ -130,7 +157,6 @@ include __DIR__ . '/sidebar.php';
                 <span class="mr-2 text-gray-600 small">Halo, <b><?= htmlspecialchars($username) ?></b></span>
                 <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
             </a>
-
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Logout
@@ -142,30 +168,34 @@ include __DIR__ . '/sidebar.php';
 
 <div class="container-fluid">
     <h1 class="h3 mb-2 text-gray-800">Data Mahasiswa</h1>
-    <p class="mb-4">Pengelolaan data mahasiswa yang telah terdaftar.</p>
+    <p class="mb-4">Daftar mahasiswa yang telah diterima menjadi anggota Lab IVSS.</p>
 
     <?php if (isset($_SESSION['message'])): ?>
-        <div class="alert alert-<?= $_SESSION['msg_type'] ?>">
+        <div class="alert alert-<?= $_SESSION['msg_type'] ?> alert-dismissible fade show">
             <?= $_SESSION['message'] ?>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
         <?php unset($_SESSION['message'], $_SESSION['msg_type']); ?>
     <?php endif; ?>
 
     <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Anggota Lab</h6>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
 
                 <table class="table table-bordered" id="dataTable">
                     <thead>
                         <tr>
-                            <th>No</th>
+                            <th width="5%">No</th>
                             <th>Nama</th>
                             <th>NIM</th>
-                            <th>Email</th>
                             <th>Prodi</th>
+                            <th>Email</th>
                             <th>Dosen Pembimbing</th>
-                            <th>Status</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="text-center">Keaktifan</th>
+                            <th class="text-center" width="15%">Aksi</th>
                         </tr>
                     </thead>
 
@@ -176,117 +206,96 @@ include __DIR__ . '/sidebar.php';
                             <td><?= $no++ ?></td>
                             <td><?= htmlspecialchars($m['nama_mahasiswa']) ?></td>
                             <td><?= htmlspecialchars($m['nim']) ?></td>
-                            <td><?= htmlspecialchars($m['email_mahasiswa'] ?? '') ?></td>
                             <td><?= htmlspecialchars($m['prodi']) ?></td>
+                            <td><?= htmlspecialchars($m['email_mahasiswa'] ?? '-') ?></td>
                             <td><?= htmlspecialchars($m['nama_dosen']) ?></td>
-                            <td>
+                            
+                            <td class="text-center">
                                 <?php 
-                                    $status = $m['status_mahasiswa'];
-                                    $badgeClass = [
-                                        'Pending'   => 'badge-warning',
-                                        'Menunggu'  => 'badge-info',
-                                        'Diterima'  => 'badge-success',
-                                        'Ditolak'   => 'badge-danger'
-                                    ];
+                                    $statusAktif = $m['keaktifan_mahasiswa'] ?? 'Aktif';
+                                    $badgeColor = ($statusAktif == 'Aktif') ? 'badge-success' : 'badge-secondary';
                                 ?>
-                                <span class="badge <?= $badgeClass[$status] ?? 'badge-secondary' ?>">
-                                    <?= htmlspecialchars($status) ?>
+                                <span class="badge <?= $badgeColor ?>" style="font-size: 0.9em;">
+                                    <?= htmlspecialchars($statusAktif) ?>
                                 </span>
                             </td>
 
                             <td class="text-center">
-
-                                <!-- Tombol Edit -->
-                                <button class="btn btn-warning btn-sm" style="margin: 1.5px;"
+                                <button class="btn btn-warning btn-sm" style="margin: 2px;"
                                     data-toggle="modal"
                                     data-target="#editModal<?= $m['id_pendaftaran'] ?>">
                                     <i class="fas fa-edit"></i>
                                 </button>
 
-                                <!-- Tombol Delete -->
                                 <a href="?action=delete&id=<?= $m['id_pendaftaran'] ?>"
                                    class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                   onclick="return confirm('Yakin ingin menghapus data mahasiswa ini?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
-
                             </td>
                         </tr>
 
-                        <!-- ============================
-                             MODAL EDIT
-                        ============================= -->
                         <div class="modal fade" id="editModal<?= $m['id_pendaftaran'] ?>" tabindex="-1">
                             <div class="modal-dialog">
                                 <form action="?action=edit" method="POST">
-                                    <input type="hidden" name="id" value="<?= $m['id_pendaftaran'] ?>">
+                                    <input type="hidden" name="id_pendaftaran" value="<?= $m['id_pendaftaran'] ?>">
+                                    <input type="hidden" name="id_mahasiswa" value="<?= $m['id_mahasiswa'] ?>">
 
                                     <div class="modal-content">
                                         <div class="modal-header bg-primary text-white">
-                                            <h5 class="modal-title">Edit Data Mahasiswa</h5>
+                                            <h5 class="modal-title">Edit Data & Status Mahasiswa</h5>
                                             <button type="button" class="close text-white" data-dismiss="modal">
-                                            <span>&times;</span>
+                                                <span>&times;</span>
                                             </button>
                                         </div>
 
                                         <div class="modal-body">
                                             <div class="form-group">
-                                                <label>Nama</label>
-                                                <input type="text" name="nama_mahasiswa" class="form-control"
-                                                    value="<?= $m['nama_mahasiswa'] ?>" required>
+                                                <label class="font-weight-bold text-primary">Status Keaktifan</label>
+                                                <select name="keaktifan_mahasiswa" class="form-control">
+                                                    <option value="Aktif" <?= ($m['keaktifan_mahasiswa'] ?? 'Aktif') == 'Aktif' ? 'selected' : '' ?>>Aktif</option>
+                                                    <option value="Alumni" <?= ($m['keaktifan_mahasiswa'] ?? '') == 'Alumni' ? 'selected' : '' ?>>Alumni</option>
+                                                </select>
+                                                <small class="text-muted">Ubah ke 'Alumni' jika sudah lulus.</small>
                                             </div>
-
+                                            <hr>
                                             <div class="form-group">
-                                                <label>Email</label>
-                                                <input type="email" name="email" class="form-control"
-                                                    value="<?= htmlspecialchars($m['email_mahasiswa'] ?? '') ?>" required>
+                                                <label>Nama</label>
+                                                <input type="text" name="nama_mahasiswa" class="form-control" value="<?= $m['nama_mahasiswa'] ?>" required>
                                             </div>
-
                                             <div class="form-group">
                                                 <label>NIM</label>
-                                                <input type="text" name="nim" class="form-control"
-                                                    value="<?= $m['nim'] ?>" required>
+                                                <input type="text" name="nim" class="form-control" value="<?= $m['nim'] ?>" required>
                                             </div>
-
+                                            <div class="form-group">
+                                                <label>Email</label>
+                                                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($m['email_mahasiswa'] ?? '') ?>" required>
+                                            </div>
                                             <div class="form-group">
                                                 <label>Prodi</label>
-                                                <input type="text" name="prodi" class="form-control"
-                                                    value="<?= $m['prodi'] ?>" required>
+                                                <input type="text" name="prodi" class="form-control" value="<?= $m['prodi'] ?>" required>
                                             </div>
-
                                             <div class="form-group">
                                                 <label>Dosen Pembimbing</label>
-                                                <input type="text" name="nama_dosen" class="form-control"
-                                                    value="<?= $m['nama_dosen'] ?>" required>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label>Status</label>
-                                                <select name="status_mahasiswa" class="form-control">
-                                                    <option <?= $m['status_mahasiswa'] == "Pending" ? "selected" : "" ?>>Pending</option>
-                                                    <option <?= $m['status_mahasiswa'] == "Diterima" ? "selected" : "" ?>>Diterima</option>
-                                                    <option <?= $m['status_mahasiswa'] == "Ditolak" ? "selected" : "" ?>>Ditolak</option>
-                                                </select>
+                                                <input type="text" name="nama_dosen" class="form-control" value="<?= $m['nama_dosen'] ?>" required>
                                             </div>
                                         </div>
 
                                         <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                         </div>
                                     </div>
-
                                 </form>
                             </div>
                         </div>
-
                         <?php endforeach; ?>
                     </tbody>
-
                 </table>
             </div>
         </div>
     </div>
+
 </div>
 </div>
 
@@ -301,27 +310,12 @@ include __DIR__ . '/sidebar.php';
 </div>
 </div>
 
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<script src="vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    $('#dataTable').DataTable();
-});
-</script>
-
-<!-- Logout confirmation modal (sama seperti file dashboard.php) -->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Yakin ingin keluar?</h5>
-        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
+        <button class="close" type="button" data-dismiss="modal"><span>×</span></button>
       </div>
       <div class="modal-body">Klik "Logout" di bawah jika Anda ingin mengakhiri sesi ini.</div>
       <div class="modal-footer">
@@ -331,6 +325,16 @@ $(document).ready(function() {
     </div>
   </div>
 </div>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#dataTable').DataTable();
+});
+</script>
 
 </body>
 </html>

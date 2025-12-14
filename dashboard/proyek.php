@@ -34,7 +34,7 @@ $listMahasiswa = $pdo->query("SELECT m.id_mahasiswa, u.nama_users, m.status_maha
 try {
     $stmt = $pdo->query("
         SELECT p.id_proyek, p.judul_proyek, p.tahun_proyek, p.tipe_proyek, p.deskripsi_proyek, 
-            p.foto_proyek, p.file_proyek, -- TAMBAHAN: Ambil kolom foto & file
+            p.foto_proyek, p.file_proyek,
             STRING_AGG(DISTINCT d.nama_dosen, ', ') as list_nama_dosen,
             STRING_AGG(DISTINCT CAST(d.id_dosen AS TEXT), ',') as list_id_dosen,
             STRING_AGG(DISTINCT u.nama_users, ', ') as list_nama_asisten,
@@ -55,11 +55,11 @@ try {
     $proyekDosen = $stmt->fetchAll();
 } catch (PDOException $e) { die("Error Dosen: " . $e->getMessage()); }
 
-// 3. QUERY PROYEK MAHASISWA
+// 3. QUERY PROYEK MAHASISWA (FIX: Tambahkan WHERE p.id_mahasiswa IS NOT NULL)
 try {
     $stmt = $pdo->query("
         SELECT p.id_proyek, p.judul_proyek, p.tahun_proyek, p.tipe_proyek, p.deskripsi_proyek, p.id_dosen AS id_pembimbing,
-            p.foto_proyek, p.file_proyek, -- TAMBAHAN: Ambil kolom foto & file
+            p.foto_proyek, p.file_proyek,
             d_pembimbing.nama_dosen AS nama_pembimbing,
             STRING_AGG(u.nama_users, ', ') as list_nama_mahasiswa,
             STRING_AGG(CAST(m.id_mahasiswa AS TEXT), ',') as list_id_mahasiswa,
@@ -73,6 +73,7 @@ try {
         LEFT JOIN mahasiswa m ON dpm.id_mahasiswa = m.id_mahasiswa
         LEFT JOIN users u ON m.id_users = u.id_users
         LEFT JOIN dosen d_pembimbing ON p.id_dosen = d_pembimbing.id_dosen
+        WHERE p.id_mahasiswa IS NOT NULL -- FILTER PENTING: Hanya ambil proyek milik mahasiswa
         GROUP BY p.id_proyek, d_pembimbing.nama_dosen ORDER BY p.id_proyek DESC
     ");
     $proyekMahasiswa = $stmt->fetchAll();
@@ -93,36 +94,23 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" rel="stylesheet">
 
 <style>
-    /* === 1. CSS TABEL === */
     td.truncate { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     td.date-col { white-space: nowrap; font-size: 0.85rem; padding: 4px 6px !important; }
     .table th { vertical-align: middle; text-align: center; }
     #tableDosen tbody td, #tableMahasiswa tbody td { vertical-align: middle !important; padding: 6px 8px !important; }
 
-    /* === 2. SELECT2 UI FIX === */
+    /* SELECT2 STYLING */
     .select2-container--bootstrap4 .select2-selection--multiple {
-        min-height: 42px !important; 
-        height: auto !important; 
-        border: 1px solid #d1d3e2;
-        padding: 4px 8px;
-        display: flex; flex-wrap: wrap; align-items: center;
+        min-height: 42px !important; height: auto !important; border: 1px solid #d1d3e2; padding: 4px 8px; display: flex; flex-wrap: wrap; align-items: center;
     }
     .select2-container--bootstrap4 .select2-selection--single {
-        height: 42px !important;
-        padding: 6px 12px;
-        border: 1px solid #d1d3e2;
-        display: flex; align-items: center;
+        height: 42px !important; padding: 6px 12px; border: 1px solid #d1d3e2; display: flex; align-items: center;
     }
     .select2-container--bootstrap4 .select2-selection__choice {
-        background-color: #4e73df !important; 
-        border: none !important; border-radius: 20px !important; 
-        color: #fff !important; padding: 4px 12px !important; 
-        margin: 3px 5px 3px 0 !important; font-size: 0.85rem; font-weight: 600;
-        display: inline-flex !important; flex-direction: row-reverse; align-items: center;
+        background-color: #4e73df !important; border: none !important; border-radius: 20px !important; color: #fff !important; padding: 4px 12px !important; margin: 3px 5px 3px 0 !important; font-size: 0.85rem; font-weight: 600; display: inline-flex !important; flex-direction: row-reverse; align-items: center;
     }
     .select2-container--bootstrap4 .select2-selection__choice__remove {
-        border: none !important; background: transparent !important; color: #fff !important;
-        margin-left: 8px !important; margin-right: 0 !important; font-weight: bold; font-size: 14px; padding: 0 !important; opacity: 0.7;
+        border: none !important; background: transparent !important; color: #fff !important; margin-left: 8px !important; margin-right: 0 !important; font-weight: bold; font-size: 14px; padding: 0 !important; opacity: 0.7;
     }
     .select2-container--bootstrap4 .select2-selection__choice__remove:hover { opacity: 1; color: #ffcccc !important; }
     .select2-search__field { margin-top: 5px !important; font-size: 0.9rem; }
@@ -369,7 +357,7 @@ try {
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="text-success">Asisten Mahasiswa</label>
+                                    <label class="text-info">Asisten Mahasiswa</label>
                                     <select name="mahasiswa_asisten[]" class="form-control select2-multiple" multiple required data-placeholder="-- Pilih Mahasiswa --">
                                         <?php foreach($listMahasiswa as $lm): ?>
                                             <option value="<?= $lm['id_mahasiswa'] ?>"><?= htmlspecialchars($lm['nama_users']) ?></option>
@@ -398,16 +386,7 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label>Tipe Proyek</label>
-                                <select name="tipe" class="form-control" required>
-                                    <option value="">-- Pilih Tipe Proyek --</option>
-                                    <option value="Penelitian">Penelitian</option>
-                                    <option value="Riset">Riset</option>
-                                    <option value="Publikasi">Publikasi</option>
-                                    <option value="Pengabdian">Pengabdian</option>
-                                </select>
-                            </div>
+                            <div class="col-md-4"><label>Tipe Proyek</label><input type="text" name="tipe" class="form-control" placeholder="Ex: Penelitian" required></div>
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" placeholder="Ex: AI/IoT" required></div>
                         </div>
 
@@ -436,7 +415,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="create_dosen" class="btn btn-success">Simpan Data</button>
+                        <button type="submit" name="create_dosen" class="btn btn-primary">Simpan Data</button>
                     </div>
                 </div>
             </form>
@@ -466,7 +445,7 @@ try {
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-success">Asisten Mahasiswa</label>
+                                <label class="text-info">Asisten Mahasiswa</label>
                                 <select name="edit_mahasiswa_asisten[]" class="form-control select2-multiple" multiple required data-placeholder="-- Pilih Mahasiswa --">
                                     <?php $asisten_ids = !empty($d['list_id_asisten']) ? explode(',', $d['list_id_asisten']) : []; ?>
                                     <?php foreach($listMahasiswa as $lm): ?>
@@ -494,17 +473,7 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label>Tipe Proyek</label>
-                                <select name="tipe" class="form-control" required>
-                                    <option value="">-- Pilih Tipe Proyek --</option>
-                                    <option value="Penelitian" <?= ($d['tipe_proyek'] == 'Penelitian') ? 'selected' : '' ?>>Penelitian</option>
-                                    <option value="Riset" <?= ($d['tipe_proyek'] == 'Riset') ? 'selected' : '' ?>>Riset</option>
-                                    <option value="Publikasi" <?= ($d['tipe_proyek'] == 'Publikasi') ? 'selected' : '' ?>>Publikasi</option>
-                                    <option value="Pengabdian" <?= ($d['tipe_proyek'] == 'Pengabdian') ? 'selected' : '' ?>>Pengabdian</option>
-                                </select>
-                            </div>
-
+                            <div class="col-md-4"><label>Tipe</label><input type="text" name="edit_tipe" value="<?= $d['tipe_proyek'] ?>" class="form-control" required></div>
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="edit_kategori" value="<?= htmlspecialchars($d['kategori']) ?>" class="form-control" required></div>
                         </div>
                         <div class="row mb-3">
@@ -535,7 +504,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_dosen" class="btn btn-success">Update Data</button>
+                        <button type="submit" name="update_dosen" class="btn btn-warning">Update Data</button>
                     </div>
                 </div>
             </form>
@@ -547,7 +516,7 @@ try {
         <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
-                    <div class="modal-header" style="background: linear-gradient(45deg, #4e73df, #224abe); color: white;">
+                    <div class="modal-header" style="background: linear-gradient(45deg, #1cc88a, #13855c);">
                         <h5 class="modal-title"><i class="fas fa-plus-circle"></i> Tambah Proyek Mahasiswa</h5>
                         <button class="close" data-dismiss="modal">×</button>
                     </div>
@@ -565,7 +534,7 @@ try {
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="text-primary">Dosen Pembimbing</label>
+                                    <label class="text-success">Dosen Pembimbing</label>
                                     <select name="dosen_pembimbing" class="form-control select2-multiple" multiple required data-placeholder="-- Pilih Dosen --">
                                         <?php foreach($listDosen as $ld): ?>
                                             <option value="<?= $ld['id_dosen'] ?>"><?= htmlspecialchars($ld['nama_dosen']) ?></option>
@@ -575,7 +544,7 @@ try {
                             </div>
                         </div>
                         
-                        <div class="form-group mb-3"><label>Judul Proyek</label><input type="text" name="judul" class="form-control"  placeholder="Masukkan judul lengkap..." required></div>
+                        <div class="form-group mb-3"><label>Judul Proyek</label><input type="text" name="judul" class="form-control" required></div>
                         <div class="form-group mb-3"><label>Deskripsi</label><textarea name="deskripsi" class="form-control" rows="3" required></textarea></div>
                         
                         <div class="row mb-3">
@@ -587,18 +556,8 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label>Tipe Proyek</label>
-                                <select name="tipe" class="form-control" required>
-                                    <option value="">-- Pilih Tipe Proyek --</option>
-                                    <option value="Penelitian">Penelitian</option>
-                                    <option value="Riset">Riset</option>
-                                    <option value="Publikasi">Publikasi</option>
-                                    <option value="Pengabdian">Pengabdian</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" placeholder="Ex: AI/IoT" required></div>
+                            <div class="col-md-4"><label>Tipe</label><input type="text" name="tipe" class="form-control" required></div>
+                            <div class="col-md-4"><label>Kategori</label><input type="text" name="kategori" class="form-control" required></div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6"><label>Mulai</label><input type="date" name="tgl_mulai" class="form-control" required></div>
@@ -624,7 +583,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="create_mahasiswa" class="btn btn-primary">Simpan Data</button>
+                        <button type="submit" name="create_mahasiswa" class="btn btn-success">Simpan Data</button>
                     </div>
                 </div>
             </form>
@@ -636,7 +595,7 @@ try {
         <div class="modal-dialog modal-lg">
             <form action="process_proyek.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-content">
-                    <div class="modal-header bg-warning" style="background: linear-gradient(45deg, #4e73df, #224abe); color: white;">
+                    <div class="modal-header bg-warning">
                         <h5 class="modal-title text-white"><i class="fas fa-edit"></i> Edit Proyek Mahasiswa</h5>
                         <button class="close" data-dismiss="modal">×</button>
                     </div>
@@ -653,7 +612,7 @@ try {
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-primary">Dosen Pembimbing</label>
+                                <label class="text-success">Dosen Pembimbing</label>
                                 <select name="edit_dosen_pembimbing" class="form-control select2-single">
                                     <option value="">-- Pilih Pembimbing --</option>
                                     <?php foreach($listDosen as $ld): ?>
@@ -675,16 +634,7 @@ try {
                                     <?php endfor; ?>
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <label>Tipe Proyek</label>
-                                <select name="tipe" class="form-control" required>
-                                    <option value="">-- Pilih Tipe Proyek --</option>
-                                    <option value="Penelitian" <?= ($d['tipe_proyek'] == 'Penelitian') ? 'selected' : '' ?>>Penelitian</option>
-                                    <option value="Riset" <?= ($d['tipe_proyek'] == 'Riset') ? 'selected' : '' ?>>Riset</option>
-                                    <option value="Publikasi" <?= ($d['tipe_proyek'] == 'Publikasi') ? 'selected' : '' ?>>Publikasi</option>
-                                    <option value="Pengabdian" <?= ($d['tipe_proyek'] == 'Pengabdian') ? 'selected' : '' ?>>Pengabdian</option>
-                                </select>
-                            </div>
+                            <div class="col-md-4"><label>Tipe</label><input type="text" name="edit_tipe_mhs" value="<?= $p['tipe_proyek'] ?>" class="form-control"></div>
                             <div class="col-md-4"><label>Kategori</label><input type="text" name="edit_kategori_mhs" value="<?= htmlspecialchars($p['kategori']) ?>" class="form-control"></div>
                         </div>
                         <div class="row mb-3">
@@ -715,7 +665,7 @@ try {
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="submit" name="update_mahasiswa" class="btn btn-primary">Update Data</button>
+                        <button type="submit" name="update_mahasiswa" class="btn btn-warning">Update Data</button>
                     </div>
                 </div>
             </form>
@@ -734,10 +684,10 @@ try {
         $(document).ready(function() { 
             // 1. Inisialisasi DataTable
             if (!$.fn.DataTable.isDataTable('#tableDosen')) { 
-                $('#tableDosen').DataTable({ "order": [[ 0, "asc" ]]}); 
+                $('#tableDosen').DataTable({ "order": [[ 0, "desc" ]]}); 
             }
             if (!$.fn.DataTable.isDataTable('#tableMahasiswa')) { 
-                $('#tableMahasiswa').DataTable({ "order": [[ 0, "asc" ]] }); 
+                $('#tableMahasiswa').DataTable({ "order": [[ 0, "desc" ]] }); 
             }
 
             // 2. Setup Select2 Global

@@ -33,23 +33,48 @@ try {
     $waitingApproval = 0;
 }
 
+// ============================
+// LOGIKA HAPUS (PERBAIKAN: Hapus Dosen + User)
+// ============================
 if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
     $id = $_GET['id'];
 
-    $stmt = $pdo->prepare("SELECT foto_dosen FROM dosen WHERE id_dosen = :id");
-    $stmt->execute(['id' => $id]);
-    $fotoLama = $stmt->fetchColumn();
+    try {
+        $pdo->beginTransaction();
 
-    if ($fotoLama && file_exists($uploadDir . $fotoLama)) {
-        @unlink($uploadDir . $fotoLama);
+        // 1. Ambil Foto & ID User sebelum dihapus
+        $stmt = $pdo->prepare("SELECT foto_dosen, id_users FROM dosen WHERE id_dosen = :id");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch();
+
+        // Hapus Foto Fisik
+        if ($data && !empty($data['foto_dosen']) && file_exists($uploadDir . $data['foto_dosen'])) {
+            @unlink($uploadDir . $data['foto_dosen']);
+        }
+
+        // 2. PUTUS HUBUNGAN DULU (Agar tidak kena Foreign Key Constraint)
+        // Set id_dosen di tabel users menjadi NULL
+        $pdo->prepare("UPDATE users SET id_dosen = NULL WHERE id_dosen = :id")->execute(['id' => $id]);
+        
+        // 3. Hapus Data Dosen
+        $pdo->prepare("DELETE FROM dosen WHERE id_dosen = :id")->execute(['id' => $id]);
+
+        // 4. Hapus Akun User Terkait (Opsional, tapi disarankan agar bersih)
+        if (!empty($data['id_users'])) {
+            $pdo->prepare("DELETE FROM users WHERE id_users = :uid")->execute(['uid' => $data['id_users']]);
+        }
+
+        // 5. Refresh View
+        $pdo->query("REFRESH MATERIALIZED VIEW mv_dosen");
+
+        $pdo->commit();
+        $_SESSION['flash'] = "Dosen dan Akun User berhasil dihapus!";
+        
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        $_SESSION['flash'] = "Gagal menghapus: " . $e->getMessage();
     }
 
-    $stmt = $pdo->prepare("DELETE FROM dosen WHERE id_dosen = :id");
-    $stmt->execute(['id' => $id]);
-
-    $pdo->query("REFRESH MATERIALIZED VIEW mv_dosen");
-
-    $_SESSION['flash'] = "Data dosen berhasil dihapus!";
     header("Location: dosen.php");
     exit;
 }

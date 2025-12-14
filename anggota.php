@@ -17,26 +17,34 @@ $keyword = isset($_GET['q']) ? $_GET['q'] : '';
 $search_param = "%" . $keyword . "%";
 
 // --- Konfigurasi Paginasi ---
-$limit = 10; // Batas data per halaman
+$limit = 10; 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
 try {
-    // A. Hitung Total Data (untuk menentukan jumlah halaman)
-    $sql_count = "SELECT COUNT(*) FROM public.pendaftaran 
-                  WHERE status_mahasiswa = 'Diterima' 
-                  AND (nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword)";
+    // A. Hitung Total Data (Join Pendaftaran + Mahasiswa)
+    // Hanya ambil yang sudah DITERIMA
+    $sql_count = "SELECT COUNT(*) 
+                  FROM public.pendaftaran p
+                  JOIN public.mahasiswa m ON p.id_users = m.id_users
+                  WHERE p.status_mahasiswa = 'Diterima' 
+                  AND (p.nama_mahasiswa ILIKE :keyword OR p.nim ILIKE :keyword)";
+                  
     $stmt_count = $pdo->prepare($sql_count);
     $stmt_count->execute(['keyword' => $search_param]);
     $total_data = $stmt_count->fetchColumn();
     $total_pages = ceil($total_data / $limit);
 
-    // B. Ambil Data Mahasiswa (dengan LIMIT dan OFFSET)
-    $sql_mhs = "SELECT * FROM public.pendaftaran 
-                WHERE status_mahasiswa = 'Diterima' 
-                AND (nama_mahasiswa ILIKE :keyword OR nim ILIKE :keyword)
-                ORDER BY nama_mahasiswa ASC 
+    // B. Ambil Data Mahasiswa + Status Keaktifan
+    $sql_mhs = "SELECT p.*, m.keaktifan_mahasiswa 
+                FROM public.pendaftaran p
+                JOIN public.mahasiswa m ON p.id_users = m.id_users
+                WHERE p.status_mahasiswa = 'Diterima' 
+                AND (p.nama_mahasiswa ILIKE :keyword OR p.nim ILIKE :keyword)
+                ORDER BY 
+                    CASE WHEN m.keaktifan_mahasiswa = 'Aktif' THEN 1 ELSE 2 END ASC, -- Aktif duluan
+                    p.nama_mahasiswa ASC 
                 LIMIT :limit OFFSET :offset";
     
     $stmt_mhs = $pdo->prepare($sql_mhs);
@@ -96,11 +104,9 @@ try {
         background-color: transparent;
         width: 200px;
         height: 200px;
-        perspective: 1000px; /* Memberikan efek 3D */
+        perspective: 1000px;
         margin: 10px;
     }
-
-    /* Container dalam yang berputar */
     .flip-inner {
         position: relative;
         width: 100%;
@@ -110,20 +116,16 @@ try {
         transform-style: preserve-3d;
         cursor: pointer;
     }
-
-    /* Efek Hover untuk memutar */
     .flip-container:hover .flip-inner {
         transform: rotateY(180deg);
     }
-
-    /* Sisi Depan dan Belakang */
     .flip-front, .flip-back {
         position: absolute;
         width: 100%;
         height: 100%;
-        -webkit-backface-visibility: hidden; /* Safari */
+        -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
-        border-radius: 50%; /* Membuat lingkaran */
+        border-radius: 50%;
         border: 4px solid #f8f9fa;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         display: flex;
@@ -131,37 +133,17 @@ try {
         justify-content: center;
         overflow: hidden;
     }
-
-    /* Sisi Depan (Foto) */
-    .flip-front {
-        background-color: #fff;
-    }
-    .flip-front img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Sisi Belakang (Nama) */
+    .flip-front { background-color: #fff; }
+    .flip-front img { width: 100%; height: 100%; object-fit: cover; }
     .flip-back {
-        background-color: #0047AB; /* Warna Biru */
+        background-color: #0047AB;
         color: white;
         transform: rotateY(180deg);
         padding: 15px;
         flex-direction: column;
     }
-    
-    .flip-back h5 {
-        font-size: 1rem;
-        margin: 0;
-        font-weight: bold;
-    }
-    
-    .flip-back small {
-        margin-top: 5px;
-        font-size: 0.8rem;
-        opacity: 0.8;
-    }
+    .flip-back h5 { font-size: 1rem; margin: 0; font-weight: bold; }
+    .flip-back small { margin-top: 5px; font-size: 0.8rem; opacity: 0.8; }
 
     .team-member-container {
         display: flex;
@@ -170,7 +152,6 @@ try {
         gap: 20px;
         margin-bottom: 40px; 
     }
-    /* === AKHIR ANIMASI FLIP === */
 
     .category-header {
         background-color: #F9D723;
@@ -183,7 +164,6 @@ try {
     }
     
     .search-filter-row { margin-bottom: 15px; }
-    
     .table-responsive { margin-bottom: 20px; }
 
     .table-custom-layout {
@@ -191,7 +171,6 @@ try {
         margin-bottom: 0;
         border-collapse: collapse;
     }
- 
     .table-custom-layout thead th {
         background-color: var(--color-table-header-border);
         color: #fff;
@@ -201,19 +180,17 @@ try {
         padding: 0.5rem;
         text-align: center;
     }
-
     .table-custom-layout th, .table-custom-layout td {
         border: 1px solid var(--color-table-header-border);
         height: 38px;
         padding: 0.5rem;
         text-align: center;
         font-weight: normal;
+        vertical-align: middle;
     }
     .table-custom-layout tbody tr:nth-child(odd) td { background-color: #F5F9FF; }
     .table-custom-layout tbody tr:nth-child(even) td { background-color: #fff; }
 
-    .table-custom-layout th, .table-custom-layout td { width: 20%; }
-    
     .input-search-custom {
         border-right: 1px solid #ced4da !important; 
         border-color: #ced4da;
@@ -221,7 +198,6 @@ try {
         padding-left: 3rem !important; 
         height: 38px; 
     }
-
     .input-group-custom { position: relative; }
     .input-group-custom .fa-search {
         position: absolute;
@@ -231,7 +207,6 @@ try {
         z-index: 10;
         color: #6c757d;
     }
-
     .btn-filter-custom {
         background-color: #fff;
         color: #000;
@@ -241,7 +216,23 @@ try {
         border-radius: .25rem;
     }
 
-    /* Style Paginasi */
+    /* Badge Status */
+    .badge-status {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .badge-aktif {
+        background-color: #1cc88a; /* Hijau */
+        color: white;
+    }
+    .badge-alumni {
+        background-color: #858796; /* Abu-abu */
+        color: white;
+    }
+
+    /* Paginasi */
     .pagination-container {
         display: flex;
         justify-content: center;
@@ -249,7 +240,6 @@ try {
         gap: 15px;
         margin-top: 20px;
     }
-    
     .btn-page {
         background-color: #fff;
         color: #0047AB;
@@ -260,22 +250,9 @@ try {
         transition: all 0.3s;
         font-weight: bold;
     }
-    
-    .btn-page:hover {
-        background-color: #F9D723;
-        color: #0047AB;
-    }
-    
-    .btn-page.disabled {
-        border-color: #ccc;
-        color: #ccc;
-        pointer-events: none;
-    }
-    
-    .page-info {
-        font-weight: 500;
-        color: #555;
-    }
+    .btn-page:hover { background-color: #F9D723; color: #0047AB; }
+    .btn-page.disabled { border-color: #ccc; color: #ccc; pointer-events: none; }
+    .page-info { font-weight: 500; color: #555; }
 </style>
 
 </head>
@@ -288,7 +265,7 @@ try {
 <div class="container">
 
     <div class="category-header">
-        Anggota Tim
+        Dosen Laboratorium
     </div>
     
     <div class="team-member-container">
@@ -300,7 +277,6 @@ try {
                     $src      = $exists ? 'uploads/' . htmlspecialchars($fileName)
                                       : 'Asset/default_profile.jpg';
                 ?>
-                
                 <div class="flip-container">
                     <a href="Profil_dosen.php?id=<?= $member['id_dosen']; ?>" class="text-decoration-none">
                         <div class="flip-inner">
@@ -314,7 +290,7 @@ try {
                         </div>
                     </a>
                 </div>
-                <?php endforeach; ?>
+            <?php endforeach; ?>
         <?php else: ?>
             <div class="col-12 text-center">Data anggota tim belum tersedia.</div>
         <?php endif; ?>
@@ -345,12 +321,12 @@ try {
         <table class="table table-custom-layout">
             <thead>
                 <tr>
-                    <th>NIM</th>
-                    <th>Nama Mahasiswa</th>
-                    <th>Jurusan</th>
-                    <th>Prodi</th>
-                    <th>Email</th>
-                </tr>
+                    <th style="width: 15%;">NIM</th>
+                    <th style="width: 25%;">Nama Mahasiswa</th>
+                    <th style="width: 20%;">Jurusan</th>
+                    <th style="width: 15%;">Prodi</th>
+                    <th style="width: 15%;">Email</th>
+                    <th style="width: 10%;">Status</th> </tr>
             </thead>
             <tbody>
                 <?php if (count($mahasiswa_list) > 0): ?>
@@ -361,11 +337,20 @@ try {
                         <td>Teknologi Informasi</td> 
                         <td><?= htmlspecialchars($mhs['prodi']); ?></td>
                         <td><?= htmlspecialchars($mhs['email_mahasiswa']); ?></td>
+                        <td>
+                            <?php 
+                                $status = $mhs['keaktifan_mahasiswa'] ?? 'Aktif'; 
+                                $badgeClass = ($status == 'Alumni') ? 'badge-alumni' : 'badge-aktif';
+                            ?>
+                            <span class="badge-status <?= $badgeClass ?>">
+                                <?= htmlspecialchars($status) ?>
+                            </span>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="text-center">Tidak ada data mahasiswa ditemukan.</td>
+                        <td colspan="6" class="text-center">Tidak ada data mahasiswa ditemukan.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -389,7 +374,8 @@ try {
         </a>
     </div>
     <?php endif; ?>
-    </div>
+
+</div>
 
 <?php include 'footer.php'; ?>
 

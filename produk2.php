@@ -5,84 +5,112 @@ include 'dashboard/db.php';
 $id_proyek = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 try {
-    // A. CEK KEPEMILIKAN PROYEK (Dosen atau Mahasiswa)
-    $stmtCheck = $pdo->prepare("SELECT id_dosen, id_mahasiswa FROM proyek WHERE id_proyek = :id");
-    $stmtCheck->execute(['id' => $id_proyek]);
-    $check = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+    // ==========================================
+    // LANGKAH 1: CEK DATA DASAR (TABEL INDUK)
+    // ==========================================
+    // Kita ambil dulu data dasar untuk memastikan ID-nya valid
+    $stmtBase = $pdo->prepare("SELECT * FROM proyek WHERE id_proyek = :id");
+    $stmtBase->execute(['id' => $id_proyek]);
+    $baseData = $stmtBase->fetch(PDO::FETCH_ASSOC);
 
-    if (!$check) {
-        die("<div class='container py-5 text-center'><h3>Proyek tidak ditemukan.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+    if (!$baseData) {
+        die("<div class='container py-5 text-center'>
+                <div class='alert alert-warning'>
+                    <h3>Data proyek tidak ditemukan.</h3>
+                    <a href='produk.php' class='btn btn-primary mt-3'>Kembali ke Daftar</a>
+                </div>
+             </div>");
     }
 
-    // Variabel Default
-    $label_tim_utama = "Tim Penulis";
-    $label_tim_kedua = ""; // Bisa jadi Asisten atau Pembimbing
-    $data_tim_kedua  = ""; 
+    // ==========================================
+    // LANGKAH 2: DETEKSI JENIS PROYEK
+    // ==========================================
+    // Cek apakah ada data di tabel detail dosen? Jika ada, berarti ini Proyek Dosen.
+    $stmtCek = $pdo->prepare("SELECT COUNT(*) FROM detail_proyek_dosen WHERE id_proyek = :id");
+    $stmtCek->execute(['id' => $id_proyek]);
+    $isDosenProject = $stmtCek->fetchColumn() > 0;
 
-    // B. LOGIKA QUERY BERDASARKAN PEMILIK
+    // Variabel Label Default
+    $label_tim_utama = "Tim Penulis";
+    $label_tim_kedua = ""; 
     
-    // --- KASUS 1: PROYEK DOSEN (Ada Asisten Mahasiswa) ---
-    // Cek apakah id_dosen di tabel PROYEK terisi (sebagai ketua)
-    if (!empty($check['id_dosen'])) {
+    // ==========================================
+    // LANGKAH 3: QUERY DETAIL (SAFE MODE)
+    // ==========================================
+    
+    if ($isDosenProject) {
+        // --- KASUS: PROYEK DOSEN ---
         $label_tim_utama = "Tim Dosen";
         $label_tim_kedua = "Asisten Mahasiswa";
 
         $sql = "SELECT 
                     p.*,
-                    -- Tim Utama (Dosen)
+                    -- Tim Utama: Dosen (Ambil dari detail_dosen)
                     STRING_AGG(DISTINCT d.nama_dosen, ', ') as tim_utama,
-                    -- Tim Kedua (Mahasiswa Asisten)
+                    
+                    -- Tim Kedua: Mahasiswa (Ambil dari detail_mahasiswa yg bertindak sbg asisten)
                     STRING_AGG(DISTINCT u.nama_users, ', ') as tim_kedua,
                     
+                    -- Detail Lainnya (Gunakan MAX agar tidak perlu GROUP BY kolom ini)
                     MAX(dd.tanggal_mulai_proyek_dosen) as tgl_mulai,
                     MAX(dd.tanggal_selesai_proyek_dosen) as tgl_selesai,
                     MAX(dd.kategori_proyek_dosen) as kategori,
                     MAX(dd.lokasi_proyek_dosen) as lokasi
                 FROM proyek p
-                JOIN detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
+                -- Gunakan LEFT JOIN agar data tidak hilang jika detail kosong
+                LEFT JOIN detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
                 LEFT JOIN dosen d ON dd.id_dosen = d.id_dosen
-                -- Join ke Asisten (Detail Mahasiswa)
+                
+                -- Join untuk Asisten
                 LEFT JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
                 LEFT JOIN mahasiswa m ON dm.id_mahasiswa = m.id_mahasiswa
                 LEFT JOIN users u ON m.id_users = u.id_users
+                
                 WHERE p.id_proyek = :id
                 GROUP BY p.id_proyek";
 
     } else {
-        // --- KASUS 2: PROYEK MAHASISWA (Ada Dosen Pembimbing) ---
+        // --- KASUS: PROYEK MAHASISWA ---
         $label_tim_utama = "Tim Mahasiswa";
         $label_tim_kedua = "Dosen Pembimbing";
 
         $sql = "SELECT 
                     p.*,
-                    -- Tim Utama (Mahasiswa)
+                    -- Tim Utama: Mahasiswa (Ambil dari detail_mahasiswa)
                     STRING_AGG(DISTINCT u.nama_users, ', ') as tim_utama,
-                    -- Tim Kedua (Dosen Pembimbing dari tabel Proyek)
-                    dbimbing.nama_dosen as tim_kedua,
                     
+                    -- Tim Kedua: Pembimbing (Ambil dari tabel proyek kolom id_dosen)
+                    MAX(dbimbing.nama_dosen) as tim_kedua,
+                    
+                    -- Detail Lainnya (Ambil dari detail_mahasiswa)
                     MAX(dm.tanggal_mulai_proyek_mahasiswa) as tgl_mulai,
                     MAX(dm.tanggal_selesai_proyek_mahasiswa) as tgl_selesai,
                     MAX(dm.kategori_proyek_mahasiswa) as kategori,
                     MAX(dm.lokasi_proyek_mahasiswa) as lokasi
                 FROM proyek p
-                JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
+                -- Join Tim Mahasiswa
+                LEFT JOIN detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
                 LEFT JOIN mahasiswa m ON dm.id_mahasiswa = m.id_mahasiswa
                 LEFT JOIN users u ON m.id_users = u.id_users
-                -- Join Pembimbing
+                
+                -- Join untuk Pembimbing (Link ke tabel Dosen)
                 LEFT JOIN dosen dbimbing ON p.id_dosen = dbimbing.id_dosen
+                
                 WHERE p.id_proyek = :id
-                GROUP BY p.id_proyek, dbimbing.nama_dosen";
+                GROUP BY p.id_proyek";
     }
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['id' => $id_proyek]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Fallback: Jika query detail gagal/kosong, gunakan data dasar dari tabel 'proyek'
+    // agar halaman tidak error.
     if (!$data) {
-        die("<div class='container py-5 text-center'><h3>Detail data tidak lengkap/rusak.</h3><a href='produk.php' class='btn btn-primary'>Kembali</a></div>");
+        $data = $baseData; 
     }
 
-    // Format Tanggal
+    // Format Tanggal (Handle jika kosong)
     $tgl_mulai_fmt = !empty($data['tgl_mulai']) ? date('d M Y', strtotime($data['tgl_mulai'])) : '-';
     $tgl_selesai_fmt = !empty($data['tgl_selesai']) ? date('d M Y', strtotime($data['tgl_selesai'])) : '-';
 
@@ -96,7 +124,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Produk Riset - <?= htmlspecialchars($data['judul_proyek']); ?></title>
+    <title>Detail Produk Riset - <?= htmlspecialchars($data['judul_proyek'] ?? 'Detail Proyek'); ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
@@ -126,10 +154,8 @@ try {
             border: 2px solid #0047AB;
             padding: 1rem;
             border-radius: 0.375rem;
-            /* MODIFIKASI: Mengganti background-color: transparent menjadi white */
-            background-color: white; 
+            background-color: transparent;
         }
-        /* Style tabel detail agar lebih rapi */
         .detail-box table tr td {
             padding: 8px 0;
             vertical-align: top;
@@ -141,9 +167,14 @@ try {
             margin-bottom: 1.5rem;
             background-color: white;
         }
+        .dokumen-container {
+            background-color: #FFFCED;
+            padding: 1rem;
+            border-radius: 0.375rem;
+        }
         .image-placeholder {
             background-color: #e9ecef;
-            height: 300px; /* Sedikit dipertinggi */
+            height: 300px;
             width: 100%;
             display: flex;
             justify-content: center;
@@ -176,15 +207,25 @@ try {
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
                 <h2 class="h5 m-0 text-muted ms-auto text-uppercase fw-bold">
-                    <?= htmlspecialchars($data['tipe_proyek']); ?>
+                    <?= htmlspecialchars($data['tipe_proyek'] ?? 'Proyek'); ?>
                 </h2>
             </div>
             
             <div class="image-placeholder mb-4 shadow-sm">
                 <?php 
-                    // Path Foto (Sesuaikan jika path di dashboard Anda berbeda)
-                    $fotoPath = 'dashboard/uploads/proyek/' . $data['foto_proyek'];
-                    if (!empty($data['foto_proyek']) && file_exists($fotoPath)): 
+                    // Logika Path Foto: Cek di uploads root atau dashboard
+                    $fotoFile = $data['foto_proyek'] ?? '';
+                    $fotoPath = '';
+
+                    if (!empty($fotoFile)) {
+                        if (file_exists('uploads/proyek/' . $fotoFile)) {
+                            $fotoPath = 'uploads/proyek/' . $fotoFile;
+                        } elseif (file_exists('dashboard/uploads/proyek/' . $fotoFile)) {
+                            $fotoPath = 'dashboard/uploads/proyek/' . $fotoFile;
+                        }
+                    }
+
+                    if (!empty($fotoPath)): 
                 ?>
                     <img src="<?= htmlspecialchars($fotoPath); ?>" alt="Foto Proyek" style="width: 100%; height: 100%; object-fit: cover;">
                 <?php else: ?>
@@ -208,7 +249,8 @@ try {
             <hr class="my-4">
             
             <h4 class="h5 fw-bold text-primary"><i class="fas fa-info-circle me-2"></i>Informasi Detail</h4>
-            <div class="detail-box mb-4"> <table class="table table-borderless m-0 bg-transparent">
+            <div class="detail-box mb-4">
+                <table class="table table-borderless m-0 bg-transparent">
                     <tr>
                         <td width="180" class="fw-bold text-secondary">Tipe Proyek</td>
                         <td>: <span class="badge bg-custom-blue"><?= htmlspecialchars($data['tipe_proyek']); ?></span></td>
@@ -232,7 +274,7 @@ try {
                     <tr>
                         <td class="fw-bold text-secondary"><?= $label_tim_kedua; ?></td>
                         <td>: 
-                            <span class="text-primary">
+                            <span class="text-primary fw-bold">
                                 <?= htmlspecialchars($data['tim_kedua']); ?>
                             </span>
                         </td>
@@ -259,18 +301,28 @@ try {
             </div>
             
             <h4 class="h5 fw-bold text-primary"><i class="fas fa-paperclip me-2"></i>Dokumen Terkait</h4>
-            <div class="p-3 mb-4 rounded shadow-sm" style="background-color: #FFFCED;"> <div class="list-group list-group-flush bg-transparent">
+            <div class="dokumen-container mb-4 shadow-sm">
+                <div class="list-group list-group-flush bg-transparent">
                 <?php 
-                    // Path File (Sesuaikan jika path di dashboard Anda berbeda)
-                    $filePath = 'dashboard/uploads/proyek/' . $data['file_proyek'];
-                    
-                    if (!empty($data['file_proyek']) && file_exists($filePath)): 
+                    // Logika Path File Dokumen
+                    $docFile = $data['file_proyek'] ?? '';
+                    $filePath = '';
+
+                    if (!empty($docFile)) {
+                        if (file_exists('uploads/proyek/' . $docFile)) {
+                            $filePath = 'uploads/proyek/' . $docFile;
+                        } elseif (file_exists('dashboard/uploads/proyek/' . $docFile)) {
+                            $filePath = 'dashboard/uploads/proyek/' . $docFile;
+                        }
+                    }
+
+                    if (!empty($filePath)): 
                 ?>
-                    <div class="d-flex justify-content-between align-items-center p-2 border rounded">
+                    <div class="d-flex justify-content-between align-items-center p-2 border rounded bg-white">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-file-pdf fa-2x me-3 text-danger"></i>
                             <div>
-                                <h6 class="mb-0 fw-bold"><?= htmlspecialchars(basename($data['file_proyek'])); ?></h6>
+                                <h6 class="mb-0 fw-bold"><?= htmlspecialchars(basename($docFile)); ?></h6>
                                 <small class="text-muted">Klik tombol di kanan untuk mengunduh.</small>
                             </div>
                         </div>

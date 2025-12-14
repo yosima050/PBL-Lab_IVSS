@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// 1. TANGKAP SEMUA INPUT
+// Tangkap Input
 $id         = $_POST['id_dosen'] ?? null;
 $nama       = $_POST['nama_dosen'];
 $nip        = $_POST['nip'];
@@ -24,80 +24,116 @@ $linkedin   = $_POST['link_linkedin'];
 $scholar    = $_POST['link_google_scholar'];
 $sinta      = $_POST['link_sinta'];
 
-// 2. PROSES UPLOAD FOTO (DUAL FOLDER)
+// Konfigurasi Upload
 $uploadDirDash = __DIR__ . '/../uploads/';
-$uploadDirRoot = __DIR__ . '/uploads/'; // Sesuaikan dengan struktur folder Anda (folder root)
-
-// Buat folder jika belum ada
+$uploadDirRoot = __DIR__ . '/uploads/'; 
 foreach ([$uploadDirDash, $uploadDirRoot] as $dir) {
     if (!is_dir($dir)) @mkdir($dir, 0755, true);
 }
 
-// Cek Foto Lama
+// Cek Foto Lama (Jika Edit)
 $fotoName = null;
 if ($id) {
     $stmt = $pdo->prepare("SELECT foto_dosen FROM dosen WHERE id_dosen = :id");
     $stmt->execute(['id' => $id]);
-    $fotoLama = $stmt->fetchColumn();
-    $fotoName = $fotoLama;
+    $fotoName = $stmt->fetchColumn();
 }
 
+// Proses Upload Baru
 if (!empty($_FILES['foto_dosen']['name'])) {
     $ext = pathinfo($_FILES['foto_dosen']['name'], PATHINFO_EXTENSION);
-    $fotoName = 'dosen_' . time() . '.' . $ext;
+    $newFoto = 'dosen_' . time() . '.' . $ext;
 
-    // Upload
-    if (move_uploaded_file($_FILES['foto_dosen']['tmp_name'], $uploadDirDash . $fotoName)) {
-        // Copy ke folder root agar frontend bisa akses
-        @copy($uploadDirDash . $fotoName, $uploadDirRoot . $fotoName);
+    if (move_uploaded_file($_FILES['foto_dosen']['tmp_name'], $uploadDirDash . $newFoto)) {
+        @copy($uploadDirDash . $newFoto, $uploadDirRoot . $newFoto);
         
         // Hapus foto lama
-        if ($fotoLama) {
-            @unlink($uploadDirDash . $fotoLama);
-            @unlink($uploadDirRoot . $fotoLama);
+        if ($id && $fotoName) {
+            @unlink($uploadDirDash . $fotoName);
+            @unlink($uploadDirRoot . $fotoName);
         }
+        $fotoName = $newFoto;
     }
 }
 
-// 3. EXECUTE QUERY
-if (!$id) {
-    // === INSERT ===
-    $sql = "INSERT INTO dosen (
-                nama_dosen, nip, nidn_dosen, jabatan_dosen, prodi_dosen, 
-                bidang_riset, pendidikan_dosen, sertifikasi_dosen, mata_kuliah_dosen,
-                email_dosen, alamat_kantor, link_linkedin, link_google_scholar, link_sinta, foto_dosen
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+try {
+    $pdo->beginTransaction();
+
+    /*==================================================
+    |   MODE TAMBAH (INSERT USER + DOSEN)
+    ====================================================*/
+    if (!$id) {
+        
+        // 1. Buat User Baru (Role 4 = Dosen)
+        // Password default: 123456 (Bisa diganti nanti)
+        $defaultPass = password_hash('123456', PASSWORD_DEFAULT);
+        
+        $stmtUser = $pdo->prepare("INSERT INTO users (id_role, nama_users, email_users, password) 
+                                   VALUES (4, :nama, :email, :pass) RETURNING id_users");
+        $stmtUser->execute([
+            'nama' => $nama,
+            'email' => $email, // Pastikan email unik di DB
+            'pass' => $defaultPass
+        ]);
+        $newUserId = $stmtUser->fetchColumn();
+
+        // 2. Buat Data Dosen (Tautkan id_users)
+        $sql = "INSERT INTO dosen (
+                    id_users, nama_dosen, nip, nidn_dosen, jabatan_dosen, prodi_dosen, 
+                    bidang_riset, pendidikan_dosen, sertifikasi_dosen, mata_kuliah_dosen,
+                    email_dosen, alamat_kantor, link_linkedin, link_google_scholar, link_sinta, foto_dosen
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id_dosen";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            $newUserId, $nama, $nip, $nidn, $jabatan, $prodi, 
+            $bidang, $pendidikan, $sertifikasi, $matkul,
+            $email, $alamat, $linkedin, $scholar, $sinta, $fotoName
+        ]);
+        $newDosenId = $stmt->fetchColumn();
+
+        // 3. Update User agar punya id_dosen (Redundansi untuk kemudahan query)
+        $pdo->prepare("UPDATE users SET id_dosen = ? WHERE id_users = ?")->execute([$newDosenId, $newUserId]);
+
+        $message = "Dosen dan Akun User berhasil dibuat! (Password Default: 123456)";
+    } 
     
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $nama, $nip, $nidn, $jabatan, $prodi, 
-        $bidang, $pendidikan, $sertifikasi, $matkul,
-        $email, $alamat, $linkedin, $scholar, $sinta, $fotoName
-    ]);
+    /*==================================================
+    |   MODE EDIT (UPDATE DOSEN SAJA)
+    ====================================================*/
+    else {
+        // Update tabel dosen
+        $sql = "UPDATE dosen SET 
+                    nama_dosen = ?, nip = ?, nidn_dosen = ?, jabatan_dosen = ?, prodi_dosen = ?, 
+                    bidang_riset = ?, pendidikan_dosen = ?, sertifikasi_dosen = ?, mata_kuliah_dosen = ?,
+                    email_dosen = ?, alamat_kantor = ?, link_linkedin = ?, link_google_scholar = ?, link_sinta = ?, foto_dosen = ?
+                WHERE id_dosen = ?";
+                
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            $nama, $nip, $nidn, $jabatan, $prodi, 
+            $bidang, $pendidikan, $sertifikasi, $matkul,
+            $email, $alamat, $linkedin, $scholar, $sinta, $fotoName, $id
+        ]);
+
+        // Opsional: Update nama & email di tabel users juga agar sinkron
+        $pdo->prepare("UPDATE users SET nama_users = ?, email_users = ? WHERE id_dosen = ?")
+            ->execute([$nama, $email, $id]);
+        
+        $message = "Data dosen berhasil diperbarui!";
+    }
+
+    // Refresh View
+    $pdo->query("REFRESH MATERIALIZED VIEW mv_dosen");
     
-    $message = "Dosen berhasil ditambahkan!";
-} else {
-    // === UPDATE ===
-    $sql = "UPDATE dosen SET 
-                nama_dosen = ?, nip = ?, nidn_dosen = ?, jabatan_dosen = ?, prodi_dosen = ?, 
-                bidang_riset = ?, pendidikan_dosen = ?, sertifikasi_dosen = ?, mata_kuliah_dosen = ?,
-                email_dosen = ?, alamat_kantor = ?, link_linkedin = ?, link_google_scholar = ?, link_sinta = ?, foto_dosen = ?
-            WHERE id_dosen = ?";
-            
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        $nama, $nip, $nidn, $jabatan, $prodi, 
-        $bidang, $pendidikan, $sertifikasi, $matkul,
-        $email, $alamat, $linkedin, $scholar, $sinta, $fotoName, $id
-    ]);
-    
-    $message = "Data dosen berhasil diperbarui!";
+    $pdo->commit();
+    $_SESSION['flash'] = $message;
+
+} catch (Exception $e) {
+    $pdo->rollBack();
+    $_SESSION['flash'] = "Gagal: " . $e->getMessage(); // Tampilkan error jika email duplikat dll
 }
 
-// 4. REFRESH MATERIALIZED VIEW (Jika Pakai)
-$pdo->query("REFRESH MATERIALIZED VIEW mv_dosen");
-
-$_SESSION['flash'] = $message;
 header("Location: dosen.php");
 exit;
 ?>

@@ -1,6 +1,5 @@
 <?php
 // Pastikan path ini benar sesuai struktur folder Anda
-// Jika file ini ada di folder root (luar), dan db.php ada di dalam folder dashboard
 include 'dashboard/db.php'; 
 
 // 1. CONFIG PAGINASI & PENCARIAN
@@ -26,13 +25,28 @@ try {
     // Hitung Total Halaman
     $total_pages = ceil($total_data / $limit);
 
-    // B. AMBIL DATA (DENGAN LIMIT & OFFSET)
-    // Mengurutkan berdasarkan ID terbaru (DESC)
-    $sql = "SELECT id_proyek, judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek 
-            FROM public.proyek 
-            WHERE judul_proyek ILIKE :keyword 
-            OR deskripsi_proyek ILIKE :keyword 
-            ORDER BY id_proyek DESC 
+    // B. AMBIL DATA (DENGAN GROUP BY AGAR TIDAK DUPLIKAT)
+    // Kita gunakan GROUP BY id_proyek untuk menggabungkan baris ganda
+    // Kita gunakan MAX() untuk mengambil satu nilai kategori (Prioritas Dosen > Mahasiswa)
+    $sql = "SELECT 
+                p.id_proyek, 
+                p.judul_proyek, 
+                p.deskripsi_proyek, 
+                p.tahun_proyek, 
+                p.tipe_proyek,
+                -- Logika: Ambil Kategori Dosen dulu. Jika kosong, baru ambil Kategori Mahasiswa.
+                COALESCE(
+                    MAX(dd.kategori_proyek_dosen), 
+                    MAX(dm.kategori_proyek_mahasiswa), 
+                    '-'
+                ) as kategori_proyek
+            FROM public.proyek p
+            LEFT JOIN public.detail_proyek_dosen dd ON p.id_proyek = dd.id_proyek
+            LEFT JOIN public.detail_proyek_mahasiswa dm ON p.id_proyek = dm.id_proyek
+            WHERE p.judul_proyek ILIKE :keyword 
+            OR p.deskripsi_proyek ILIKE :keyword 
+            GROUP BY p.id_proyek -- PENTING: Mencegah duplikasi data
+            ORDER BY p.id_proyek DESC 
             LIMIT :limit OFFSET :offset"; 
             
     $stmt = $pdo->prepare($sql);
@@ -206,32 +220,39 @@ try {
                     
                     <div class="custom-card shadow-sm">
                         <div class="custom-card-title">
-                            <?= htmlspecialchars($row['tipe_proyek']); ?>
+                            <?= htmlspecialchars($row['tipe_proyek'] ?? ''); ?>
                         </div>
                         
                         <h5 class="card-title fw-bold">
-                            <?= htmlspecialchars($row['judul_proyek']); ?>
-                            <small class="text-muted ms-2" style="font-size: 0.8rem;">(<?= htmlspecialchars($row['tahun_proyek']); ?>)</small>
+                            <?= htmlspecialchars($row['judul_proyek'] ?? ''); ?>
+                            <small class="text-muted ms-2" style="font-size: 0.8rem;">(<?= htmlspecialchars($row['tahun_proyek'] ?? ''); ?>)</small>
                         </h5>
                         
                         <p class="card-text text-muted">
-                            <?= htmlspecialchars(substr($row['deskripsi_proyek'], 0, 150)) . (strlen($row['deskripsi_proyek']) > 150 ? '...' : ''); ?>
+                            <?php 
+                                $deskripsi = $row['deskripsi_proyek'] ?? '';
+                                echo htmlspecialchars(substr($deskripsi, 0, 150)) . (strlen($deskripsi) > 150 ? '...' : ''); 
+                            ?>
                         </p>
                         
                         <div class="mb-3">
                             <?php
-                                // Logika Warna Badge Berdasarkan Tipe
+                                // Badge Warna
                                 $badgeColor = 'bg-blue';
-                                $tipe = strtolower($row['tipe_proyek']);
+                                $tipe = strtolower($row['tipe_proyek'] ?? '');
                                 
                                 if (strpos($tipe, 'aktif') !== false) {
                                     $badgeColor = 'bg-orange';
                                 } elseif (strpos($tipe, 'publikasi') !== false || strpos($tipe, 'selesai') !== false) {
                                     $badgeColor = 'bg-green';
                                 }
+
+                                // Kategori dari Query
+                                $kategori = $row['kategori_proyek'] ?? '-';
                             ?>
+                            
                             <span class="badge-status <?= $badgeColor ?>">
-                                <?= htmlspecialchars($row['tipe_proyek']); ?>
+                                <?= htmlspecialchars($kategori); ?>
                             </span>
                         </div>
                         
