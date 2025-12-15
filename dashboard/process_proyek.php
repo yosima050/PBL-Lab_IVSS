@@ -79,32 +79,44 @@ if (isset($_POST['create_dosen'])) {
         $foto = handleFileUpload('foto_proyek', ['jpg', 'jpeg', 'png', 'webp'], 2097152); // Max 2MB
         $file = handleFileUpload('file_proyek', ['pdf', 'doc', 'docx', 'xls', 'xlsx'], 5242880); // Max 5MB
 
-        // 1. Insert Proyek Utama (Termasuk Foto & File)
-        $stmt = $pdo->prepare("INSERT INTO proyek (judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek, id_dosen, id_mahasiswa, foto_proyek, file_proyek) 
-                               VALUES (:judul, :deskripsi, :tahun, :tipe, :id_dosen, NULL, :foto, :file) RETURNING id_proyek");
+        // 1. Insert Proyek Utama via function fn_insert_proyek_dosen
+        $stmt = $pdo->prepare("
+            SELECT public.fn_insert_proyek_dosen(
+                :judul, :deskripsi, :tahun, :tipe, :id_dosen,
+                :tgl_mulai, :tgl_selesai, :penulis, :kategori, :lokasi,
+                :foto, :file
+            )
+        ");
         $stmt->execute([
             ':judul' => $_POST['judul'],
             ':deskripsi' => $_POST['deskripsi'],
             ':tahun' => $_POST['tahun'],
             ':tipe' => $_POST['tipe'],
             ':id_dosen' => $ketua_id,
+            ':tgl_mulai' => $_POST['tgl_mulai'],
+            ':tgl_selesai' => $_POST['tgl_selesai'],
+            ':penulis' => $_POST['nama_penulis'],
+            ':kategori' => $_POST['kategori'],
+            ':lokasi' => $_POST['lokasi'],
             ':foto' => $foto,
             ':file' => $file
         ]);
-        $newId = $stmt->fetchColumn();
+        $newId = (int)$stmt->fetchColumn();
 
-        // 2. Insert Tim Dosen
-        $stmtDosen = $pdo->prepare("INSERT INTO detail_proyek_dosen (id_dosen, id_proyek, tanggal_mulai_proyek_dosen, tanggal_selesai_proyek_dosen, nama_penulis_proyek_dosen, kategori_proyek_dosen, lokasi_proyek_dosen) VALUES (:id_dosen, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
-        foreach ($dosen_ids as $dosen_id) {
-            $stmtDosen->execute([
-                ':id_dosen' => $dosen_id,
-                ':id_proyek' => $newId,
-                ':mulai' => $_POST['tgl_mulai'],
-                ':selesai' => $_POST['tgl_selesai'],
-                ':penulis' => $_POST['nama_penulis'],
-                ':kategori' => $_POST['kategori'],
-                ':lokasi' => $_POST['lokasi']
-            ]);
+        // 2. Insert Tim Dosen (tambahan anggota selain ketua)
+        if (count($dosen_ids) > 1) {
+            $stmtDosen = $pdo->prepare("INSERT INTO detail_proyek_dosen (id_dosen, id_proyek, tanggal_mulai_proyek_dosen, tanggal_selesai_proyek_dosen, nama_penulis_proyek_dosen, kategori_proyek_dosen, lokasi_proyek_dosen) VALUES (:id_dosen, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
+            foreach (array_slice($dosen_ids, 1) as $dosen_id) {
+                $stmtDosen->execute([
+                    ':id_dosen' => $dosen_id,
+                    ':id_proyek' => $newId,
+                    ':mulai' => $_POST['tgl_mulai'],
+                    ':selesai' => $_POST['tgl_selesai'],
+                    ':penulis' => $_POST['nama_penulis'],
+                    ':kategori' => $_POST['kategori'],
+                    ':lokasi' => $_POST['lokasi']
+                ]);
+            }
         }
 
         // 3. Insert Asisten Mahasiswa (Jika ada)
@@ -222,8 +234,14 @@ if (isset($_POST['create_mahasiswa'])) {
         $foto = handleFileUpload('foto_proyek', ['jpg', 'jpeg', 'png', 'webp'], 2097152);
         $file = handleFileUpload('file_proyek', ['pdf', 'doc', 'docx', 'xls', 'xlsx'], 5242880);
 
-        // 1. Insert Proyek Utama
-        $stmt = $pdo->prepare("INSERT INTO proyek (judul_proyek, deskripsi_proyek, tahun_proyek, tipe_proyek, id_mahasiswa, id_dosen, foto_proyek, file_proyek) VALUES (:judul, :deskripsi, :tahun, :tipe, :id_mhs, :id_pembimbing, :foto, :file) RETURNING id_proyek");
+        // 1. Insert Proyek Utama via function fn_insert_proyek_mahasiswa
+        $stmt = $pdo->prepare("
+            SELECT public.fn_insert_proyek_mahasiswa(
+                :judul, :deskripsi, :tahun, :tipe, :id_mhs, :id_pembimbing,
+                :tgl_mulai, :tgl_selesai, :penulis, :kategori, :lokasi,
+                :foto, :file
+            )
+        ");
         $stmt->execute([
             ':judul' => $_POST['judul'],
             ':deskripsi' => $_POST['deskripsi'],
@@ -231,24 +249,30 @@ if (isset($_POST['create_mahasiswa'])) {
             ':tipe' => $_POST['tipe'],
             ':id_mhs' => $ketua_id,
             ':id_pembimbing' => $id_pembimbing,
+            ':tgl_mulai' => $_POST['tgl_mulai'],
+            ':tgl_selesai' => $_POST['tgl_selesai'],
+            ':penulis' => $_POST['nama_penulis'],
+            ':kategori' => $_POST['kategori'],
+            ':lokasi' => $_POST['lokasi'],
             ':foto' => $foto,
             ':file' => $file
         ]);
-        $newId = $stmt->fetchColumn();
+        $newId = (int)$stmt->fetchColumn();
 
-        // 2. Insert Detail Tim Mahasiswa
-        $stmt2 = $pdo->prepare("INSERT INTO detail_proyek_mahasiswa (id_mahasiswa, id_proyek, tanggal_mulai_proyek_mahasiswa, tanggal_selesai_proyek_mahasiswa, nama_penulis_proyek_mahasiswa, kategori_proyek_mahasiswa, lokasi_proyek_mahasiswa) VALUES (:id_mhs, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
-        
-        foreach ($mhs_ids as $single_id) {
-            $stmt2->execute([
-                ':id_mhs' => $single_id,
-                ':id_proyek' => $newId,
-                ':mulai' => $_POST['tgl_mulai'],
-                ':selesai' => $_POST['tgl_selesai'],
-                ':penulis' => $_POST['nama_penulis'],
-                ':kategori' => $_POST['kategori'],
-                ':lokasi' => $_POST['lokasi']
-            ]);
+        // 2. Insert Detail Tim Mahasiswa (anggota tambahan selain ketua)
+        if (count($mhs_ids) > 1) {
+            $stmt2 = $pdo->prepare("INSERT INTO detail_proyek_mahasiswa (id_mahasiswa, id_proyek, tanggal_mulai_proyek_mahasiswa, tanggal_selesai_proyek_mahasiswa, nama_penulis_proyek_mahasiswa, kategori_proyek_mahasiswa, lokasi_proyek_mahasiswa) VALUES (:id_mhs, :id_proyek, :mulai, :selesai, :penulis, :kategori, :lokasi)");
+            foreach (array_slice($mhs_ids, 1) as $single_id) {
+                $stmt2->execute([
+                    ':id_mhs' => $single_id,
+                    ':id_proyek' => $newId,
+                    ':mulai' => $_POST['tgl_mulai'],
+                    ':selesai' => $_POST['tgl_selesai'],
+                    ':penulis' => $_POST['nama_penulis'],
+                    ':kategori' => $_POST['kategori'],
+                    ':lokasi' => $_POST['lokasi']
+                ]);
+            }
         }
 
         $pdo->commit();

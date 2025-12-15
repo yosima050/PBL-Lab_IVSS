@@ -17,13 +17,13 @@ if (isset($_POST['create'])) {
     $link = $_POST['link_publikasi'];
 
     try {
-        $sql = "INSERT INTO publikasi (id_users, judul_publikasi, tahun_publikasi, link_publikasi)
-                VALUES (:id_users, :judul, :tahun, :link)";
+        // Gunakan function PostgreSQL
+        $sql = "SELECT public.fn_insert_publikasi(:id_users, :judul, :tahun, :link)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':id_users' => $id_users,
+            ':id_users' => (int)$id_users,
             ':judul'    => $judul,
-            ':tahun'    => $tahun,
+            ':tahun'    => (int)$tahun,
             ':link'     => $link
         ]);
 
