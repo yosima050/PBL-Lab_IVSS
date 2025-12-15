@@ -61,7 +61,7 @@ if (isset($_POST['create'])) {
     $id_role   = $_POST['id_role'];
     $nama      = $_POST['nama_users'];
     $email     = $_POST['email_users'];
-    $password  = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $password  = $_POST['password'];
 
     try {
         $pdo->beginTransaction();
@@ -123,7 +123,7 @@ if (isset($_POST['update'])) {
         // Jika password diisi, update password juga
         if (!empty($_POST['password'])) {
             $sql .= ", password = ?";
-            $params[] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $params[] = $_POST['password'];
         }
         $sql .= " WHERE id_users = ?";
         $params[] = $id;
