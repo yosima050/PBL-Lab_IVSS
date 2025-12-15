@@ -234,7 +234,7 @@ $pendingCount = $waitingApproval = 0;
                 // --- FORM EDIT ---
                 if (isset($_GET['aksi']) && $_GET['aksi'] == 'edit') {
                     $id = $_GET['id'];
-                    $stmt = $pdo->prepare("SELECT * FROM berita WHERE id_berita = :id");
+                    $stmt = $pdo->prepare("SELECT * FROM view_berita WHERE id_berita = :id");
                     $stmt->execute(['id' => $id]);
                     $d = $stmt->fetch();
                     
@@ -368,7 +368,7 @@ $pendingCount = $waitingApproval = 0;
 
                 <?php
                 } else {
-                    $stmt = $pdo->query("SELECT * FROM berita ORDER BY created_at_berita DESC");
+                    $stmt = $pdo->query("SELECT * FROM view_berita ORDER BY created_at_berita DESC");
                     $data = $stmt->fetchAll();
                 ?>
                 <div class="card shadow mb-4">

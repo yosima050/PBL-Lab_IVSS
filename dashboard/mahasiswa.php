@@ -99,20 +99,15 @@ $search_param = "%" . $keyword . "%";
 try {
     // Query Join: Pendaftaran + Mahasiswa
     // Filter: status_mahasiswa = 'Diterima'
-    $query = "SELECT 
-                p.*, 
-                m.id_mahasiswa, 
-                m.keaktifan_mahasiswa 
-              FROM pendaftaran p
-              JOIN mahasiswa m ON p.id_users = m.id_users
-              WHERE p.status_mahasiswa = 'Diterima'
-              AND (p.nama_mahasiswa ILIKE :kwd OR p.nim ILIKE :kwd)
-              ORDER BY p.nama_mahasiswa ASC";
-
+    $query = "SELECT *
+          FROM view_mahasiswa
+          WHERE nama_mahasiswa ILIKE :kwd
+             OR nim ILIKE :kwd
+          ORDER BY nama_mahasiswa ASC";
     $stmt = $pdo->prepare($query);
     $stmt->execute(['kwd' => $search_param]);
     $mahasiswa = $stmt->fetchAll();
-
+    
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
